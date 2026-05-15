@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /panel/
+Disallow: /admin/
+Disallow: /login
+Disallow: /registro
+Disallow: /verificar
+Disallow: /recuperar-password
+
+# Sitemap dinámico generado por el backend
+Sitemap: http://localhost:8080/sitemap.xml

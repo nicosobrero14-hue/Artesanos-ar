@@ -1,0 +1,78 @@
+# ─────────────────────────────────────────────────────────────────────────
+# .gitignore para el monorepo (frontend + backend)
+# Cubre lo de Spring Boot, Maven, Node, React/Vite, IDEs y secretos.
+# ─────────────────────────────────────────────────────────────────────────
+
+# ── Secretos — NUNCA COMMITEAR ──
+.env
+.env.local
+.env.production
+.env.*.local
+*.pem
+*.key
+*.keystore
+
+# ── Build outputs ──
+# Backend (Maven / Spring Boot)
+**/target/
+*.jar
+*.war
+*.class
+HELP.md
+
+# Frontend (Node / Vite)
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/build/
+
+# ── IDEs ──
+# Eclipse
+.classpath
+.project
+.settings/
+.springBeans
+.apt_generated/
+.apt_generated_tests/
+.factorypath
+.sts4-cache/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code (mantenemos extensions.json si existe)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Otros editores
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Logs ──
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── Backups y dumps ──
+*.sql.gz
+*.dump
+backup_*.sql
+
+# ── Misc ──
+*.bak
+*.tmp
+.cache/
+
+# ── Específico de tu setup ──
+# .claude — carpeta de configuración local de tu agente, no va al repo
+.claude/
