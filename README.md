@@ -59,6 +59,27 @@ Ver **`blogArtesanos/DEPLOY.md`** para la guía completa (Docker, hosting provid
 - Headers de seguridad (HSTS, X-Frame-Options, etc.)
 - BCrypt + roles + auditoría admin
 
+
+## Imagenes
+![Login](images/Login.png)
+![CrearPieza](images/AgregarPieza.png)
+![CatalogoPropio](images/CatalogoPropio.png)
+![Chat](images/ChatInterno.png)
+![ConfigRanking](images/ConfigRanking.png)
+![ControlPedidos](images/ControlPedidos.png)
+![Descuento](images/CuponesDescuento.png)
+![FeedBack](images/FeedBack.png)
+![Ferias](images/FeriasDisponibles.png)
+![Clientes](images/GestionClientes.png)
+![Interaccion](images/InteraccionArtesanos.png)
+![PanelAdmin](images/PanelAdmin.png)
+![Panel](images/PanelUsuario.png)
+![Perfil](images/PerfilUsuario.png)
+![Reseñas](images/PerfilYReseñas.png)
+![Premium](images/Premium.png)
+![Ranking](images/Ranking.png)
+
+
 ## Licencia
 
 Proyecto personal. Todos los derechos reservados.
