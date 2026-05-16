@@ -169,4 +169,4 @@ docker run -d artesanos-backend:previous
 
 ## Contacto
 
-Para incidentes de seguridad: gestioncomplejodeportivo@gmail.com
+Para incidentes de seguridad: blogartesanos.soporte.2026@gmail.com
