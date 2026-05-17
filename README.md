@@ -75,7 +75,7 @@ Ver **`blogArtesanos/DEPLOY.md`** para la guía completa (Docker, hosting provid
 ![PanelAdmin](Images/PanelAdmin.png)
 ![Panel](Images/PanelUsuario.png)
 ![Perfil](Images/PerfilUsuario.png)
-![Reseñas](Images/PerfilYReseñas.png)
+![Reseñas](Images/PerfilYReseñasArtesanos.png)
 ![Premium](Images/Premium.png)
 ![Ranking](Images/Ranking.png)
 
