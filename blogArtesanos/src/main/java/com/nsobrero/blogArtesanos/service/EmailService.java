@@ -1,23 +1,43 @@
 package com.nsobrero.blogArtesanos.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${resend.api-key}")
+    private String apiKey;
+
+    @Value("${app.mail-from}")
+    private String emailRemitente;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
-    @Value("${app.mail-from}")
-    private String emailRemitente;
+    private void enviar(String to, String subject, String text) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        Map<String, Object> body = Map.of(
+            "from", emailRemitente,
+            "to", List.of(to),
+            "subject", subject,
+            "text", text
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+        restTemplate.postForObject("https://api.resend.com/emails", request, String.class);
+    }
 
     /*
      * Manda la respuesta del artesano al email del contacto.
@@ -27,11 +47,9 @@ public class EmailService {
     public void enviarRespuesta(String destinatario, String nombreDestinatario,
                                  String mensajeOriginal, String respuesta,
                                  String nombreArtesano) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom(emailRemitente);
-        msg.setTo(destinatario);
-        msg.setSubject(nombreArtesano + " respondió tu consulta — Artesanos");
-        msg.setText(
+        enviar(
+            destinatario,
+            nombreArtesano + " respondió tu consulta — Artesanos",
             "Hola " + nombreDestinatario + ",\n\n" +
             nombreArtesano + " te respondió:\n\n" +
             "\"" + respuesta + "\"\n\n" +
@@ -40,7 +58,6 @@ public class EmailService {
             "\"" + mensajeOriginal + "\"\n\n" +
             "Equipo Artesanos"
         );
-        mailSender.send(msg);
     }
 
     /*
@@ -51,11 +68,9 @@ public class EmailService {
     public void enviarFeedbackAlAdmin(String adminEmail, String tipo,
                                        String mensaje, String autorNombre,
                                        String autorEmail) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom(emailRemitente);
-        msg.setTo(adminEmail);
-        msg.setSubject("[Feedback " + (tipo != null ? tipo : "") + "] Artesanos.ar");
-        msg.setText(
+        enviar(
+            adminEmail,
+            "[Feedback " + (tipo != null ? tipo : "") + "] Artesanos.ar",
             "Recibiste un feedback nuevo en Artesanos.ar:\n\n" +
             "Tipo: " + (tipo != null ? tipo : "(sin tipo)") + "\n" +
             "Autor: " + (autorNombre != null ? autorNombre : "Anónimo") +
@@ -64,7 +79,6 @@ public class EmailService {
             "---\n" +
             "Ver todos los feedbacks: " + frontendUrl + "/admin/feedback"
         );
-        mailSender.send(msg);
     }
 
     /*
@@ -72,11 +86,9 @@ public class EmailService {
      */
     @Async
     public void enviarResetPassword(String destinatario, String nombre, String token) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom(emailRemitente);
-        msg.setTo(destinatario);
-        msg.setSubject("Recuperar tu contraseña — Artesanos.ar");
-        msg.setText(
+        enviar(
+            destinatario,
+            "Recuperar tu contraseña — Artesanos.ar",
             "Hola " + nombre + ",\n\n" +
             "Recibimos una solicitud para restablecer tu contraseña. Si no fuiste vos, ignorá este email.\n\n" +
             "Para crear una nueva contraseña, hacé click en este link:\n\n" +
@@ -84,17 +96,14 @@ public class EmailService {
             "El link vence en 1 hora.\n\n" +
             "Equipo Artesanos.ar"
         );
-        mailSender.send(msg);
     }
 
     @Async
     public void enviarNotificacionContacto(String artesanoEmail, String artesanoNombre,
                                             String remitente, String mensajeTexto, String remitenteEmail) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom(emailRemitente);
-        msg.setTo(artesanoEmail);
-        msg.setSubject("Nuevo mensaje de " + remitente + " — Artesanos");
-        msg.setText(
+        enviar(
+            artesanoEmail,
+            "Nuevo mensaje de " + remitente + " — Artesanos",
             "Hola " + artesanoNombre + ",\n\n" +
             "Recibiste un nuevo mensaje de " + remitente + ":\n\n" +
             "\"" + mensajeTexto + "\"\n\n" +
@@ -105,7 +114,6 @@ public class EmailService {
             frontendUrl + "/panel/mensajes\n\n" +
             "Equipo Artesanos"
         );
-        mailSender.send(msg);
     }
 
     /*
@@ -114,11 +122,9 @@ public class EmailService {
      */
     @Async
     public void enviarVerificacion(String destinatario, String nombre, String token) {
-        SimpleMailMessage mensaje = new SimpleMailMessage();
-        mensaje.setFrom(emailRemitente);
-        mensaje.setTo(destinatario);
-        mensaje.setSubject("Activá tu cuenta en Artesanos");
-        mensaje.setText(
+        enviar(
+            destinatario,
+            "Activá tu cuenta en Artesanos",
             "Hola " + nombre + ",\n\n" +
             "Gracias por registrarte. Hacé click en el siguiente link para activar tu cuenta:\n\n" +
             frontendUrl + "/verificar?token=" + token + "\n\n" +
@@ -126,6 +132,5 @@ public class EmailService {
             "Si no te registraste, ignorá este email.\n\n" +
             "Equipo Artesanos"
         );
-        mailSender.send(mensaje);
     }
 }
