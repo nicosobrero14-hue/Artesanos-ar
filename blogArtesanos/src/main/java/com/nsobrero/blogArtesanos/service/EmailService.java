@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +23,7 @@ public class EmailService {
      * Manda la respuesta del artesano al email del contacto.
      * Incluye el mensaje original para dar contexto al destinatario.
      */
+    @Async
     public void enviarRespuesta(String destinatario, String nombreDestinatario,
                                  String mensajeOriginal, String respuesta,
                                  String nombreArtesano) {
@@ -45,6 +47,7 @@ public class EmailService {
      * Reenvía feedback recibido al admin por email — para tener respaldo
      * fuera de la DB. Si la DB se corrompe, el admin igual tiene el email.
      */
+    @Async
     public void enviarFeedbackAlAdmin(String adminEmail, String tipo,
                                        String mensaje, String autorNombre,
                                        String autorEmail) {
@@ -67,6 +70,7 @@ public class EmailService {
     /*
      * Email para recuperar contraseña. Manda link con token único que vence en 1 hora.
      */
+    @Async
     public void enviarResetPassword(String destinatario, String nombre, String token) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setFrom(emailRemitente);
@@ -83,6 +87,7 @@ public class EmailService {
         mailSender.send(msg);
     }
 
+    @Async
     public void enviarNotificacionContacto(String artesanoEmail, String artesanoNombre,
                                             String remitente, String mensajeTexto, String remitenteEmail) {
         SimpleMailMessage msg = new SimpleMailMessage();
@@ -107,6 +112,7 @@ public class EmailService {
      * Manda el email de verificación con el link de activación.
      * El link lleva al frontend que a su vez llama al backend para confirmar.
      */
+    @Async
     public void enviarVerificacion(String destinatario, String nombre, String token) {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setFrom(emailRemitente);
