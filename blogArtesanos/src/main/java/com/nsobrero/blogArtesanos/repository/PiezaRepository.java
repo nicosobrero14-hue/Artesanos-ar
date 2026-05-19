@@ -28,6 +28,17 @@ public interface PiezaRepository extends JpaRepository<Pieza, Long> {
             @Param("artesanoId") Long artesanoId,
             @Param("estado") EstadoPieza estado);
 
+    /*
+     * Catálogo público del perfil de un artesano: trae todas sus piezas
+     * (DISPONIBLE, VENDIDA, RESERVADA, ENCARGO) excepto las ocultas.
+     * Las vendidas/reservadas funcionan como portfolio del artesano.
+     */
+    @Query("SELECT DISTINCT p FROM Pieza p " +
+           "LEFT JOIN FETCH p.materiales " +
+           "WHERE p.artesano.id = :artesanoId " +
+           "AND (p.oculta = false OR p.oculta IS NULL)")
+    List<Pieza> findPublicasByArtesanoIdWithMateriales(@Param("artesanoId") Long artesanoId);
+
     List<Pieza> findByArtesanoId(Long artesanoId);
     List<Pieza> findByArtesanoIdAndEstado(Long artesanoId, EstadoPieza estado);
     List<Pieza> findByArtesanoIdAndDestacadaTrue(Long artesanoId);

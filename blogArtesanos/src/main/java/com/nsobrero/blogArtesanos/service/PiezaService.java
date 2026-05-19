@@ -146,14 +146,27 @@ public class PiezaService {
                 .toList();
     }
 
+    /*
+     * Orden para el catálogo público del perfil de un artesano:
+     * 1) DISPONIBLE primero (lo que se puede comprar / encargar ahora)
+     * 2) Después destacadas
+     * 3) Después por fecha (más nuevas primero)
+     * Las vendidas / reservadas / encargo quedan al final como portfolio.
+     */
+    private static final Comparator<Pieza> ORDEN_PERFIL_PUBLICO =
+        Comparator.<Pieza, Boolean>comparing(p -> p.getEstado() == EstadoPieza.DISPONIBLE)
+            .reversed()
+            .thenComparing(p -> Boolean.TRUE.equals(p.getDestacada()), Comparator.reverseOrder())
+            .thenComparing(Pieza::getFechaCreacion, Comparator.nullsLast(Comparator.reverseOrder()));
+
     @Transactional
     public List<PiezaDTO> listarPublicas(String slug) {
         Artesano artesano = artesanoRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Artesano no encontrado"));
         return piezaRepository
-                .findByArtesanoIdAndEstadoWithMateriales(artesano.getId(), EstadoPieza.DISPONIBLE)
+                .findPublicasByArtesanoIdWithMateriales(artesano.getId())
                 .stream()
-                .sorted(ORDEN_DESTACADAS_PRIMERO)
+                .sorted(ORDEN_PERFIL_PUBLICO)
                 .map(this::toDTOPublico).toList();
     }
 
