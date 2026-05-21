@@ -59,6 +59,27 @@ public class Conversacion {
     private Integer noLeidosB = 0;
 
     /*
+     * Si false, los participantes que NO son admin no pueden enviar mensajes.
+     * Cuando un admin inicia una conversación, por defecto queda en false
+     * (el usuario solo puede leer). El admin puede habilitar la respuesta
+     * con un toggle desde su panel.
+     * Para conversaciones entre usuarios normales, siempre true.
+     */
+    @Column(nullable = false)
+    private Boolean respuestaHabilitada = true;
+
+    /*
+     * Soft-delete por usuario. Cada participante puede ocultar la conversación
+     * de su panel sin afectar al otro. Si llega un mensaje nuevo, se "des-oculta"
+     * automáticamente para que vuelva a aparecer.
+     */
+    @Column(nullable = false)
+    private Boolean ocultaParaA = false;
+
+    @Column(nullable = false)
+    private Boolean ocultaParaB = false;
+
+    /*
      * Helper: dado el id de un usuario que es parte de la conversación,
      * devuelve el id del otro.
      */
@@ -68,5 +89,17 @@ public class Conversacion {
 
     public boolean esParticipante(Long id) {
         return participanteAId.equals(id) || participanteBId.equals(id);
+    }
+
+    /* Helpers para el soft-delete por usuario. */
+    public boolean isOcultaPara(Long userId) {
+        if (participanteAId.equals(userId)) return Boolean.TRUE.equals(ocultaParaA);
+        if (participanteBId.equals(userId)) return Boolean.TRUE.equals(ocultaParaB);
+        return false;
+    }
+
+    public void setOcultaPara(Long userId, boolean valor) {
+        if (participanteAId.equals(userId)) ocultaParaA = valor;
+        else if (participanteBId.equals(userId)) ocultaParaB = valor;
     }
 }

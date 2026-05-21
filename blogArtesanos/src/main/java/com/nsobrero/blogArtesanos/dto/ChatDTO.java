@@ -18,7 +18,9 @@ public class ChatDTO {
         String ultimoMensaje,
         Boolean ultimoLoEnvieYo,
         LocalDateTime ultimaActividad,
-        Integer noLeidos
+        Integer noLeidos,
+        Boolean otroEsAdmin,
+        Boolean respuestaHabilitada
     ) {}
 
     /* Mensaje individual al ver una conversación */
@@ -38,6 +40,8 @@ public class ChatDTO {
         String otroNombre,
         String otroSlug,
         String otroAvatarUrl,
-        List<MensajeDTO> mensajes
+        List<MensajeDTO> mensajes,
+        Boolean otroEsAdmin,
+        Boolean respuestaHabilitada
     ) {}
 }

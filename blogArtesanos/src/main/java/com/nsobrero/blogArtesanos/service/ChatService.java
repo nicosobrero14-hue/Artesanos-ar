@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,58 +30,85 @@ public class ChatService {
 
     /*
      * Lista las conversaciones del usuario logueado para el panel de chat.
-     * Hace una sola query del listado + una query por conversación para resolver el "otro".
-     * Como vamos a tener pocas conversaciones por usuario, está OK.
+     * Excluye las que el usuario tiene "ocultas" (soft-delete por usuario).
      */
     @Transactional
     public List<ChatDTO.ConversacionItemDTO> listarMias(Long userId) {
         List<Conversacion> convos = conversacionRepository.findMias(userId);
-        return convos.stream().map(c -> {
-            Long otroId = c.getOtroParticipante(userId);
-            Artesano otro = artesanoRepository.findById(otroId).orElse(null);
-            int noLeidos = c.getParticipanteAId().equals(userId) ? c.getNoLeidosA() : c.getNoLeidosB();
-            return new ChatDTO.ConversacionItemDTO(
-                c.getId(),
-                otroId,
-                otro != null ? otro.getNombre() : "Cuenta eliminada",
-                otro != null ? otro.getSlug() : null,
-                otro != null ? otro.getAvatarUrl() : null,
-                c.getUltimoMensaje(),
-                c.getUltimoMensajeAutorId() != null && c.getUltimoMensajeAutorId().equals(userId),
-                c.getUltimaActividad(),
-                noLeidos
-            );
-        }).toList();
+        return convos.stream()
+            .filter(c -> !c.isOcultaPara(userId))
+            .map(c -> {
+                Long otroId = c.getOtroParticipante(userId);
+                Artesano otro = artesanoRepository.findById(otroId).orElse(null);
+                int noLeidos = c.getParticipanteAId().equals(userId) ? c.getNoLeidosA() : c.getNoLeidosB();
+                boolean otroEsAdmin = otro != null && otro.getRol() == RolUsuario.ADMIN;
+                return new ChatDTO.ConversacionItemDTO(
+                    c.getId(),
+                    otroId,
+                    otro != null ? otro.getNombre() : "Cuenta eliminada",
+                    otro != null ? otro.getSlug() : null,
+                    otro != null ? otro.getAvatarUrl() : null,
+                    c.getUltimoMensaje(),
+                    c.getUltimoMensajeAutorId() != null && c.getUltimoMensajeAutorId().equals(userId),
+                    c.getUltimaActividad(),
+                    noLeidos,
+                    otroEsAdmin,
+                    Boolean.TRUE.equals(c.getRespuestaHabilitada())
+                );
+            }).toList();
     }
 
     /*
      * Abre o crea una conversación con otro usuario y devuelve los mensajes.
-     * Si ya existe, marca como leídos los mensajes que el otro mandó al usuario actual.
      *
-     * No permitimos chat con admins (cuentas operativas) ni autoconversación.
+     * Reglas:
+     *  - No se permite chatear con uno mismo.
+     *  - Un usuario regular NO puede INICIAR conversación con admin, pero SÍ
+     *    puede abrir una ya existente (que el admin haya iniciado) en modo lectura.
+     *  - El admin puede iniciar conversación con cualquier usuario (usa este mismo
+     *    método o el endpoint específico de admin).
      */
     @Transactional
     public ChatDTO.DetalleDTO abrirConversacion(Long userId, Long otroId) {
         if (userId.equals(otroId)) {
             throw new RuntimeException("No podés chatear con vos mismo");
         }
+        Artesano yo = artesanoRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Artesano otro = artesanoRepository.findById(otroId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (otro.getRol() == RolUsuario.ADMIN) {
-            throw new RuntimeException("No podés chatear con la cuenta admin");
-        }
 
-        // a < b ordenado para garantizar uniqueness
         Long a = Math.min(userId, otroId);
         Long b = Math.max(userId, otroId);
 
-        Conversacion convo = conversacionRepository.buscarEntre(a, b)
-            .orElseGet(() -> {
-                Conversacion nueva = new Conversacion();
-                nueva.setParticipanteAId(a);
-                nueva.setParticipanteBId(b);
-                return conversacionRepository.save(nueva);
-            });
+        boolean yoSoyAdmin = yo.getRol() == RolUsuario.ADMIN;
+        boolean otroEsAdmin = otro.getRol() == RolUsuario.ADMIN;
+
+        Optional<Conversacion> existente = conversacionRepository.buscarEntre(a, b);
+
+        Conversacion convo;
+        if (existente.isPresent()) {
+            convo = existente.get();
+        } else {
+            // Si el otro es admin y yo no, no puedo iniciar
+            if (otroEsAdmin && !yoSoyAdmin) {
+                throw new RuntimeException("No podés iniciar una conversación con la cuenta admin");
+            }
+            Conversacion nueva = new Conversacion();
+            nueva.setParticipanteAId(a);
+            nueva.setParticipanteBId(b);
+            // Si el admin inicia, la respuesta del usuario queda deshabilitada por default
+            if (yoSoyAdmin) {
+                nueva.setRespuestaHabilitada(false);
+            }
+            convo = conversacionRepository.save(nueva);
+        }
+
+        // Al abrir, des-ocultar si estaba oculta para este usuario
+        if (convo.isOcultaPara(userId)) {
+            convo.setOcultaPara(userId, false);
+            conversacionRepository.save(convo);
+        }
 
         // Resetear no-leídos del usuario actual y marcar mensajes como leídos
         marcarLeidos(convo, userId);
@@ -99,7 +127,9 @@ public class ChatService {
             otro.getNombre(),
             otro.getSlug(),
             otro.getAvatarUrl(),
-            mensajesDTO
+            mensajesDTO,
+            otroEsAdmin,
+            Boolean.TRUE.equals(convo.getRespuestaHabilitada())
         );
     }
 
@@ -132,12 +162,28 @@ public class ChatService {
     /*
      * Envía un mensaje. Sanitiza el texto, actualiza la actividad y los contadores.
      * Crea notificación para el destinatario.
+     *
+     * Si el otro es admin y respuestaHabilitada=false y yo NO soy admin, se rechaza.
      */
     @Transactional
     public ChatDTO.MensajeDTO enviarMensaje(Long userId, Long convoId, String texto) {
         Conversacion convo = conversacionRepository.findById(convoId)
             .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         if (!convo.esParticipante(userId)) throw new RuntimeException("Sin permiso");
+
+        Artesano yo = artesanoRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        boolean yoSoyAdmin = yo.getRol() == RolUsuario.ADMIN;
+
+        Long destinatarioId = convo.getOtroParticipante(userId);
+        Artesano otro = artesanoRepository.findById(destinatarioId).orElse(null);
+        boolean otroEsAdmin = otro != null && otro.getRol() == RolUsuario.ADMIN;
+
+        // Solo el admin puede enviar libremente. Un usuario regular hablando con admin
+        // requiere que la respuesta esté habilitada.
+        if (otroEsAdmin && !yoSoyAdmin && !Boolean.TRUE.equals(convo.getRespuestaHabilitada())) {
+            throw new RuntimeException("El admin no habilitó las respuestas en esta conversación");
+        }
 
         String limpio = sanitizer.limpiar(texto, 2000);
         if (limpio == null || limpio.isBlank()) {
@@ -155,22 +201,22 @@ public class ChatService {
         convo.setUltimoMensajeAutorId(userId);
         convo.setUltimaActividad(LocalDateTime.now());
 
-        Long destinatarioId;
+        // Si el destinatario tenía la conversación oculta, se des-oculta automáticamente
+        // — un mensaje nuevo siempre vuelve a sacarla a la luz.
+        convo.setOcultaPara(destinatarioId, false);
+
         if (convo.getParticipanteAId().equals(userId)) {
             convo.setNoLeidosB(convo.getNoLeidosB() + 1);
-            destinatarioId = convo.getParticipanteBId();
         } else {
             convo.setNoLeidosA(convo.getNoLeidosA() + 1);
-            destinatarioId = convo.getParticipanteAId();
         }
         conversacionRepository.save(convo);
 
         // Notificación al destinatario
-        Artesano autor = artesanoRepository.findById(userId).orElse(null);
-        if (autor != null) {
+        if (yo != null) {
             notificacionService.notificar(
                 destinatarioId, TipoNotificacion.MENSAJE_CONTACTO,
-                "💬 Nuevo mensaje de " + autor.getNombre(),
+                "💬 Nuevo mensaje de " + yo.getNombre(),
                 "/chat?con=" + userId
             );
         }
@@ -182,12 +228,13 @@ public class ChatService {
     }
 
     /*
-     * Cuenta total de mensajes no leídos del usuario en todas sus conversaciones.
-     * Para el badge global del chat.
+     * Cuenta total de mensajes no leídos del usuario en todas sus conversaciones,
+     * excluyendo las ocultas.
      */
     @Transactional
     public long countNoLeidos(Long userId) {
         return conversacionRepository.findMias(userId).stream()
+            .filter(c -> !c.isOcultaPara(userId))
             .mapToLong(c -> c.getParticipanteAId().equals(userId) ? c.getNoLeidosA() : c.getNoLeidosB())
             .sum();
     }
@@ -204,14 +251,27 @@ public class ChatService {
 
     /*
      * Vaciar el chat: borra todos los mensajes pero mantiene la conversación.
-     * Afecta a AMBOS participantes (no es soft-delete por usuario para no
-     * complicar el modelo). El frontend muestra advertencia clara antes.
+     * Afecta a AMBOS participantes — el frontend muestra advertencia clara antes.
+     *
+     * EXCEPCIÓN: si el OTRO es admin y yo no soy admin, no permitimos vaciar
+     * bilateralmente (sería raro que un usuario borre el chat del admin).
+     * El usuario regular en ese caso usa "eliminar para mí".
      */
     @Transactional
     public void vaciarChat(Long userId, Long convoId) {
         Conversacion convo = conversacionRepository.findById(convoId)
             .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         if (!convo.esParticipante(userId)) throw new RuntimeException("Sin permiso");
+
+        Artesano yo = artesanoRepository.findById(userId).orElse(null);
+        Long otroId = convo.getOtroParticipante(userId);
+        Artesano otro = artesanoRepository.findById(otroId).orElse(null);
+        boolean yoSoyAdmin = yo != null && yo.getRol() == RolUsuario.ADMIN;
+        boolean otroEsAdmin = otro != null && otro.getRol() == RolUsuario.ADMIN;
+
+        if (otroEsAdmin && !yoSoyAdmin) {
+            throw new RuntimeException("No podés vaciar una conversación del admin. Usá 'Eliminar para mí'.");
+        }
 
         mensajeChatRepository.deleteByConversacionId(convoId);
 
@@ -224,8 +284,12 @@ public class ChatService {
     }
 
     /*
-     * Eliminar conversación completa: borra mensajes + la conversación entera.
-     * Si vuelven a chatear se crea una nueva conversación desde cero.
+     * Eliminar conversación: distinto comportamiento según los participantes.
+     *
+     *  - Si ambos son usuarios regulares: borrado bilateral (queda como estaba).
+     *  - Si uno de los dos es admin: borrado SOLO del lado del que pide.
+     *    El admin sigue viendo la conversación y los mensajes.
+     *    Si llega un mensaje nuevo, se des-oculta automáticamente.
      */
     @Transactional
     public void eliminarConversacion(Long userId, Long convoId) {
@@ -233,7 +297,54 @@ public class ChatService {
             .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         if (!convo.esParticipante(userId)) throw new RuntimeException("Sin permiso");
 
-        mensajeChatRepository.deleteByConversacionId(convoId);
-        conversacionRepository.delete(convo);
+        Long otroId = convo.getOtroParticipante(userId);
+        Artesano yo = artesanoRepository.findById(userId).orElse(null);
+        Artesano otro = artesanoRepository.findById(otroId).orElse(null);
+        boolean yoSoyAdmin = yo != null && yo.getRol() == RolUsuario.ADMIN;
+        boolean otroEsAdmin = otro != null && otro.getRol() == RolUsuario.ADMIN;
+
+        if (yoSoyAdmin || otroEsAdmin) {
+            // Soft-delete: solo se oculta para quien lo pide
+            convo.setOcultaPara(userId, true);
+            // Reset también el contador de no-leídos para que no quede sumando al badge
+            if (convo.getParticipanteAId().equals(userId)) convo.setNoLeidosA(0);
+            else convo.setNoLeidosB(0);
+            conversacionRepository.save(convo);
+        } else {
+            // Borrado bilateral entre usuarios regulares (comportamiento histórico)
+            mensajeChatRepository.deleteByConversacionId(convoId);
+            conversacionRepository.delete(convo);
+        }
+    }
+
+    /*
+     * Admin habilita/deshabilita las respuestas del usuario en una conversación.
+     * Solo el admin puede invocar esto.
+     */
+    @Transactional
+    public boolean toggleRespuestaHabilitada(Long adminId, Long convoId) {
+        Artesano admin = artesanoRepository.findById(adminId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (admin.getRol() != RolUsuario.ADMIN) {
+            throw new RuntimeException("Solo admin puede modificar este estado");
+        }
+        Conversacion convo = conversacionRepository.findById(convoId)
+            .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
+        if (!convo.esParticipante(adminId)) throw new RuntimeException("Sin permiso");
+
+        boolean nuevo = !Boolean.TRUE.equals(convo.getRespuestaHabilitada());
+        convo.setRespuestaHabilitada(nuevo);
+        conversacionRepository.save(convo);
+
+        // Notificación al usuario para que sepa que ya puede responder
+        if (nuevo) {
+            Long otroId = convo.getOtroParticipante(adminId);
+            notificacionService.notificar(
+                otroId, TipoNotificacion.MENSAJE_CONTACTO,
+                "El admin habilitó las respuestas en la conversación",
+                "/chat?con=" + adminId
+            );
+        }
+        return nuevo;
     }
 }

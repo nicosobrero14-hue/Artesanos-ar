@@ -142,6 +142,7 @@ export default function Admin() {
                     <TabAdmin to="/admin/reportes" icono="🚩" label="Reportes" badge={pendientes.reportes} />
                     <TabAdmin to="/admin/feedback" icono="💡" label="Feedback" />
                     <TabAdmin to="/admin/ranking" icono="🏆" label="Ranking" />
+                    <TabAdmin to="/admin/anuncios" icono="📢" label="Anuncios" />
                     <TabAdmin to="/admin/auditoria" icono="📜" label="Auditoria" />
 
                 </div>

@@ -15,9 +15,16 @@ import { useAuth } from '../context/AuthContext'
  *
  * Se puede abrir un chat con un usuario específico desde otra parte de la app
  * navegando a /chat?con={idDelOtro}
+ *
+ * Conversaciones con admin:
+ *  - El usuario las abre solo en lectura por defecto.
+ *  - Si el admin habilita la respuesta, el input se desbloquea.
+ *  - El usuario puede eliminar la conversación de su lado (no afecta al admin).
  */
 export default function Chat() {
     const { usuario } = useAuth()
+    const soyAdmin = usuario?.rol === 'ADMIN'
+
     const [params] = useSearchParams()
     const conIdParam = params.get('con')
     const mensajePrellenado = params.get('mensaje')
@@ -92,9 +99,17 @@ export default function Chat() {
 
     const abrirConvo = (c) => abrirCon(c.otroId)
 
+    // Banderas derivadas de la conversación activa
+    const conversacionConAdmin = activa && (activa.otroEsAdmin || soyAdmin)
+    const respuestaHabilitada = !activa || activa.respuestaHabilitada !== false
+    // Para el usuario regular hablando con admin: solo puede enviar si está habilitado
+    const puedoEnviar = !activa
+        ? false
+        : soyAdmin || !activa.otroEsAdmin || respuestaHabilitada
+
     /*
      * Vaciar el chat actual: borra los mensajes pero mantiene la conversación.
-     * Afecta a AMBOS participantes, por eso confirmamos antes con mensaje claro.
+     * Afecta a AMBOS participantes — solo disponible entre usuarios regulares.
      */
     const vaciarChat = async () => {
         if (!activa) return
@@ -115,15 +130,20 @@ export default function Chat() {
     }
 
     /*
-     * Eliminar la conversación completa. Si vuelven a chatear se crea nueva.
+     * Eliminar la conversación.
+     * - Entre usuarios regulares: borrado bilateral.
+     * - Con admin: soft-delete (solo del lado del que pide).
      */
     const eliminarConversacion = async () => {
         if (!activa) return
-        const ok = confirm(
-            `¿Eliminar la conversación con ${activa.otroNombre}?\n\n` +
-            `⚠️ Se borra todo el historial para ambos lados.\n` +
-            `Si vuelven a chatear se crea una conversación nueva.`
-        )
+        const conAdmin = activa.otroEsAdmin || soyAdmin
+        const mensaje = conAdmin
+            ? `¿Eliminar la conversación con ${activa.otroNombre} de tu lado?\n\n` +
+              `La otra persona la sigue viendo. Si llega un mensaje nuevo, vuelve a aparecer.`
+            : `¿Eliminar la conversación con ${activa.otroNombre}?\n\n` +
+              `⚠️ Se borra todo el historial para ambos lados.\n` +
+              `Si vuelven a chatear se crea una conversación nueva.`
+        const ok = confirm(mensaje)
         if (!ok) return
         try {
             await api.delete(`/chat/${activa.id}`)
@@ -132,6 +152,19 @@ export default function Chat() {
             api.get('/chat').then(res => setConversaciones(res.data)).catch(() => {})
         } catch (err) {
             alert(err.response?.data?.message || 'Error al eliminar la conversación')
+        }
+    }
+
+    /*
+     * Solo admin: togglear si el usuario puede responder.
+     */
+    const toggleRespuesta = async () => {
+        if (!activa || !soyAdmin) return
+        try {
+            const { data } = await api.post(`/chat/${activa.id}/toggle-respuesta`)
+            setActiva(prev => ({ ...prev, respuestaHabilitada: data.respuestaHabilitada }))
+        } catch (err) {
+            alert(err.response?.data?.message || 'Error al cambiar el estado')
         }
     }
 
@@ -208,6 +241,14 @@ export default function Chat() {
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '6px' }}>
                                             <span style={{ fontSize: '14px', fontWeight: c.noLeidos > 0 ? '600' : '500', color: 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                 {c.otroNombre}
+                                                {c.otroEsAdmin && (
+                                                    <span style={{
+                                                        marginLeft: '6px', fontSize: '9px', fontWeight: '700',
+                                                        background: 'var(--color-accent)', color: '#0f0f0f',
+                                                        padding: '1px 5px', borderRadius: '3px', letterSpacing: '0.5px',
+                                                        verticalAlign: 'middle'
+                                                    }}>ADMIN</span>
+                                                )}
                                             </span>
                                             {c.noLeidos > 0 && (
                                                 <span style={{
@@ -275,8 +316,18 @@ export default function Chat() {
                                         : activa.otroNombre?.charAt(0).toUpperCase()}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: '14px', fontWeight: '600' }}>{activa.otroNombre}</p>
-                                    {activa.otroSlug && (
+                                    <p style={{ fontSize: '14px', fontWeight: '600' }}>
+                                        {activa.otroNombre}
+                                        {activa.otroEsAdmin && (
+                                            <span style={{
+                                                marginLeft: '8px', fontSize: '10px', fontWeight: '700',
+                                                background: 'var(--color-accent)', color: '#0f0f0f',
+                                                padding: '2px 6px', borderRadius: '3px', letterSpacing: '0.5px',
+                                                verticalAlign: 'middle'
+                                            }}>ADMIN</span>
+                                        )}
+                                    </p>
+                                    {activa.otroSlug && !activa.otroEsAdmin && (
                                         <Link to={`/artesano/${activa.otroSlug}`} style={{ fontSize: '11px', color: 'var(--color-text-3)' }}>
                                             Ver catálogo →
                                         </Link>
@@ -284,18 +335,44 @@ export default function Chat() {
                                 </div>
                                 {/* Acciones del chat activo */}
                                 <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                                    <button onClick={vaciarChat} title="Vaciar mensajes del chat" style={{
-                                        background: 'transparent', border: '1px solid var(--color-border)',
-                                        borderRadius: 'var(--radius-sm)', padding: '5px 10px',
-                                        color: 'var(--color-text-2)', fontSize: '12px', cursor: 'pointer'
-                                    }}>🧹 Vaciar</button>
-                                    <button onClick={eliminarConversacion} title="Eliminar la conversación completa" style={{
+                                    {/* Toggle respuesta — solo admin */}
+                                    {soyAdmin && (
+                                        <button onClick={toggleRespuesta} title={activa.respuestaHabilitada ? 'Deshabilitar respuestas del usuario' : 'Habilitar respuestas del usuario'} style={{
+                                            background: activa.respuestaHabilitada ? 'transparent' : 'var(--color-accent)',
+                                            border: '1px solid var(--color-accent)',
+                                            borderRadius: 'var(--radius-sm)', padding: '5px 10px',
+                                            color: activa.respuestaHabilitada ? 'var(--color-accent)' : '#0f0f0f',
+                                            fontSize: '11px', fontWeight: '600', cursor: 'pointer'
+                                        }}>
+                                            {activa.respuestaHabilitada ? '🔓 Respuesta ON' : '🔒 Respuesta OFF'}
+                                        </button>
+                                    )}
+                                    {/* Vaciar solo si NO involucra admin */}
+                                    {!conversacionConAdmin && (
+                                        <button onClick={vaciarChat} title="Vaciar mensajes del chat" style={{
+                                            background: 'transparent', border: '1px solid var(--color-border)',
+                                            borderRadius: 'var(--radius-sm)', padding: '5px 10px',
+                                            color: 'var(--color-text-2)', fontSize: '12px', cursor: 'pointer'
+                                        }}>🧹 Vaciar</button>
+                                    )}
+                                    <button onClick={eliminarConversacion} title={conversacionConAdmin ? 'Eliminar de mi lado' : 'Eliminar conversación completa'} style={{
                                         background: 'transparent', border: '1px solid var(--color-border)',
                                         borderRadius: 'var(--radius-sm)', padding: '5px 10px',
                                         color: 'var(--color-danger)', fontSize: '12px', cursor: 'pointer'
                                     }}>🗑</button>
                                 </div>
                             </div>
+
+                            {/* Banner de read-only para usuario regular hablando con admin */}
+                            {activa.otroEsAdmin && !soyAdmin && !respuestaHabilitada && (
+                                <div style={{
+                                    padding: '10px 16px', background: '#3a2e1a',
+                                    borderBottom: '1px solid var(--color-border)',
+                                    fontSize: '12px', color: '#f0c674', textAlign: 'center'
+                                }}>
+                                    🔒 Conversación de solo lectura. El admin no habilitó las respuestas.
+                                </div>
+                            )}
 
                             {/* Mensajes */}
                             <div ref={scrollRef} style={{
@@ -332,33 +409,44 @@ export default function Chat() {
                                 ))}
                             </div>
 
-                            {/* Input */}
-                            <form onSubmit={enviar} style={{
-                                padding: '12px 16px',
-                                borderTop: '1px solid var(--color-border)',
-                                display: 'flex', gap: '8px'
-                            }}>
-                                <input
-                                    value={texto}
-                                    onChange={e => setTexto(e.target.value)}
-                                    placeholder="Escribí un mensaje..."
-                                    maxLength={2000}
-                                    style={{
-                                        flex: 1, background: 'var(--color-bg-3)',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '20px', padding: '10px 16px',
-                                        color: 'var(--color-text)', fontSize: '14px', outline: 'none'
-                                    }} />
-                                <button type="submit" disabled={enviando || !texto.trim()} style={{
-                                    background: 'var(--color-accent)', color: '#0f0f0f',
-                                    border: 'none', borderRadius: '20px', padding: '10px 18px',
-                                    fontSize: '13px', fontWeight: '600',
-                                    cursor: (enviando || !texto.trim()) ? 'not-allowed' : 'pointer',
-                                    opacity: (enviando || !texto.trim()) ? 0.5 : 1
+                            {/* Input — oculto en modo lectura */}
+                            {puedoEnviar ? (
+                                <form onSubmit={enviar} style={{
+                                    padding: '12px 16px',
+                                    borderTop: '1px solid var(--color-border)',
+                                    display: 'flex', gap: '8px'
                                 }}>
-                                    Enviar
-                                </button>
-                            </form>
+                                    <input
+                                        value={texto}
+                                        onChange={e => setTexto(e.target.value)}
+                                        placeholder="Escribí un mensaje..."
+                                        maxLength={2000}
+                                        style={{
+                                            flex: 1, background: 'var(--color-bg-3)',
+                                            border: '1px solid var(--color-border)',
+                                            borderRadius: '20px', padding: '10px 16px',
+                                            color: 'var(--color-text)', fontSize: '14px', outline: 'none'
+                                        }} />
+                                    <button type="submit" disabled={enviando || !texto.trim()} style={{
+                                        background: 'var(--color-accent)', color: '#0f0f0f',
+                                        border: 'none', borderRadius: '20px', padding: '10px 18px',
+                                        fontSize: '13px', fontWeight: '600',
+                                        cursor: (enviando || !texto.trim()) ? 'not-allowed' : 'pointer',
+                                        opacity: (enviando || !texto.trim()) ? 0.5 : 1
+                                    }}>
+                                        Enviar
+                                    </button>
+                                </form>
+                            ) : (
+                                <div style={{
+                                    padding: '14px 16px',
+                                    borderTop: '1px solid var(--color-border)',
+                                    fontSize: '12px', color: 'var(--color-text-3)',
+                                    textAlign: 'center', fontStyle: 'italic'
+                                }}>
+                                    No podés responder en esta conversación
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

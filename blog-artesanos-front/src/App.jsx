@@ -31,6 +31,7 @@ import NotFound from './pages/NotFound'
 import AdminPiezas from './pages/AdminPiezas'
 import AdminFeedback from './pages/AdminFeedback'
 import AdminRanking from './pages/AdminRanking'
+import AdminAnuncios from './pages/AdminAnuncios'
 import BotonFeedback from './components/BotonFeedback'
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
         <Route path="/admin/piezas" element={<RutaProtegida><AdminPiezas /></RutaProtegida>} />
         <Route path="/admin/feedback" element={<RutaProtegida><AdminFeedback /></RutaProtegida>} />
         <Route path="/admin/ranking" element={<RutaProtegida><AdminRanking /></RutaProtegida>} />
+        <Route path="/admin/anuncios" element={<RutaProtegida><AdminAnuncios /></RutaProtegida>} />
         <Route path="/panel" element={<RutaProtegida><Panel /></RutaProtegida>} />
         <Route path="/panel/piezas" element={<RutaProtegida><MisPiezas /></RutaProtegida>} />
         <Route path="/panel/pedidos" element={<RutaProtegida><MisPedidos /></RutaProtegida>} />

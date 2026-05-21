@@ -77,8 +77,9 @@ public class ChatController {
     }
 
     /*
-     * DELETE /api/chat/{id} — eliminar la conversación entera. Si vuelven a chatear
-     * se crea una nueva desde cero. Afecta a ambos participantes.
+     * DELETE /api/chat/{id} — eliminar la conversación.
+     * Si involucra a un admin: soft-delete (solo se oculta del lado del que pide).
+     * Si es entre usuarios regulares: borrado bilateral.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> eliminar(
@@ -86,5 +87,17 @@ public class ChatController {
             @AuthenticationPrincipal Artesano artesano) {
         chatService.eliminarConversacion(artesano.getId(), id);
         return ResponseEntity.ok(Map.of("message", "Conversación eliminada"));
+    }
+
+    /*
+     * POST /api/chat/{id}/toggle-respuesta — solo admin.
+     * Habilita/deshabilita las respuestas del usuario en una conversación admin↔usuario.
+     */
+    @PostMapping("/{id}/toggle-respuesta")
+    public ResponseEntity<Map<String, Object>> toggleRespuesta(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Artesano artesano) {
+        boolean nuevo = chatService.toggleRespuestaHabilitada(artesano.getId(), id);
+        return ResponseEntity.ok(Map.of("respuestaHabilitada", nuevo));
     }
 }

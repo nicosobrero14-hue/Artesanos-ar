@@ -80,8 +80,12 @@ const colorEstado = {
     const [fotoVisor, setFotoVisor] = useState(null)
     const [subiendoVideo, setSubiendoVideo] = useState(null)
     const [piezaVideoId, setPiezaVideoId] = useState(null)
+    // Fotos iniciales para una pieza nueva — se suben después de crearla
+    const [fotosNuevas, setFotosNuevas] = useState([])
+    const [progresoFotos, setProgresoFotos] = useState(null) // { subiendo, total }
     const fileInputRef = useRef(null)
     const videoInputRef = useRef(null)
+    const fotosNuevasInputRef = useRef(null)
 
     useEffect(() => {
         cargarPiezas()
@@ -125,8 +129,35 @@ const colorEstado = {
     const abrirCrear = () => {
         setEditando(null)
         setForm({ titulo: '', descripcion: '', precio: '', horasTrabajo: '', categoria: '', oficio: '', estado: 'DISPONIBLE', destacada: false })
+        setFotosNuevas([])
         setError('')
         setMostrarForm(true)
+    }
+
+    const handleFotosNuevasSeleccionadas = e => {
+        const archivos = Array.from(e.target.files || [])
+        if (archivos.length === 0) return
+        const restante = maxFotos - fotosNuevas.length
+        if (restante <= 0) {
+            alert(`Llegaste al máximo de ${maxFotos} fotos por pieza.`)
+            e.target.value = ''
+            return
+        }
+        // Solo aceptamos imágenes
+        const validos = archivos
+            .filter(a => a.type.startsWith('image/'))
+            .slice(0, restante)
+        if (validos.length < archivos.length) {
+            alert(`Solo se agregaron ${validos.length} fotos. ${restante < archivos.length
+                ? `Máximo ${maxFotos} por pieza.`
+                : 'Algunos archivos no eran imágenes válidas.'}`)
+        }
+        setFotosNuevas(prev => [...prev, ...validos])
+        e.target.value = ''
+    }
+
+    const quitarFotoNueva = (idx) => {
+        setFotosNuevas(prev => prev.filter((_, i) => i !== idx))
     }
 
     const abrirEditar = (pieza) => {
@@ -166,9 +197,31 @@ const colorEstado = {
         if (editando) {
             await api.put(`/mis-piezas/${editando.id}`, payload)
         } else {
-            await api.post('/mis-piezas', payload)
+            // Crear pieza primero
+            const { data: piezaCreada } = await api.post('/mis-piezas', payload)
+            // Si seleccionó fotos iniciales, subirlas una por una
+            if (fotosNuevas.length > 0 && piezaCreada?.id) {
+                setProgresoFotos({ subiendo: 0, total: fotosNuevas.length })
+                for (let i = 0; i < fotosNuevas.length; i++) {
+                    setProgresoFotos({ subiendo: i + 1, total: fotosNuevas.length })
+                    const formData = new FormData()
+                    formData.append('foto', fotosNuevas[i])
+                    try {
+                        await api.post(`/mis-piezas/${piezaCreada.id}/fotos`, formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        })
+                    } catch (errFoto) {
+                        const msg = errFoto.response?.data?.message ||
+                            `Error al subir la foto ${i + 1} de ${fotosNuevas.length}`
+                        alert(msg)
+                        break
+                    }
+                }
+                setProgresoFotos(null)
+            }
         }
         setMostrarForm(false)
+        setFotosNuevas([])
         cargarPiezas()
         cargarPlan()
         } catch (err) {
@@ -368,10 +421,92 @@ const colorEstado = {
                     )}
                     </label>
                 </div>
+                {/* Fotos iniciales — solo al CREAR (al editar se manejan desde la card) */}
+                {!editando && (
+                    <div style={{
+                        marginBottom: '20px', padding: '14px',
+                        background: 'var(--color-bg-3)', borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--color-border)'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <label style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                                Fotos (opcional) — podés agregar ahora o después
+                            </label>
+                            <span style={{ fontSize: '11px', color: 'var(--color-text-3)' }}>
+                                {fotosNuevas.length}/{maxFotos}
+                            </span>
+                        </div>
+
+                        {fotosNuevas.length > 0 && (
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                                gap: '8px', marginBottom: '10px'
+                            }}>
+                                {fotosNuevas.map((archivo, idx) => (
+                                    <div key={idx} style={{
+                                        position: 'relative', aspectRatio: '1',
+                                        borderRadius: 'var(--radius-sm)', overflow: 'hidden',
+                                        border: '1px solid var(--color-border)'
+                                    }}>
+                                        <img src={URL.createObjectURL(archivo)} alt={`Foto ${idx + 1}`}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <button
+                                            type="button"
+                                            onClick={() => quitarFotoNueva(idx)}
+                                            style={{
+                                                position: 'absolute', top: '2px', right: '2px',
+                                                background: 'rgba(0,0,0,0.7)', color: 'white',
+                                                border: 'none', borderRadius: '50%',
+                                                width: '20px', height: '20px',
+                                                fontSize: '12px', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                            }}
+                                        >×</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            ref={fotosNuevasInputRef}
+                            onChange={handleFotosNuevasSeleccionadas}
+                            style={{ display: 'none' }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => fotosNuevasInputRef.current?.click()}
+                            disabled={fotosNuevas.length >= maxFotos}
+                            style={{
+                                background: 'transparent',
+                                border: '1px dashed var(--color-border)',
+                                borderRadius: 'var(--radius-sm)',
+                                padding: '8px 14px', fontSize: '13px',
+                                color: 'var(--color-text-2)',
+                                cursor: fotosNuevas.length >= maxFotos ? 'not-allowed' : 'pointer',
+                                opacity: fotosNuevas.length >= maxFotos ? 0.5 : 1
+                            }}
+                        >
+                            📷 Agregar fotos
+                        </button>
+
+                        {progresoFotos && (
+                            <p style={{ fontSize: '12px', color: 'var(--color-accent)', marginTop: '8px' }}>
+                                Subiendo foto {progresoFotos.subiendo} de {progresoFotos.total}...
+                            </p>
+                        )}
+                    </div>
+                )}
+
                 {error && <p style={{ color: 'var(--color-danger)', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
                 <div style={{ display: 'flex', gap: '12px' }}>
-                    <Button type="submit" loading={guardando}>Guardar</Button>
-                    <Button type="button" variant="ghost" onClick={() => setMostrarForm(false)}>Cancelar</Button>
+                    <Button type="submit" loading={guardando}>
+                        {guardando && fotosNuevas.length > 0 ? 'Guardando...' : 'Guardar'}
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={() => { setMostrarForm(false); setFotosNuevas([]) }}>Cancelar</Button>
                 </div>
                 </form>
             </div>

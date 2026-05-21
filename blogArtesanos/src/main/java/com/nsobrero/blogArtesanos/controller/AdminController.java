@@ -401,4 +401,43 @@ public class AdminController {
         if (noEsAdmin(admin)) return ResponseEntity.status(403).body(Map.of("message", "Solo admins"));
         return ResponseEntity.ok(logAuditoriaRepository.findTop100ByOrderByFechaDesc());
     }
+
+    /*
+     * Manda una notificación a TODOS los artesanos activos no-admin.
+     * Útil para anuncios globales (mantenimiento, novedades, etc.).
+     * Aparece en la campana de notificaciones de cada usuario.
+     *
+     * Body: { "mensaje": "texto", "url": "/destino-opcional" }
+     */
+    @PostMapping("/notificaciones/global")
+    public ResponseEntity<?> notificarGlobal(@RequestBody Map<String, String> body,
+                                              @AuthenticationPrincipal Artesano admin) {
+        if (noEsAdmin(admin)) return ResponseEntity.status(403).body(Map.of("message", "Solo admins"));
+
+        String mensaje = body != null ? body.get("mensaje") : null;
+        if (mensaje == null || mensaje.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Mensaje vacío"));
+        }
+        if (mensaje.length() > 500) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Máximo 500 caracteres"));
+        }
+        String url = body.get("url");
+
+        // Solo cuentas activas no-admin
+        List<Artesano> destinatarios = artesanoRepository.findAll().stream()
+            .filter(a -> Boolean.TRUE.equals(a.getActivo()))
+            .filter(a -> a.getRol() != RolUsuario.ADMIN)
+            .toList();
+
+        int enviadas = 0;
+        for (Artesano a : destinatarios) {
+            notificacionService.notificar(a.getId(), TipoNotificacion.GENERICO, mensaje, url);
+            enviadas++;
+        }
+
+        auditoriaService.log(admin, "NOTIFICACION_GLOBAL", "ARTESANO", null,
+            "enviadas=" + enviadas + " · mensaje=" + (mensaje.length() > 80 ? mensaje.substring(0, 80) + "…" : mensaje));
+
+        return ResponseEntity.ok(Map.of("enviadas", enviadas));
+    }
 }
