@@ -82,9 +82,9 @@ export default function MisMensajes() {
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <Navbar />
-            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div className="stack-mobile" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '12px' }}>
                     <div>
                         <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '4px' }}>Mensajes</h1>
                         {noLeidos > 0 && (
@@ -128,8 +128,8 @@ export default function MisMensajes() {
                             }}>
                                 {/* Cabecera del mensaje */}
                                 <div style={{ padding: '18px 20px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
-                                        <div style={{ flex: 1 }}>
+                                    <div className="stack-mobile" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                                                 {!m.leido && (
                                                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent)', flexShrink: 0 }} />

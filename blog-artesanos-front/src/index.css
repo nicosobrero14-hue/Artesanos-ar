@@ -13,6 +13,9 @@
   --color-danger: #e05c5c;
   --radius: 10px;
   --radius-sm: 6px;
+
+  /* Breakpoint mobile — referencia para JS via useIsMobile */
+  --bp-mobile: 768px;
 }
 
 * {
@@ -47,4 +50,85 @@ button {
 input, textarea, select {
   font-family: inherit;
   font-size: 14px;
+}
+
+/* ───────────────────────────── Utilidades responsive ──────────────────────── */
+
+/* Mostrar / ocultar según breakpoint.
+   Estas clases las uso en lugar de duplicar componentes para no inflar el bundle. */
+.solo-desktop { display: initial; }
+.solo-mobile  { display: none;    }
+
+@media (max-width: 768px) {
+  .solo-desktop { display: none !important;    }
+  .solo-mobile  { display: initial !important; }
+  .solo-mobile-flex { display: flex !important; }
+
+  /* Padding lateral más chico en mobile */
+  .container-page {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Headings más chicos en mobile para ganar aire */
+  h1 { font-size: 18px !important; }
+  h2 { font-size: 16px !important; }
+
+  /* Inputs en iOS ≥16px para evitar el zoom automático del browser */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* Stack vertical en mobile (en lugar de flex row) */
+@media (max-width: 768px) {
+  .stack-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .stack-mobile > * { width: 100%; }
+
+  /* Para grids que tienen que pasar a 1 columna */
+  .grid-1-mobile {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tabs con scroll horizontal en mobile (en vez de wrap feo) */
+@media (max-width: 768px) {
+  .tabs-scroll-mobile {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .tabs-scroll-mobile::-webkit-scrollbar { display: none; }
+  .tabs-scroll-mobile > * { flex-shrink: 0; }
+}
+
+/* Scroll suave general */
+html { scroll-behavior: smooth; }
+
+/* Mejor tap target en mobile — mínimo 40px en botones chicos */
+@media (max-width: 768px) {
+  button:not(.btn-sm) {
+    min-height: 40px;
+  }
+}
+
+/* Heroes y secciones grandes — bajan padding vertical en mobile */
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 40px !important;
+    padding-bottom: 24px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .section-pad {
+    padding-top: 28px !important;
+    padding-bottom: 28px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
 }

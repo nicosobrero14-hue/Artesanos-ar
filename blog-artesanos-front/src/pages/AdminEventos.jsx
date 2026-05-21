@@ -65,7 +65,7 @@ export default function AdminEventos() {
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <Navbar />
 
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>Moderación de eventos</h1>

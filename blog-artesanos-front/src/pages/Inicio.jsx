@@ -257,7 +257,7 @@ function Hero({ busqueda, setBusqueda, stats, loading }) {
         if (busqueda.trim()) navigate(`/buscar?q=${encodeURIComponent(busqueda.trim())}`)
     }
     return (
-        <div style={{
+        <div className="hero-section" style={{
             background: `
                 radial-gradient(circle at 20% 0%, rgba(245, 185, 79, 0.08), transparent 40%),
                 radial-gradient(circle at 80% 100%, rgba(76, 175, 130, 0.05), transparent 40%),
@@ -445,7 +445,7 @@ function SeccionDestacadas({ piezas }) {
             background: 'linear-gradient(180deg, rgba(245, 185, 79, 0.06), rgba(245, 185, 79, 0))',
             borderBottom: '1px solid var(--color-border)',
             padding: '48px 24px'
-        }}>
+        }} className="section-pad">
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 <SectionHeader
                     titulo={<><span style={{ color: '#f5b94f' }}>★</span> Piezas destacadas</>}
@@ -503,7 +503,7 @@ function SeccionDestacadas({ piezas }) {
 // ────────────────────────────────────────────────────────────────────────
 function SeccionRecientes({ piezas }) {
     return (
-        <div style={{ borderBottom: '1px solid var(--color-border)', padding: '40px 24px' }}>
+        <div className="section-pad" style={{ borderBottom: '1px solid var(--color-border)', padding: '40px 24px' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 <SectionHeader
                     titulo="Piezas recientes"
@@ -562,7 +562,7 @@ function SeccionArtesanos({ artesanos, loading, busqueda }) {
     }
 
     return (
-        <div style={{ padding: '48px 24px' }}>
+        <div className="section-pad" style={{ padding: '48px 24px' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '20px', gap: '8px' }}>
                     <div>
@@ -759,12 +759,12 @@ function SectionHeader({ titulo, subtitulo, contador }) {
 
 function Footer() {
     return (
-        <footer style={{
+        <footer className="section-pad" style={{
             borderTop: '1px solid var(--color-border)',
             padding: '32px 24px',
             background: 'var(--color-bg-2)'
         }}>
-            <div style={{
+            <div className="stack-mobile" style={{
                 maxWidth: '1100px', margin: '0 auto',
                 display: 'flex', justifyContent: 'space-between',
                 alignItems: 'center', gap: '16px', flexWrap: 'wrap'

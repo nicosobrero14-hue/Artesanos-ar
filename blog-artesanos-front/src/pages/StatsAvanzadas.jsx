@@ -18,7 +18,7 @@ export default function StatsAvanzadas() {
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <Navbar />
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
                 <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '4px' }}>
                     📊 Estadísticas avanzadas
                 </h1>

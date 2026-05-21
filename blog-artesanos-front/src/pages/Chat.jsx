@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import useIsMobile from '../hooks/useIsMobile'
 
 /*
  * Chat interno con polling.
@@ -24,6 +25,7 @@ import { useAuth } from '../context/AuthContext'
 export default function Chat() {
     const { usuario } = useAuth()
     const soyAdmin = usuario?.rol === 'ADMIN'
+    const isMobile = useIsMobile()
 
     const [params] = useSearchParams()
     const conIdParam = params.get('con')
@@ -190,16 +192,27 @@ export default function Chat() {
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
             <Navbar />
 
-            <div style={{ flex: 1, display: 'flex', maxWidth: '1100px', margin: '0 auto', padding: '20px', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
+            <div style={{
+                flex: 1,
+                display: 'flex',
+                maxWidth: '1100px',
+                margin: '0 auto',
+                padding: isMobile ? '10px' : '20px',
+                gap: isMobile ? '0' : '16px',
+                width: '100%',
+                boxSizing: 'border-box'
+            }}>
 
-                {/* Lista de conversaciones */}
+                {/* Lista de conversaciones — en mobile se oculta cuando hay chat activo */}
                 <div style={{
-                    width: '320px', flexShrink: 0,
+                    width: isMobile ? '100%' : '320px',
+                    flexShrink: 0,
+                    display: isMobile && activa ? 'none' : 'flex',
                     background: 'var(--color-bg-2)',
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius)',
                     overflow: 'hidden',
-                    display: 'flex', flexDirection: 'column'
+                    flexDirection: 'column'
                 }}>
                     <div style={{
                         padding: '14px 16px', borderBottom: '1px solid var(--color-border)',
@@ -273,15 +286,16 @@ export default function Chat() {
                     </div>
                 </div>
 
-                {/* Chat activo */}
+                {/* Chat activo — en mobile ocupa todo el espacio */}
                 <div style={{
                     flex: 1,
                     background: 'var(--color-bg-2)',
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius)',
                     overflow: 'hidden',
-                    display: 'flex', flexDirection: 'column',
-                    minHeight: '500px'
+                    display: isMobile && !activa ? 'none' : 'flex',
+                    flexDirection: 'column',
+                    minHeight: isMobile ? 'calc(100vh - 100px)' : '500px'
                 }}>
                     {!activa ? (
                         <div style={{
@@ -304,6 +318,18 @@ export default function Chat() {
                                 borderBottom: '1px solid var(--color-border)',
                                 display: 'flex', alignItems: 'center', gap: '12px'
                             }}>
+                                {/* Botón volver — solo mobile */}
+                                {isMobile && (
+                                    <button
+                                        onClick={() => setActiva(null)}
+                                        aria-label="Volver a la lista"
+                                        style={{
+                                            background: 'transparent', border: 'none',
+                                            color: 'var(--color-text)', fontSize: '20px',
+                                            padding: '4px 6px', flexShrink: 0
+                                        }}
+                                    >←</button>
+                                )}
                                 <div style={{
                                     width: '36px', height: '36px', borderRadius: '50%',
                                     background: 'var(--color-bg-3)', flexShrink: 0,

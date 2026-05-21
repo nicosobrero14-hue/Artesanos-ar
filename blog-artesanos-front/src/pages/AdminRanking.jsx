@@ -66,7 +66,7 @@ export default function AdminRanking() {
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <Navbar />
-            <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>🏆 Config del Ranking</h1>
                     <span style={{

@@ -101,7 +101,7 @@ export default function MiPerfil() {
             style={{ display: 'none' }}
         />
 
-        <div style={{ maxWidth: '700px', margin: '0 auto', padding: '32px 24px' }}>
+        <div className="container-page" style={{ maxWidth: '700px', margin: '0 auto', padding: '32px 24px' }}>
 
             <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '8px' }}>Mi perfil</h1>
             <p style={{ fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '32px' }}>

@@ -106,7 +106,7 @@ export default function PiezaDetalle() {
                 </div>
             </nav>
 
-            <div style={{ maxWidth: '860px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '860px', margin: '0 auto', padding: '32px 24px' }}>
 
                 {/* Breadcrumb */}
                 <p style={{ fontSize: '13px', color: 'var(--color-text-3)', marginBottom: '20px' }}>

@@ -121,7 +121,7 @@ export default function Admin() {
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <Navbar />
 
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>Panel Admin</h1>
@@ -135,7 +135,7 @@ export default function Admin() {
                     Gestión global de artesanos. Cuando alguien te transfiere el pago, lo upgradeas desde acá.
                 </p>
 
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                <div className="tabs-scroll-mobile" style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
                     <TabAdmin to="/admin" activo label="Artesanos" />
                     <TabAdmin to="/admin/piezas" icono="🛡" label="Piezas" />
                     <TabAdmin to="/admin/eventos" icono="📅" label="Eventos" badge={pendientes.eventos} />
@@ -160,7 +160,7 @@ export default function Admin() {
                 </div>
 
                 {/* Filtros */}
-                <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div className="stack-mobile" style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
                     <input
                         value={filtro}
                         onChange={e => setFiltro(e.target.value)}

@@ -186,7 +186,7 @@ export default function CatalogoPublico() {
                 </div>
             </div>
 
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
 
                 {/* Cupones vigentes (si hay) */}
                 <CuponesVigentes slug={slug} />

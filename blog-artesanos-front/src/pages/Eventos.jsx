@@ -86,7 +86,7 @@ export default function Eventos() {
                 )}
             </div>
 
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
 
                 {loading ? (
                     <p style={{ color: 'var(--color-text-2)', textAlign: 'center' }}>Cargando eventos...</p>

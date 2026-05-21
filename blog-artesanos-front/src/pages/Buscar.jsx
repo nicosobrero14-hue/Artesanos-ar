@@ -72,7 +72,7 @@ export default function Buscar() {
                 </div>
             </nav>
 
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
+            <div className="container-page" style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
 
                 <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '20px' }}>
                     Buscar

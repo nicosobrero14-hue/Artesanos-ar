@@ -30,7 +30,7 @@ export default function Panel() {
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
         <Navbar />
 
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+        <div className="container-page" style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
             <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '8px' }}>
             Panel
             </h1>
@@ -47,7 +47,7 @@ export default function Panel() {
                 border: `1px solid ${plan.esPremium ? '#f5b94f' : 'var(--color-border)'}`,
                 borderRadius: 'var(--radius)', padding: '18px 22px', marginBottom: '24px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap'
-            }}>
+            }} className="stack-mobile">
                 <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
                     <span style={{ fontSize: '13px', color: 'var(--color-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>

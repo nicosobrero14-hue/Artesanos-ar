@@ -84,7 +84,7 @@ export default function MisClientes() {
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
         <Navbar />
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
+        <div className="container-page" style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <div>

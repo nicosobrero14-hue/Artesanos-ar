@@ -334,10 +334,10 @@ const colorEstado = {
             style={{ display: 'none' }}
         />
 
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+        <div className="container-page" style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
 
             {/* Encabezado */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
+            <div className="stack-mobile" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
             <div>
                 <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '4px' }}>Mis piezas</h1>
                 {plan && (
@@ -368,7 +368,7 @@ const colorEstado = {
                 {editando ? 'Editar pieza' : 'Nueva pieza'}
                 </h2>
                 <form onSubmit={handleGuardar}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     <Input label="Título *" name="titulo" value={form.titulo} onChange={handleChange} required />
                     <Input label="Precio ($) *" name="precio" type="number" value={form.precio} onChange={handleChange} required />
                     <div>
@@ -514,7 +514,7 @@ const colorEstado = {
 
             {/* Tabs de estado */}
             {!loading && piezas.length > 0 && (
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <div className="tabs-scroll-mobile" style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
                 {['TODAS', ...ESTADOS].map(e => {
                 const count = e === 'TODAS' ? piezas.length : piezas.filter(p => p.estado === e).length
                 return (
