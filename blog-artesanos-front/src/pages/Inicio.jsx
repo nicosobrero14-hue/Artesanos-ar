@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../api/axios'
 import CarruselFotos from '../components/CarruselFotos'
 import BannerEventos from '../components/BannerEventos'
 import SidebarOficios from '../components/SidebarOficios'
+import MobileDrawer from '../components/MobileDrawer'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 
@@ -153,98 +154,197 @@ export default function Inicio() {
 }
 
 // ────────────────────────────────────────────────────────────────────────
-// Top bar — barra superior con logo y auth
+// Top bar — barra superior con logo y auth.
+// En mobile colapsa todo a un menú hamburguesa + drawer.
 // ────────────────────────────────────────────────────────────────────────
 function TopBar({ usuario }) {
     const { logout } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
+    const [drawerAbierto, setDrawerAbierto] = useState(false)
+
+    useEffect(() => { setDrawerAbierto(false) }, [location.pathname])
+
     const handleSalir = () => {
         logout()
         navigate('/')
+        setDrawerAbierto(false)
     }
-    return (
-        <nav style={{
-            background: 'var(--color-bg-2)',
-            borderBottom: '1px solid var(--color-border)',
-            padding: '0 24px',
-            height: '56px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
-            backdropFilter: 'blur(10px)'
-        }}>
-            <Link to="/" style={{
-                color: 'var(--color-accent)',
-                fontWeight: '700',
-                fontSize: '17px',
-                letterSpacing: '-0.01em'
-            }}>
-                Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>.ar</span>
-            </Link>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <Link to="/eventos" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                    📅 Eventos
+    return (
+        <>
+            <nav style={{
+                background: 'var(--color-bg-2)',
+                borderBottom: '1px solid var(--color-border)',
+                padding: '0 24px',
+                height: '56px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                position: 'sticky',
+                top: 0,
+                zIndex: 100,
+                backdropFilter: 'blur(10px)'
+            }}>
+                <Link to="/" style={{
+                    color: 'var(--color-accent)',
+                    fontWeight: '700',
+                    fontSize: '17px',
+                    letterSpacing: '-0.01em',
+                    flexShrink: 0
+                }}>
+                    Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>.ar</span>
                 </Link>
-                <Link to="/ranking" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                    🏆 Ranking
-                </Link>
-                {usuario ? (
-                    <>
-                        <span style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                            Hola, <strong style={{ color: 'var(--color-text)' }}>{usuario.nombre}</strong>
-                        </span>
-                        {usuario.slug && (
-                            <Link to={`/artesano/${usuario.slug}`}
-                                style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                                Mi catálogo
+
+                {/* Links desktop */}
+                <div className="solo-desktop" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <Link to="/eventos" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                        📅 Eventos
+                    </Link>
+                    <Link to="/ranking" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                        🏆 Ranking
+                    </Link>
+                    {usuario ? (
+                        <>
+                            <span style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                                Hola, <strong style={{ color: 'var(--color-text)' }}>{usuario.nombre}</strong>
+                            </span>
+                            {usuario.slug && (
+                                <Link to={`/artesano/${usuario.slug}`}
+                                    style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                                    Mi catálogo
+                                </Link>
+                            )}
+                            <Link to="/panel" style={btnAccent}>
+                                Mi panel
                             </Link>
+                            <button onClick={handleSalir} title="Cerrar sesión" style={btnGhost}>
+                                Salir
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                                Ingresar
+                            </Link>
+                            <Link to="/registro" style={btnAccent}>
+                                Registrá tu taller
+                            </Link>
+                        </>
+                    )}
+                </div>
+
+                {/* Hamburguesa — solo mobile */}
+                <button
+                    className="solo-mobile-flex"
+                    onClick={() => setDrawerAbierto(true)}
+                    aria-label="Abrir menú"
+                    style={{
+                        display: 'none',
+                        background: 'transparent',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        width: '38px', height: '38px',
+                        alignItems: 'center', justifyContent: 'center',
+                        color: 'var(--color-text)'
+                    }}
+                >
+                    <span style={{ fontSize: '18px', lineHeight: 1 }}>☰</span>
+                </button>
+            </nav>
+
+            {/* Drawer mobile */}
+            <MobileDrawer abierto={drawerAbierto} onClose={() => setDrawerAbierto(false)}>
+                <div style={{
+                    padding: '16px 20px',
+                    borderBottom: '1px solid var(--color-border)',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                }}>
+                    <div style={{ minWidth: 0 }}>
+                        <p style={{ fontSize: '15px', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {usuario ? `Hola, ${usuario.nombre}` : 'Menú'}
+                        </p>
+                        {usuario?.email && (
+                            <p style={{ fontSize: '11px', color: 'var(--color-text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {usuario.email}
+                            </p>
                         )}
-                        <Link to="/panel" style={{
-                            fontSize: '13px',
-                            background: 'var(--color-accent)',
-                            color: '#0f0f0f',
-                            padding: '7px 16px',
-                            borderRadius: 'var(--radius-sm)',
-                            fontWeight: '500'
-                        }}>
-                            Mi panel
+                    </div>
+                    <button
+                        onClick={() => setDrawerAbierto(false)}
+                        aria-label="Cerrar"
+                        style={{
+                            background: 'transparent', border: 'none',
+                            color: 'var(--color-text-2)', fontSize: '22px',
+                            lineHeight: 1, padding: '4px 8px'
+                        }}
+                    >×</button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0', flex: 1 }}>
+                    <Link to="/" style={linkDrawer}>🏠 Inicio</Link>
+                    <Link to="/eventos" style={linkDrawer}>📅 Eventos</Link>
+                    <Link to="/ranking" style={linkDrawer}>🏆 Ranking</Link>
+                    {usuario && usuario.slug && (
+                        <Link to={`/artesano/${usuario.slug}`} style={linkDrawer}>📖 Mi catálogo</Link>
+                    )}
+                    {usuario && (
+                        <Link to="/panel" style={{ ...linkDrawer, color: 'var(--color-accent)', fontWeight: '600' }}>
+                            ⚙ Mi panel
                         </Link>
-                        <button onClick={handleSalir} title="Cerrar sesión" style={{
-                            background: 'transparent',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: 'var(--radius-sm)',
-                            padding: '6px 12px',
-                            color: 'var(--color-text-2)',
-                            fontSize: '13px',
-                            cursor: 'pointer'
-                        }}>
-                            Salir
+                    )}
+                </div>
+
+                <div style={{
+                    borderTop: '1px solid var(--color-border)',
+                    padding: '14px 20px',
+                    display: 'flex', flexDirection: 'column', gap: '8px'
+                }}>
+                    {usuario ? (
+                        <button onClick={handleSalir} style={{ ...btnGhost, width: '100%' }}>
+                            Cerrar sesión
                         </button>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/login" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                            Ingresar
-                        </Link>
-                        <Link to="/registro" style={{
-                            fontSize: '13px',
-                            background: 'var(--color-accent)',
-                            color: '#0f0f0f',
-                            padding: '7px 16px',
-                            borderRadius: 'var(--radius-sm)',
-                            fontWeight: '500'
-                        }}>
-                            Registrá tu taller
-                        </Link>
-                    </>
-                )}
-            </div>
-        </nav>
+                    ) : (
+                        <>
+                            <Link to="/login" style={{ ...btnGhost, textAlign: 'center' }}>
+                                Ingresar
+                            </Link>
+                            <Link to="/registro" style={{ ...btnAccent, textAlign: 'center' }}>
+                                Registrá tu taller
+                            </Link>
+                        </>
+                    )}
+                </div>
+            </MobileDrawer>
+        </>
     )
+}
+
+const linkDrawer = {
+    padding: '12px 20px',
+    fontSize: '14px',
+    color: 'var(--color-text)',
+    borderBottom: '1px solid var(--color-border)'
+}
+
+const btnAccent = {
+    fontSize: '13px',
+    background: 'var(--color-accent)',
+    color: '#0f0f0f',
+    padding: '8px 16px',
+    borderRadius: 'var(--radius-sm)',
+    fontWeight: '500',
+    border: 'none'
+}
+
+const btnGhost = {
+    background: 'transparent',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '8px 14px',
+    color: 'var(--color-text-2)',
+    fontSize: '13px',
+    cursor: 'pointer'
 }
 
 // ────────────────────────────────────────────────────────────────────────

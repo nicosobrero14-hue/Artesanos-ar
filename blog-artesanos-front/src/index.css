@@ -132,3 +132,29 @@ html { scroll-behavior: smooth; }
     padding-right: 16px !important;
   }
 }
+
+/* Card de "Mis Piezas" — en mobile las acciones van debajo en una fila
+   horizontal de ancho completo, en lugar de pelearse con la info por el espacio. */
+@media (max-width: 768px) {
+  .card-pieza {
+    padding: 14px !important;
+  }
+  .card-pieza-row {
+    flex-wrap: wrap !important;
+  }
+  .card-pieza-row > div:first-child {
+    /* Thumbnail más chica para dejar más espacio a la info */
+    width: 110px !important;
+  }
+  .card-pieza-acciones {
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+    justify-content: flex-end;
+  }
+  .card-pieza-acciones > button {
+    flex: 1;
+    text-align: center;
+  }
+}

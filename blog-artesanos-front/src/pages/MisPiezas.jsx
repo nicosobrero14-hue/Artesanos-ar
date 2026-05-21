@@ -551,8 +551,8 @@ const colorEstado = {
             ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {piezasFiltradas.map(pieza => (
-                <div key={pieza.id} style={{ background: 'var(--color-bg-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius)', padding: '16px 20px' }}>
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                <div key={pieza.id} className="card-pieza" style={{ background: 'var(--color-bg-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius)', padding: '16px 20px' }}>
+                    <div className="card-pieza-row" style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
 
                     {/* Carrusel con X para borrar cada foto */}
                     <div style={{ width: '140px', flexShrink: 0, borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
@@ -653,8 +653,8 @@ const colorEstado = {
                         </div>
                     </div>
 
-                    {/* Acciones */}
-                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                    {/* Acciones — en desktop quedan a la derecha, en mobile pasan a una fila debajo */}
+                    <div className="card-pieza-acciones" style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                         <button
                         onClick={() => abrirEditar(pieza)}
                         style={{ background: 'transparent', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', color: 'var(--color-text-2)', fontSize: '13px', cursor: 'pointer' }}
