@@ -128,6 +128,8 @@ public class EmailService {
             "Hola " + nombre + ",\n\n" +
             "Gracias por registrarte. Hacé click en el siguiente link para activar tu cuenta:\n\n" +
             frontendUrl + "/verificar?token=" + token + "\n\n" +
+            "🎁 Bonus: al verificar tu cuenta te activamos automáticamente 1 mes de Premium gratis.\n" +
+            "Con Premium podés destacar tus piezas, subir más fotos por pieza, agregar videos y más.\n\n" +
             "El link vence en 24 horas.\n\n" +
             "Si no te registraste, ignorá este email.\n\n" +
             "Equipo Artesanos"

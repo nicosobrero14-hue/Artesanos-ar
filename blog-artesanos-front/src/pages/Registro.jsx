@@ -78,11 +78,30 @@ export default function Registro() {
             background: 'var(--color-bg-2)', border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius)', padding: '40px', width: '100%', maxWidth: '420px'
         }}>
-            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '6px' }}>Crear cuenta</h1>
             <p style={{ color: 'var(--color-text-2)', fontSize: '14px' }}>
                 Registrá tu taller y empezá a mostrar tu trabajo
             </p>
+            </div>
+
+            {/* Banner de trial Premium gratis al verificar la cuenta. */}
+            <div style={{
+                background: 'linear-gradient(135deg, #f5b94f22, #f59f3315)',
+                border: '1px solid #f5b94f55',
+                borderRadius: 'var(--radius-sm)',
+                padding: '12px 14px',
+                marginBottom: '24px',
+                fontSize: '13px',
+                color: 'var(--color-text)',
+                lineHeight: '1.5'
+            }}>
+                <p style={{ marginBottom: '2px' }}>
+                    <strong style={{ color: '#f5b94f' }}>🎁 1 mes de Premium gratis</strong>
+                </p>
+                <p style={{ color: 'var(--color-text-2)', fontSize: '12px' }}>
+                    Al verificar tu cuenta. Destacá piezas, subí más fotos y videos.
+                </p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

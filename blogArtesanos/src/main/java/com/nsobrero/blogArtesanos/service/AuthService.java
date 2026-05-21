@@ -10,8 +10,12 @@ import com.nsobrero.blogArtesanos.auth.AuthResponse;
 import com.nsobrero.blogArtesanos.auth.LoginRequest;
 import com.nsobrero.blogArtesanos.auth.RegisterRequest;
 import com.nsobrero.blogArtesanos.entity.Artesano;
+import com.nsobrero.blogArtesanos.enums.PlanArtesano;
+import com.nsobrero.blogArtesanos.enums.RolUsuario;
+import com.nsobrero.blogArtesanos.enums.TipoNotificacion;
 import com.nsobrero.blogArtesanos.repository.ArtesanoRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -24,6 +28,14 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final NotificacionService notificacionService;
+
+    /*
+     * Trial: meses de Premium que se otorgan automáticamente al verificar
+     * la cuenta. Cuando se vence, el sistema lo trata como GRATIS sin necesidad
+     * de tocar nada — PlanService.isPremium() ya chequea la fecha contra hoy.
+     */
+    private static final int TRIAL_PREMIUM_MESES = 1;
 
     public void register(RegisterRequest request) {
         if (artesanoRepository.existsByEmail(request.email())) {
@@ -121,7 +133,34 @@ public class AuthService {
         artesano.setVerificado(true);
         artesano.setTokenVerificacion(null);   // limpiamos el token — ya no sirve
         artesano.setTokenExpiracion(null);
+
+        /*
+         * Trial Premium automático: 1 mes gratis al verificar la cuenta.
+         * Solo si no es ADMIN y no tenía un premium activo (este último caso
+         * sería raro acá porque acabamos de verificar, pero por las dudas no
+         * pisamos un premium ya existente otorgado por el admin).
+         */
+        boolean otorgarTrial = artesano.getRol() != RolUsuario.ADMIN
+                && (artesano.getFechaExpiracionPlan() == null
+                    || artesano.getFechaExpiracionPlan().isBefore(LocalDate.now()));
+
+        if (otorgarTrial) {
+            artesano.setPlan(PlanArtesano.PREMIUM);
+            artesano.setFechaExpiracionPlan(LocalDate.now().plusMonths(TRIAL_PREMIUM_MESES));
+        }
+
         artesanoRepository.save(artesano);
+
+        // Notificación de bienvenida + trial activado
+        if (otorgarTrial) {
+            notificacionService.notificar(
+                artesano.getId(),
+                TipoNotificacion.PLAN_UPGRADE,
+                "🎉 ¡Bienvenido! Te activamos " + TRIAL_PREMIUM_MESES + " mes de Premium gratis. " +
+                "Aprovechá para destacar tus piezas, subir más fotos y videos.",
+                "/panel"
+            );
+        }
     }
 
     /*
