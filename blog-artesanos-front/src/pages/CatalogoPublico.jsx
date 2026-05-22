@@ -6,6 +6,7 @@ import SeccionComentarios from '../components/SeccionComentarios'
 import SeccionResenas from '../components/SeccionResenas'
 import CuponesVigentes from '../components/CuponesVigentes'
 import BotonCompartir from '../components/BotonCompartir'
+import BotonWhatsApp from '../components/BotonWhatsApp'
 import BotonMeGusta from '../components/BotonMeGusta'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
@@ -167,6 +168,15 @@ export default function CatalogoPublico() {
                             <BotonCompartir
                                 titulo={`${artesano.nombre} — Artesanos.ar`}
                                 texto={`Mirá el trabajo de ${artesano.nombre}`}
+                                style={{ padding: '5px 12px', fontSize: '13px' }}
+                            />
+                            {/* Compartir el catálogo por WhatsApp (a un contacto, grupo o estado) */}
+                            <BotonWhatsApp
+                                texto={
+                                    `Mirá el catálogo de ${artesano.nombre} en Artesanos.ar 👇\n` +
+                                    (typeof window !== 'undefined' ? window.location.href : '')
+                                }
+                                label="Compartir catálogo"
                                 style={{ padding: '5px 12px', fontSize: '13px' }}
                             />
                             {usuario && usuario.slug !== slug && (

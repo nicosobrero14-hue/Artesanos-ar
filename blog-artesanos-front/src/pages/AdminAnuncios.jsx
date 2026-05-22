@@ -15,8 +15,9 @@ export default function AdminAnuncios() {
     const { usuario } = useAuth()
     const [mensaje, setMensaje] = useState('')
     const [url, setUrl] = useState('')
+    const [enviarEmail, setEnviarEmail] = useState(true)
     const [enviando, setEnviando] = useState(false)
-    const [resultado, setResultado] = useState(null) // { enviadas } | null
+    const [resultado, setResultado] = useState(null) // { enviadas, conEmail } | null
 
     if (usuario && usuario.rol !== 'ADMIN') return <Navigate to="/panel" replace />
 
@@ -25,14 +26,15 @@ export default function AdminAnuncios() {
         if (!mensaje.trim()) return
         const ok = confirm(
             `¿Mandar este anuncio a TODOS los usuarios activos?\n\n"${mensaje.trim()}"\n\n` +
-            `Aparece en la campana de notificaciones de cada usuario.`
+            `Aparece en la campana de notificaciones` +
+            (enviarEmail ? ' y además les llega por email.' : ' de cada usuario.')
         )
         if (!ok) return
 
         setEnviando(true)
         setResultado(null)
         try {
-            const body = { mensaje: mensaje.trim() }
+            const body = { mensaje: mensaje.trim(), enviarEmail: String(enviarEmail) }
             if (url.trim()) body.url = url.trim()
             const { data } = await api.post('/admin/notificaciones/global', body)
             setResultado(data)
@@ -110,7 +112,21 @@ export default function AdminAnuncios() {
                         }}
                     />
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                    {/* Checkbox: mandar también por email */}
+                    <label style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        margin: '16px 0 4px', fontSize: '13px',
+                        color: 'var(--color-text-2)', cursor: 'pointer'
+                    }}>
+                        <input
+                            type="checkbox"
+                            checked={enviarEmail}
+                            onChange={e => setEnviarEmail(e.target.checked)}
+                        />
+                        Enviar también por email (además de la notificación in-app)
+                    </label>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                         <button
                             type="submit"
                             disabled={enviando || !mensaje.trim()}
@@ -133,7 +149,8 @@ export default function AdminAnuncios() {
                             borderRadius: 'var(--radius-sm)',
                             color: 'var(--color-success)', fontSize: '13px'
                         }}>
-                            ✓ Anuncio enviado a <strong>{resultado.enviadas}</strong> usuario{resultado.enviadas !== 1 ? 's' : ''}.
+                            ✓ Anuncio enviado a <strong>{resultado.enviadas}</strong> usuario{resultado.enviadas !== 1 ? 's' : ''}
+                            {resultado.conEmail ? ' (notificación + email)' : ' (solo notificación)'}.
                         </div>
                     )}
                 </form>

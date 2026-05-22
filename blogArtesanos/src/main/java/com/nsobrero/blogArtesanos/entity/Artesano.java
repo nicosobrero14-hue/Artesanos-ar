@@ -108,6 +108,14 @@ public class Artesano implements UserDetails {
     private LocalDate fechaExpiracionPlan;
 
     /*
+     * Contador de visitas al perfil público (catálogo del artesano).
+     * Se incrementa cada vez que alguien abre /artesano/{slug}, salvo que
+     * el que mira sea el propio dueño. Métrica vanidosa para el panel.
+     */
+    @Column(nullable = false)
+    private Long visitasPerfil = 0L;
+
+    /*
      * Rol dentro del sistema. Por defecto USER.
      * El bootstrap al arrancar la app marca como ADMIN al usuario
      * cuyo email coincide con app.admin-email.

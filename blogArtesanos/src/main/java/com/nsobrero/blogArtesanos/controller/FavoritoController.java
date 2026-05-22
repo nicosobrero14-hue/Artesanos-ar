@@ -82,6 +82,7 @@ public class FavoritoController {
                             p.getFechaCreacion(),
                             p.getArtesano().getNombre(), p.getArtesano().getSlug(),
                             p.getArtesano().getId(),
+                            p.getArtesano().getWhatsapp(),
                             likes, comentarios
                     );
                 })

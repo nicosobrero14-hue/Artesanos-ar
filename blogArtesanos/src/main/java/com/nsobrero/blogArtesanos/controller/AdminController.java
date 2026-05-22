@@ -18,6 +18,7 @@ import com.nsobrero.blogArtesanos.repository.PiezaRepository;
 import com.nsobrero.blogArtesanos.repository.ReporteRepository;
 import com.nsobrero.blogArtesanos.repository.ResenaRepository;
 import com.nsobrero.blogArtesanos.service.AuditoriaService;
+import com.nsobrero.blogArtesanos.service.EmailService;
 import com.nsobrero.blogArtesanos.service.EventoService;
 import com.nsobrero.blogArtesanos.service.NotificacionService;
 import com.nsobrero.blogArtesanos.service.PlanService;
@@ -54,6 +55,7 @@ public class AdminController {
     private final EventoService eventoService;
     private final NotificacionService notificacionService;
     private final AuditoriaService auditoriaService;
+    private final EmailService emailService;
 
     private boolean noEsAdmin(Artesano user) {
         return user == null || user.getRol() != RolUsuario.ADMIN;
@@ -429,15 +431,24 @@ public class AdminController {
             .filter(a -> a.getRol() != RolUsuario.ADMIN)
             .toList();
 
+        // Si enviarEmail viene true (o no viene), además de la notificación
+        // in-app se manda un email a cada artesano.
+        Object emailFlag = body.get("enviarEmail");
+        boolean enviarEmail = emailFlag == null || "true".equalsIgnoreCase(String.valueOf(emailFlag));
+
         int enviadas = 0;
         for (Artesano a : destinatarios) {
             notificacionService.notificar(a.getId(), TipoNotificacion.GENERICO, mensaje, url);
+            if (enviarEmail && a.getEmail() != null && !a.getEmail().isBlank()) {
+                emailService.enviarAnuncioGlobal(a.getEmail(), a.getNombre(), mensaje);
+            }
             enviadas++;
         }
 
         auditoriaService.log(admin, "NOTIFICACION_GLOBAL", "ARTESANO", null,
-            "enviadas=" + enviadas + " · mensaje=" + (mensaje.length() > 80 ? mensaje.substring(0, 80) + "…" : mensaje));
+            "enviadas=" + enviadas + " · email=" + enviarEmail +
+            " · mensaje=" + (mensaje.length() > 80 ? mensaje.substring(0, 80) + "…" : mensaje));
 
-        return ResponseEntity.ok(Map.of("enviadas", enviadas));
+        return ResponseEntity.ok(Map.of("enviadas", enviadas, "conEmail", enviarEmail));
     }
 }

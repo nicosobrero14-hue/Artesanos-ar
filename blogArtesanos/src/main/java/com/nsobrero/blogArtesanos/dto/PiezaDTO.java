@@ -25,6 +25,7 @@ public record PiezaDTO(
         String artesanoNombre,
         String artesanoSlug,
         Long artesanoId,           // necesario para abrir chat directo (/chat?con=ID)
+        String artesanoWhatsapp,   // para el botón "Consultar por WhatsApp" (puede ser null)
         Long meGustaCount,
         Long comentariosCount
 ) {}

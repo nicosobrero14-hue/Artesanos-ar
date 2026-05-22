@@ -4,6 +4,7 @@ import api from '../api/axios'
 import CarruselFotos from '../components/CarruselFotos'
 import SeccionComentarios from '../components/SeccionComentarios'
 import BotonCompartir from '../components/BotonCompartir'
+import BotonWhatsApp from '../components/BotonWhatsApp'
 import BotonMeGusta from '../components/BotonMeGusta'
 import BotonFavorito from '../components/BotonFavorito'
 import BotonReportar from '../components/BotonReportar'
@@ -231,32 +232,48 @@ export default function PiezaDetalle() {
                         </div>
 
                         {pieza.estado !== 'VENDIDA' && (
-                            <button
-                                onClick={() => {
-                                    if (!usuario) {
-                                        window.location.href = `/login?next=${window.location.pathname}`
-                                        return
-                                    }
-                                    /*
-                                     * Abrimos chat directo con el artesano. Si hay cupón aplicable
-                                     * lo incluímos en el mensaje para que el cliente lo mencione directo.
-                                     */
-                                    const baseMsg = `Hola! Me interesa la pieza "${pieza.titulo}".`
-                                    const conCupon = mejorCupon
-                                        ? `${baseMsg} ¿Aplica el cupón ${mejorCupon.codigo} (${mejorCupon.porcentaje}% off)?`
-                                        : baseMsg
-                                    const mensaje = encodeURIComponent(conCupon)
-                                    window.location.href = `/chat?con=${pieza.artesanoId}&mensaje=${mensaje}`
-                                }}
-                                style={{
-                                    display: 'block', width: '100%', textAlign: 'center',
-                                    background: 'var(--color-accent)', color: '#0f0f0f',
-                                    border: 'none', borderRadius: 'var(--radius-sm)',
-                                    padding: '12px', fontSize: '14px', fontWeight: '500', cursor: 'pointer'
-                                }}
-                            >
-                                💬 Consultar al artesano
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <button
+                                    onClick={() => {
+                                        if (!usuario) {
+                                            window.location.href = `/login?next=${window.location.pathname}`
+                                            return
+                                        }
+                                        /*
+                                         * Abrimos chat directo con el artesano. Si hay cupón aplicable
+                                         * lo incluímos en el mensaje para que el cliente lo mencione directo.
+                                         */
+                                        const baseMsg = `Hola! Me interesa la pieza "${pieza.titulo}".`
+                                        const conCupon = mejorCupon
+                                            ? `${baseMsg} ¿Aplica el cupón ${mejorCupon.codigo} (${mejorCupon.porcentaje}% off)?`
+                                            : baseMsg
+                                        const mensaje = encodeURIComponent(conCupon)
+                                        window.location.href = `/chat?con=${pieza.artesanoId}&mensaje=${mensaje}`
+                                    }}
+                                    style={{
+                                        display: 'block', width: '100%', textAlign: 'center',
+                                        background: 'var(--color-accent)', color: '#0f0f0f',
+                                        border: 'none', borderRadius: 'var(--radius-sm)',
+                                        padding: '12px', fontSize: '14px', fontWeight: '500', cursor: 'pointer'
+                                    }}
+                                >
+                                    💬 Consultar por chat interno
+                                </button>
+
+                                {/* Consultar por WhatsApp — solo si el artesano cargó su número */}
+                                {pieza.artesanoWhatsapp && (
+                                    <BotonWhatsApp
+                                        numero={pieza.artesanoWhatsapp}
+                                        texto={
+                                            `Hola! Me interesa la pieza "${pieza.titulo}" ` +
+                                            `que vi en tu catálogo de Artesanos.ar` +
+                                            (mejorCupon ? `. ¿Aplica el cupón ${mejorCupon.codigo}?` : '.')
+                                        }
+                                        label="Consultar por WhatsApp"
+                                        style={{ width: '100%', padding: '12px' }}
+                                    />
+                                )}
+                            </div>
                         )}
 
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

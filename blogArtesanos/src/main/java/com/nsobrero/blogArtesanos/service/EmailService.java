@@ -117,6 +117,23 @@ public class EmailService {
     }
 
     /*
+     * Anuncio global del admin. Se manda a cada artesano activo cuando el admin
+     * usa la herramienta de notificaciones globales.
+     */
+    @Async
+    public void enviarAnuncioGlobal(String destinatario, String nombre, String mensaje) {
+        enviar(
+            destinatario,
+            "Novedades de Artesanos.ar",
+            "Hola " + nombre + ",\n\n" +
+            mensaje + "\n\n" +
+            "---\n" +
+            "Entrá a tu panel: " + frontendUrl + "/panel\n\n" +
+            "Equipo Artesanos.ar"
+        );
+    }
+
+    /*
      * Manda el email de verificación con el link de activación.
      * El link lleva al frontend que a su vez llama al backend para confirmar.
      */

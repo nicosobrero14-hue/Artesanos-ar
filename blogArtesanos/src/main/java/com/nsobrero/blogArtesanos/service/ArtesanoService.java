@@ -50,14 +50,32 @@ public class ArtesanoService {
     /*
      * Perfil público por slug. Si el slug corresponde a un ADMIN, fingimos
      * que no existe — así el admin no es navegable desde el público.
+     *
+     * visitanteId: id del usuario logueado que mira el perfil (o null si es
+     * un visitante anónimo). Si el visitante es el propio dueño, NO contamos
+     * la visita — sería inflar la métrica con uno mismo.
      */
-    public ArtesanoPublicoDTO obtenerPorSlug(String slug) {
+    @org.springframework.transaction.annotation.Transactional
+    public ArtesanoPublicoDTO obtenerPorSlug(String slug, Long visitanteId) {
         Artesano artesano = artesanoRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Artesano no encontrado: " + slug));
         if (artesano.getRol() == RolUsuario.ADMIN) {
             throw new RuntimeException("Artesano no encontrado: " + slug);
         }
+
+        // Contar visita solo si no es el propio dueño quien mira
+        if (visitanteId == null || !visitanteId.equals(artesano.getId())) {
+            Long actuales = artesano.getVisitasPerfil() != null ? artesano.getVisitasPerfil() : 0L;
+            artesano.setVisitasPerfil(actuales + 1);
+            artesanoRepository.save(artesano);
+        }
+
         return toPublicoDTO(artesano);
+    }
+
+    // Sobrecarga para visitante anónimo
+    public ArtesanoPublicoDTO obtenerPorSlug(String slug) {
+        return obtenerPorSlug(slug, null);
     }
 
     // Estadísticas del panel privado
@@ -65,6 +83,10 @@ public class ArtesanoService {
         var piezas = piezaRepository.findByArtesanoId(artesanoId);
         var pedidos = pedidoRepository.findByArtesanoId(artesanoId);
         var mensajes = contactoRepository.findByArtesanoIdAndLeidoFalse(artesanoId);
+
+        Artesano artesano = artesanoRepository.findById(artesanoId)
+                .orElseThrow(() -> new RuntimeException("Artesano no encontrado"));
+        long visitasPerfil = artesano.getVisitasPerfil() != null ? artesano.getVisitasPerfil() : 0L;
 
         long disponibles = piezas.stream()
                 .filter(p -> p.getEstado() == EstadoPieza.DISPONIBLE).count();
@@ -103,7 +125,8 @@ public class ArtesanoService {
                 piezas.size(), disponibles, vendidas,
                 pedidosAbiertos, pedidosListos,
                 totalHoras, totalFacturado, valorHora,
-                mensajes.size()
+                mensajes.size(),
+                visitasPerfil
         );
     }
 

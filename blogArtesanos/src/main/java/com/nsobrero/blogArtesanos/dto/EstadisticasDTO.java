@@ -12,5 +12,6 @@ public record EstadisticasDTO(
      int totalHorasTrabajadas,
      BigDecimal totalFacturado,
      BigDecimal valorHoraPromedio,
-     long mensajesNoLeidos
+     long mensajesNoLeidos,
+     long visitasPerfil
 ) {}

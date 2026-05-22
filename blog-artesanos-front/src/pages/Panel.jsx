@@ -107,6 +107,7 @@ export default function Panel() {
                     color="var(--color-success)"
                 />
                 <StatCard label="Mensajes sin leer" value={stats.mensajesNoLeidos} sub="" color={stats.mensajesNoLeidos > 0 ? 'var(--color-accent)' : undefined} />
+                <StatCard label="Visitas a tu perfil" value={stats.visitasPerfil ?? 0} sub="desde que te registraste" color="var(--color-accent)" />
                 </div>
 
                 {/* Accesos rápidos */}

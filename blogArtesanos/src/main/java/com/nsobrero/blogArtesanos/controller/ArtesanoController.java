@@ -41,8 +41,11 @@ public class ArtesanoController {
     }
 
     @GetMapping("/{slug}")
-    public ResponseEntity<ArtesanoPublicoDTO> obtener(@PathVariable String slug) {
-        return ResponseEntity.ok(artesanoService.obtenerPorSlug(slug));
+    public ResponseEntity<ArtesanoPublicoDTO> obtener(
+            @PathVariable String slug,
+            @AuthenticationPrincipal Artesano usuario) {
+        Long visitanteId = usuario != null ? usuario.getId() : null;
+        return ResponseEntity.ok(artesanoService.obtenerPorSlug(slug, visitanteId));
     }
 
     @PostMapping("/{slug}/contacto")
