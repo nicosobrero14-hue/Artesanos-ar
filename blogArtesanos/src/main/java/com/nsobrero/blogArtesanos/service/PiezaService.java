@@ -159,6 +159,22 @@ public class PiezaService {
             .thenComparing(p -> Boolean.TRUE.equals(p.getDestacada()), Comparator.reverseOrder())
             .thenComparing(Pieza::getFechaCreacion, Comparator.nullsLast(Comparator.reverseOrder()));
 
+    /*
+     * Feed de Novedades: las últimas piezas DISPONIBLES de toda la comunidad,
+     * ordenadas por fecha de creación. Le da a los artesanos una razón de volver
+     * (ver qué subieron los demás) y muestra que la plataforma está activa.
+     */
+    @Transactional
+    public List<PiezaDTO> listarNovedades() {
+        return piezaRepository.findTodasPublicas().stream()
+                .filter(p -> p.getEstado() == EstadoPieza.DISPONIBLE)
+                .sorted(Comparator.comparing(Pieza::getFechaCreacion,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(48)
+                .map(this::toDTOPublico)
+                .toList();
+    }
+
     @Transactional
     public List<PiezaDTO> listarPublicas(String slug) {
         Artesano artesano = artesanoRepository.findBySlug(slug)
@@ -311,6 +327,18 @@ public class PiezaService {
                     : "Pasate a Premium para subir hasta 15 fotos por pieza.")
             );
         }
+        pieza.getFotos().add(fotoUrl);
+        return toDTO(piezaRepository.save(pieza));
+    }
+
+    /*
+     * Agregar foto a una pieza desde el panel admin (onboarding asistido).
+     * No valida propiedad ni límite de plan — es una herramienta operativa
+     * para que el admin cargue catálogos en nombre de los artesanos.
+     */
+    @Transactional
+    public PiezaDTO agregarFotoComoAdmin(Long id, String fotoUrl) {
+        Pieza pieza = buscarPieza(id);
         pieza.getFotos().add(fotoUrl);
         return toDTO(piezaRepository.save(pieza));
     }

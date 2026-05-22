@@ -52,6 +52,7 @@ export default function Navbar() {
      */
     const links = [
         { to: '/', label: 'Inicio' },
+        { to: '/novedades', label: '✨ Novedades' },
         { to: '/panel', label: 'Panel' },
         { to: '/panel/piezas', label: 'Mis piezas' },
         { to: '/panel/pedidos', label: 'Pedidos' },

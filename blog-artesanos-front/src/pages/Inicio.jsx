@@ -19,6 +19,7 @@ export default function Inicio() {
     const [eventos, setEventos] = useState([])
     const [oficios, setOficios] = useState([])
     const [oficioSeleccionado, setOficioSeleccionado] = useState(null)
+    const [artesanoSemana, setArtesanoSemana] = useState(null)
     const [loading, setLoading] = useState(true)
     const [busqueda, setBusqueda] = useState('')
     const [rubroSeleccionado, setRubroSeleccionado] = useState(null)
@@ -44,6 +45,11 @@ export default function Inicio() {
             })
             .catch(err => console.error(err))
             .finally(() => setLoading(false))
+
+        // Artesano destacado de la semana (independiente, no bloquea el resto)
+        api.get('/home/artesano-semana')
+            .then(res => setArtesanoSemana(res.data))
+            .catch(() => {})
     }, [])
 
     /*
@@ -130,6 +136,9 @@ export default function Inicio() {
                 />
             )}
 
+            {/* ── Artesano destacado de la semana ──────────────────────── */}
+            {artesanoSemana && <SeccionArtesanoSemana artesano={artesanoSemana} />}
+
             {/* ── Vidriera de piezas destacadas (solo premium) ─────────── */}
             {!loading && destacadas.length > 0 && (
                 <SeccionDestacadas piezas={destacadas} />
@@ -198,6 +207,9 @@ function TopBar({ usuario }) {
 
                 {/* Links desktop */}
                 <div className="solo-desktop" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <Link to="/novedades" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
+                        ✨ Novedades
+                    </Link>
                     <Link to="/eventos" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
                         📅 Eventos
                     </Link>
@@ -283,6 +295,7 @@ function TopBar({ usuario }) {
 
                 <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0', flex: 1 }}>
                     <Link to="/" style={linkDrawer}>🏠 Inicio</Link>
+                    <Link to="/novedades" style={linkDrawer}>✨ Novedades</Link>
                     <Link to="/eventos" style={linkDrawer}>📅 Eventos</Link>
                     <Link to="/ranking" style={linkDrawer}>🏆 Ranking</Link>
                     {usuario && usuario.slug && (
@@ -534,6 +547,76 @@ function chipStyle(activo) {
         flexShrink: 0,
         fontWeight: activo ? '500' : '400'
     }
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Artesano destacado de la semana
+// ────────────────────────────────────────────────────────────────────────
+function SeccionArtesanoSemana({ artesano }) {
+    return (
+        <div className="section-pad" style={{
+            borderBottom: '1px solid var(--color-border)',
+            padding: '36px 24px',
+            background: 'linear-gradient(135deg, #1c1710, var(--color-bg))'
+        }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+                <p style={{
+                    fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase',
+                    color: 'var(--color-accent)', fontWeight: '600', marginBottom: '14px'
+                }}>
+                    ⭐ Artesano de la semana
+                </p>
+                <Link to={`/artesano/${artesano.slug}`} style={{ textDecoration: 'none' }}>
+                    <div className="stack-mobile" style={{
+                        display: 'flex', gap: '20px', alignItems: 'center',
+                        background: 'var(--color-bg-2)',
+                        border: '1px solid var(--color-accent)',
+                        borderRadius: 'var(--radius)',
+                        padding: '20px'
+                    }}>
+                        <div style={{
+                            width: '80px', height: '80px', borderRadius: '50%', flexShrink: 0,
+                            background: 'var(--color-bg-3)', border: '1px solid var(--color-border)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '30px', fontWeight: '600', color: 'var(--color-accent)',
+                            overflow: 'hidden'
+                        }}>
+                            {artesano.avatarUrl
+                                ? <img src={artesano.avatarUrl} alt={artesano.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                : artesano.nombre?.charAt(0).toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '2px' }}>
+                                {artesano.nombre}
+                            </p>
+                            {artesano.ubicacion && (
+                                <p style={{ fontSize: '13px', color: 'var(--color-text-3)', marginBottom: '6px' }}>
+                                    {artesano.ubicacion}
+                                </p>
+                            )}
+                            {artesano.bio && (
+                                <p style={{
+                                    fontSize: '13px', color: 'var(--color-text-2)', lineHeight: '1.5',
+                                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                }}>
+                                    {artesano.bio}
+                                </p>
+                            )}
+                        </div>
+                        <span style={{
+                            flexShrink: 0,
+                            background: 'var(--color-accent)', color: '#0f0f0f',
+                            borderRadius: 'var(--radius-sm)', padding: '8px 16px',
+                            fontSize: '13px', fontWeight: '600'
+                        }}>
+                            Ver catálogo →
+                        </span>
+                    </div>
+                </Link>
+            </div>
+        </div>
+    )
 }
 
 // ────────────────────────────────────────────────────────────────────────

@@ -40,6 +40,12 @@ public class PiezaController {
         return ResponseEntity.ok(piezaService.listarRecientesPublicas(oficio));
     }
 
+    // GET /api/piezas/novedades — últimas piezas de toda la comunidad
+    @GetMapping("/piezas/novedades")
+    public ResponseEntity<List<PiezaDTO>> novedades() {
+        return ResponseEntity.ok(piezaService.listarNovedades());
+    }
+
     // GET /api/piezas/buscar?q=xxx — búsqueda global pública
     @GetMapping("/piezas/buscar")
     public ResponseEntity<List<PiezaDTO>> buscar(@RequestParam(name = "q", required = false) String q) {

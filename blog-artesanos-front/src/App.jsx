@@ -25,6 +25,8 @@ import Chat from './pages/Chat'
 import Legal from './pages/Legal'
 import RutaProtegida from './components/RutaProtegida'
 import Inicio from './pages/Inicio'
+import Novedades from './pages/Novedades'
+import Resumen from './pages/Resumen'
 import Verificar from './pages/Verificar'
 import MisClientes from './pages/MisClientes'
 import NotFound from './pages/NotFound'
@@ -32,6 +34,7 @@ import AdminPiezas from './pages/AdminPiezas'
 import AdminFeedback from './pages/AdminFeedback'
 import AdminRanking from './pages/AdminRanking'
 import AdminAnuncios from './pages/AdminAnuncios'
+import AdminCargarPieza from './pages/AdminCargarPieza'
 import BotonFeedback from './components/BotonFeedback'
 
 function App() {
@@ -45,6 +48,7 @@ function App() {
         <Route path="/artesano/:slug/pieza/:id" element={<PiezaDetalle />} />
         <Route path="/premium" element={<Premium />} />
         <Route path="/ranking" element={<Ranking />} />
+        <Route path="/novedades" element={<Novedades />} />
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/buscar" element={<Buscar />} />
         <Route path="/recuperar-password" element={<RecuperarPassword />} />
@@ -54,6 +58,7 @@ function App() {
         <Route path="/panel/eventos" element={<RutaProtegida><MisEventos /></RutaProtegida>} />
         <Route path="/panel/cupones" element={<RutaProtegida><MisCupones /></RutaProtegida>} />
         <Route path="/panel/stats" element={<RutaProtegida><StatsAvanzadas /></RutaProtegida>} />
+        <Route path="/panel/resumen" element={<RutaProtegida><Resumen /></RutaProtegida>} />
         <Route path="/chat" element={<RutaProtegida><Chat /></RutaProtegida>} />
         <Route path="/admin" element={<RutaProtegida><Admin /></RutaProtegida>} />
         <Route path="/admin/eventos" element={<RutaProtegida><AdminEventos /></RutaProtegida>} />
@@ -63,6 +68,7 @@ function App() {
         <Route path="/admin/feedback" element={<RutaProtegida><AdminFeedback /></RutaProtegida>} />
         <Route path="/admin/ranking" element={<RutaProtegida><AdminRanking /></RutaProtegida>} />
         <Route path="/admin/anuncios" element={<RutaProtegida><AdminAnuncios /></RutaProtegida>} />
+        <Route path="/admin/cargar-pieza" element={<RutaProtegida><AdminCargarPieza /></RutaProtegida>} />
         <Route path="/panel" element={<RutaProtegida><Panel /></RutaProtegida>} />
         <Route path="/panel/piezas" element={<RutaProtegida><MisPiezas /></RutaProtegida>} />
         <Route path="/panel/pedidos" element={<RutaProtegida><MisPedidos /></RutaProtegida>} />

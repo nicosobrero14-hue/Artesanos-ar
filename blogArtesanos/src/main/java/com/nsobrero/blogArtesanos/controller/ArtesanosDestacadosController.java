@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -100,6 +102,35 @@ public class ArtesanosDestacadosController {
                 .toList();
 
         return ResponseEntity.ok(dtos);
+    }
+
+    /*
+     * Artesano destacado de la semana.
+     *
+     * Rota automáticamente cada semana SIN necesidad de un cron: el índice se
+     * calcula con (año ISO * 53 + semana ISO) % cantidadDeArtesanos. Es
+     * determinístico — todo el mundo ve el mismo artesano durante la semana,
+     * y cambia solo al pasar a la semana siguiente.
+     *
+     * Ordenamos por id para que la selección sea estable.
+     */
+    @GetMapping("/artesano-semana")
+    @Transactional
+    public ResponseEntity<ArtesanoPublicoDTO> artesanoSemana() {
+        List<Artesano> elegibles = artesanoRepository.findAll().stream()
+                .filter(Artesano::getActivo)
+                .filter(a -> a.getRol() != RolUsuario.ADMIN)
+                .sorted(Comparator.comparing(Artesano::getId))
+                .toList();
+
+        if (elegibles.isEmpty()) return ResponseEntity.noContent().build();
+
+        LocalDate hoy = LocalDate.now();
+        int semana = hoy.get(WeekFields.ISO.weekOfWeekBasedYear());
+        int anio = hoy.get(WeekFields.ISO.weekBasedYear());
+        int idx = Math.floorMod(anio * 53 + semana, elegibles.size());
+
+        return ResponseEntity.ok(toPublicoDTO(elegibles.get(idx)));
     }
 
     /*

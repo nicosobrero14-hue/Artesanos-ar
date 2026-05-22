@@ -143,6 +143,7 @@ export default function Admin() {
                     <TabAdmin to="/admin/feedback" icono="💡" label="Feedback" />
                     <TabAdmin to="/admin/ranking" icono="🏆" label="Ranking" />
                     <TabAdmin to="/admin/anuncios" icono="📢" label="Anuncios" />
+                    <TabAdmin to="/admin/cargar-pieza" icono="📦" label="Cargar pieza" />
                     <TabAdmin to="/admin/auditoria" icono="📜" label="Auditoria" />
 
                 </div>

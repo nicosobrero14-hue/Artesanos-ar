@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
+import BotonWhatsApp from '../components/BotonWhatsApp'
+import { useAuth } from '../context/AuthContext'
 
 /*
  * Este componente carga las estadísticas del artesano logueado.
@@ -9,9 +11,11 @@ import Navbar from '../components/Navbar'
  * aparece en pantalla — equivale al "al cargar la página" de JavaScript puro.
  */
 export default function Panel() {
+    const { usuario } = useAuth()
     const [stats, setStats] = useState(null)
     const [plan, setPlan] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [esArtesanoSemana, setEsArtesanoSemana] = useState(false)
 
     useEffect(() => {
         Promise.all([
@@ -24,7 +28,16 @@ export default function Panel() {
         })
         .catch(err => console.error(err))
         .finally(() => setLoading(false))
-    }, [])
+
+        // ¿Soy el artesano destacado de la semana?
+        api.get('/home/artesano-semana')
+            .then(res => {
+                if (res.data && usuario && res.data.id === usuario.id) {
+                    setEsArtesanoSemana(true)
+                }
+            })
+            .catch(() => {})
+    }, [usuario])
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
@@ -37,6 +50,31 @@ export default function Panel() {
             <p style={{ color: 'var(--color-text-2)', fontSize: '14px', marginBottom: '24px' }}>
             Resumen de tu taller
             </p>
+
+            {/* Banner: sos el artesano destacado de la semana */}
+            {esArtesanoSemana && (
+            <div style={{
+                background: 'linear-gradient(135deg, #f5b94f22, #f59f3315)',
+                border: '1px solid #f5b94f',
+                borderRadius: 'var(--radius)', padding: '18px 22px', marginBottom: '24px'
+            }}>
+                <p style={{ fontSize: '15px', fontWeight: '600', marginBottom: '4px' }}>
+                    ⭐ ¡Sos el Artesano de la Semana!
+                </p>
+                <p style={{ fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '12px' }}>
+                    Esta semana tu taller aparece destacado en la portada de Artesanos.ar.
+                    Aprovechá para contarlo.
+                </p>
+                <BotonWhatsApp
+                    texto={
+                        `Esta semana soy el Artesano de la Semana en Artesanos.ar ⭐\n\n` +
+                        `Mirá mi catálogo 👇\n` +
+                        (usuario?.slug ? `${window.location.origin}/artesano/${usuario.slug}` : window.location.origin)
+                    }
+                    label="Compartir por WhatsApp"
+                />
+            </div>
+            )}
 
             {/* Tarjeta del plan actual */}
             {plan && (
@@ -122,6 +160,7 @@ export default function Panel() {
                 <AccionCard to="/panel/eventos" titulo="📅 Mis eventos" desc="Ferias y exposiciones donde vas a estar" />
                 <AccionCard to="/panel/cupones" titulo="🎟 Cupones" desc="Descuentos para atraer clientes (Premium)" />
                 <AccionCard to="/panel/stats" titulo="📊 Stats avanzadas" desc="Métricas de engagement (Premium)" />
+                <AccionCard to="/panel/resumen" titulo="✨ Tu resumen" desc="Tu recorrido en una tarjeta para compartir" />
                 <AccionCard to="/favoritos" titulo="🔖 Mis favoritos" desc="Piezas que guardaste para volver" />
                 <AccionCard to="/panel/perfil" titulo="Editar perfil" desc="Bio, redes, ubicación y foto de perfil" />
                 </div>

@@ -43,9 +43,11 @@ public class ArtesanoController {
     @GetMapping("/{slug}")
     public ResponseEntity<ArtesanoPublicoDTO> obtener(
             @PathVariable String slug,
+            @RequestParam(name = "og", required = false, defaultValue = "false") boolean og,
             @AuthenticationPrincipal Artesano usuario) {
         Long visitanteId = usuario != null ? usuario.getId() : null;
-        return ResponseEntity.ok(artesanoService.obtenerPorSlug(slug, visitanteId));
+        // og=true → es el scrapeo de Open Graph (un bot), no cuenta como visita
+        return ResponseEntity.ok(artesanoService.obtenerPorSlug(slug, visitanteId, !og));
     }
 
     @PostMapping("/{slug}/contacto")

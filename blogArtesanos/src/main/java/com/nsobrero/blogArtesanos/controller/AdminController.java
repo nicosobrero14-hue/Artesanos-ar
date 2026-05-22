@@ -21,7 +21,13 @@ import com.nsobrero.blogArtesanos.service.AuditoriaService;
 import com.nsobrero.blogArtesanos.service.EmailService;
 import com.nsobrero.blogArtesanos.service.EventoService;
 import com.nsobrero.blogArtesanos.service.NotificacionService;
+import com.nsobrero.blogArtesanos.service.PiezaService;
 import com.nsobrero.blogArtesanos.service.PlanService;
+import com.nsobrero.blogArtesanos.auth.PiezaRequest;
+import com.nsobrero.blogArtesanos.dto.PiezaDTO;
+import com.nsobrero.blogArtesanos.imagen.CloudinaryService;
+import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +62,8 @@ public class AdminController {
     private final NotificacionService notificacionService;
     private final AuditoriaService auditoriaService;
     private final EmailService emailService;
+    private final PiezaService piezaService;
+    private final CloudinaryService cloudinaryService;
 
     private boolean noEsAdmin(Artesano user) {
         return user == null || user.getRol() != RolUsuario.ADMIN;
@@ -393,6 +401,34 @@ public class AdminController {
             "/panel/piezas"
         );
         return ResponseEntity.noContent().build();
+    }
+
+    /*
+     * Crear una pieza en nombre de un artesano (onboarding asistido /
+     * migración de catálogos). Reusa la lógica normal de creación, incluido
+     * el límite de piezas del plan del artesano destino.
+     */
+    @PostMapping("/artesanos/{id}/piezas")
+    public ResponseEntity<?> crearPiezaPara(@PathVariable Long id,
+                                            @Valid @RequestBody PiezaRequest request,
+                                            @AuthenticationPrincipal Artesano admin) {
+        if (noEsAdmin(admin)) return ResponseEntity.status(403).body(Map.of("message", "Solo admins"));
+        PiezaDTO dto = piezaService.crear(request, id);
+        auditoriaService.log(admin, "CREAR_PIEZA_ADMIN", "PIEZA", dto.id(), "paraArtesanoId=" + id);
+        return ResponseEntity.ok(dto);
+    }
+
+    /*
+     * Subir foto a cualquier pieza desde el panel admin. Sin validación de
+     * propiedad — herramienta operativa para cargar catálogos.
+     */
+    @PostMapping("/piezas/{piezaId}/fotos")
+    public ResponseEntity<?> subirFotoPiezaAdmin(@PathVariable Long piezaId,
+                                                 @RequestParam("foto") MultipartFile foto,
+                                                 @AuthenticationPrincipal Artesano admin) {
+        if (noEsAdmin(admin)) return ResponseEntity.status(403).body(Map.of("message", "Solo admins"));
+        String url = cloudinaryService.subirImagen(foto, "artesanos/admin-carga");
+        return ResponseEntity.ok(piezaService.agregarFotoComoAdmin(piezaId, url));
     }
 
     /*

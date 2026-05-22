@@ -56,15 +56,16 @@ public class ArtesanoService {
      * la visita — sería inflar la métrica con uno mismo.
      */
     @org.springframework.transaction.annotation.Transactional
-    public ArtesanoPublicoDTO obtenerPorSlug(String slug, Long visitanteId) {
+    public ArtesanoPublicoDTO obtenerPorSlug(String slug, Long visitanteId, boolean contarVisita) {
         Artesano artesano = artesanoRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Artesano no encontrado: " + slug));
         if (artesano.getRol() == RolUsuario.ADMIN) {
             throw new RuntimeException("Artesano no encontrado: " + slug);
         }
 
-        // Contar visita solo si no es el propio dueño quien mira
-        if (visitanteId == null || !visitanteId.equals(artesano.getId())) {
+        // Contar visita solo si corresponde y no es el propio dueño quien mira.
+        // contarVisita=false lo usa el scrapeo de Open Graph (bots) para no inflar.
+        if (contarVisita && (visitanteId == null || !visitanteId.equals(artesano.getId()))) {
             Long actuales = artesano.getVisitasPerfil() != null ? artesano.getVisitasPerfil() : 0L;
             artesano.setVisitasPerfil(actuales + 1);
             artesanoRepository.save(artesano);
@@ -73,9 +74,13 @@ public class ArtesanoService {
         return toPublicoDTO(artesano);
     }
 
+    public ArtesanoPublicoDTO obtenerPorSlug(String slug, Long visitanteId) {
+        return obtenerPorSlug(slug, visitanteId, true);
+    }
+
     // Sobrecarga para visitante anónimo
     public ArtesanoPublicoDTO obtenerPorSlug(String slug) {
-        return obtenerPorSlug(slug, null);
+        return obtenerPorSlug(slug, null, true);
     }
 
     // Estadísticas del panel privado
