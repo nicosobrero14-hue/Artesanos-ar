@@ -34,6 +34,7 @@ function paginaOG({ title, description, image, url }) {
 ${image ? `<meta property="og:image" content="${esc(image)}"/>` : ''}
 <meta property="og:url" content="${esc(url)}"/>
 <meta property="og:locale" content="es_AR"/>
+${image ? `<meta property="og:image:alt" content="${esc(title)}"/>` : ''}
 <meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}"/>
 <meta name="twitter:title" content="${esc(title)}"/>
 <meta name="twitter:description" content="${esc(description)}"/>
@@ -79,14 +80,31 @@ export default async function handler(req, res) {
                 }
             }
         } else if (catMatch && API) {
+            const slug = catMatch[1]
             // og=true → el backend no cuenta esto como visita al perfil
-            const r = await fetch(`${API}/artesanos/${catMatch[1]}?og=true`)
+            const r = await fetch(`${API}/artesanos/${slug}?og=true`)
             if (r.ok) {
                 const a = await r.json()
+
+                // Imagen del preview: el avatar del artesano si tiene; si no,
+                // la primera foto de alguna de sus piezas (queda mejor que un
+                // link sin imagen).
+                let image = a.avatarUrl || null
+                if (!image) {
+                    try {
+                        const rp = await fetch(`${API}/artesanos/${slug}/piezas`)
+                        if (rp.ok) {
+                            const piezas = await rp.json()
+                            const conFoto = piezas.find(p => p.fotos && p.fotos.length > 0)
+                            if (conFoto) image = conFoto.fotos[0]
+                        }
+                    } catch (e) { /* sin imagen, no pasa nada */ }
+                }
+
                 meta = {
                     title: `${a.nombre} — Artesanos.ar`,
                     description: a.bio || `Mirá el catálogo de ${a.nombre} en Artesanos.ar`,
-                    image: a.avatarUrl || null,
+                    image,
                     url: fullUrl
                 }
             }

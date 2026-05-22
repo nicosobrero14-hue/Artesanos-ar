@@ -14,6 +14,7 @@ export default function Panel() {
     const { usuario } = useAuth()
     const [stats, setStats] = useState(null)
     const [plan, setPlan] = useState(null)
+    const [perfil, setPerfil] = useState(null)
     const [loading, setLoading] = useState(true)
     const [esArtesanoSemana, setEsArtesanoSemana] = useState(false)
 
@@ -29,6 +30,13 @@ export default function Panel() {
         .catch(err => console.error(err))
         .finally(() => setLoading(false))
 
+        // Perfil propio — para el checklist de onboarding (foto, whatsapp)
+        if (usuario?.slug) {
+            api.get(`/artesanos/${usuario.slug}`)
+                .then(res => setPerfil(res.data))
+                .catch(() => {})
+        }
+
         // ¿Soy el artesano destacado de la semana?
         api.get('/home/artesano-semana')
             .then(res => {
@@ -38,6 +46,14 @@ export default function Panel() {
             })
             .catch(() => {})
     }, [usuario])
+
+    // Items del checklist de onboarding
+    const checklist = (stats && perfil) ? [
+        { ok: !!perfil.avatarUrl, label: 'Subí tu foto de perfil', to: '/panel/perfil' },
+        { ok: stats.totalPiezas > 0, label: 'Cargá tu primera pieza', to: '/panel/piezas' },
+        { ok: !!perfil.whatsapp, label: 'Agregá tu WhatsApp', to: '/panel/perfil' }
+    ] : []
+    const checklistCompleto = checklist.length > 0 && checklist.every(i => i.ok)
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
@@ -50,6 +66,51 @@ export default function Panel() {
             <p style={{ color: 'var(--color-text-2)', fontSize: '14px', marginBottom: '24px' }}>
             Resumen de tu taller
             </p>
+
+            {/* Checklist de onboarding — se oculta cuando está completo */}
+            {checklist.length > 0 && !checklistCompleto && (
+            <div style={{
+                background: 'var(--color-bg-2)',
+                border: '1px solid var(--color-accent)',
+                borderRadius: 'var(--radius)', padding: '18px 22px', marginBottom: '24px'
+            }}>
+                <p style={{ fontSize: '15px', fontWeight: '600', marginBottom: '2px' }}>
+                    🚀 Completá tu taller
+                </p>
+                <p style={{ fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '14px' }}>
+                    {checklist.filter(i => i.ok).length} de {checklist.length} pasos listos.
+                    Un perfil completo recibe más consultas.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {checklist.map((item, i) => (
+                        <Link key={i} to={item.to} style={{
+                            display: 'flex', alignItems: 'center', gap: '10px',
+                            fontSize: '14px', textDecoration: 'none',
+                            color: item.ok ? 'var(--color-text-3)' : 'var(--color-text)'
+                        }}>
+                            <span style={{
+                                width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '12px',
+                                background: item.ok ? 'var(--color-success)' : 'transparent',
+                                border: item.ok ? 'none' : '1.5px solid var(--color-border)',
+                                color: '#0f0f0f'
+                            }}>
+                                {item.ok ? '✓' : ''}
+                            </span>
+                            <span style={{ textDecoration: item.ok ? 'line-through' : 'none' }}>
+                                {item.label}
+                            </span>
+                            {!item.ok && (
+                                <span style={{ fontSize: '12px', color: 'var(--color-accent)', marginLeft: 'auto' }}>
+                                    Hacelo →
+                                </span>
+                            )}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+            )}
 
             {/* Banner: sos el artesano destacado de la semana */}
             {esArtesanoSemana && (

@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import CarruselFotos from '../components/CarruselFotos'
+import BotonWhatsApp from '../components/BotonWhatsApp'
 
 const ESTADOS = ['DISPONIBLE', 'ENCARGO', 'RESERVADA', 'VENDIDA']
 
@@ -83,6 +84,7 @@ const colorEstado = {
     // Fotos iniciales para una pieza nueva — se suben después de crearla
     const [fotosNuevas, setFotosNuevas] = useState([])
     const [progresoFotos, setProgresoFotos] = useState(null) // { subiendo, total }
+    const [piezaCompartir, setPiezaCompartir] = useState(null) // pieza recién creada
     const fileInputRef = useRef(null)
     const videoInputRef = useRef(null)
     const fotosNuevasInputRef = useRef(null)
@@ -194,11 +196,13 @@ const colorEstado = {
             precio: parseFloat(form.precio),
             horasTrabajo: form.horasTrabajo ? parseInt(form.horasTrabajo) : null
         }
+        let piezaCreada = null
         if (editando) {
             await api.put(`/mis-piezas/${editando.id}`, payload)
         } else {
             // Crear pieza primero
-            const { data: piezaCreada } = await api.post('/mis-piezas', payload)
+            const resp = await api.post('/mis-piezas', payload)
+            piezaCreada = resp.data
             // Si seleccionó fotos iniciales, subirlas una por una
             if (fotosNuevas.length > 0 && piezaCreada?.id) {
                 setProgresoFotos({ subiendo: 0, total: fotosNuevas.length })
@@ -224,6 +228,10 @@ const colorEstado = {
         setFotosNuevas([])
         cargarPiezas()
         cargarPlan()
+        // Si creamos una pieza nueva, invitamos a compartirla en el momento
+        if (!editando && piezaCreada?.id) {
+            setPiezaCompartir(piezaCreada)
+        }
         } catch (err) {
         // El backend manda mensajes específicos cuando se llega al límite
         const msg = err.response?.data?.message || 'Error al guardar la pieza'
@@ -314,6 +322,59 @@ const colorEstado = {
 
         {/* Visor de foto ampliada — se monta aquí arriba para que quede sobre todo */}
         <VisorFoto url={fotoVisor} onClose={() => setFotoVisor(null)} />
+
+        {/* Modal: invitar a compartir la pieza recién creada */}
+        {piezaCompartir && (
+            <div
+                onClick={() => setPiezaCompartir(null)}
+                style={{
+                    position: 'fixed', inset: 0, zIndex: 1000,
+                    background: 'rgba(0,0,0,0.7)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '20px'
+                }}
+            >
+                <div
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                        background: 'var(--color-bg-2)',
+                        border: '1px solid var(--color-accent)',
+                        borderRadius: 'var(--radius)',
+                        padding: '28px 24px',
+                        maxWidth: '380px', width: '100%',
+                        textAlign: 'center'
+                    }}
+                >
+                    <div style={{ fontSize: '38px', marginBottom: '8px' }}>🎉</div>
+                    <h2 style={{ fontSize: '17px', fontWeight: '600', marginBottom: '6px' }}>
+                        ¡Pieza publicada!
+                    </h2>
+                    <p style={{ fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '20px' }}>
+                        Compartila ahora para que la vean tus contactos y seguidores.
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <BotonWhatsApp
+                            texto={
+                                `Mirá mi nueva pieza: "${piezaCompartir.titulo}" 🛠️\n` +
+                                `${window.location.origin}/artesano/${piezaCompartir.artesanoSlug}/pieza/${piezaCompartir.id}`
+                            }
+                            label="Compartir por WhatsApp"
+                            style={{ width: '100%', padding: '12px' }}
+                        />
+                        <button
+                            onClick={() => setPiezaCompartir(null)}
+                            style={{
+                                background: 'transparent', border: '1px solid var(--color-border)',
+                                borderRadius: 'var(--radius-sm)', padding: '10px',
+                                color: 'var(--color-text-2)', fontSize: '13px', cursor: 'pointer'
+                            }}
+                        >
+                            Ahora no
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
 
         <Navbar />
 

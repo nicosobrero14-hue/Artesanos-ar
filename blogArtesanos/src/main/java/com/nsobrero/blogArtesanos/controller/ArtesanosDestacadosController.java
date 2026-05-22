@@ -120,6 +120,8 @@ public class ArtesanosDestacadosController {
         List<Artesano> elegibles = artesanoRepository.findAll().stream()
                 .filter(Artesano::getActivo)
                 .filter(a -> a.getRol() != RolUsuario.ADMIN)
+                // Solo artesanos con al menos 1 pieza — no destacamos catálogos vacíos
+                .filter(a -> piezaRepository.countByArtesanoId(a.getId()) > 0)
                 .sorted(Comparator.comparing(Artesano::getId))
                 .toList();
 
