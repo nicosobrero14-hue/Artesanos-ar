@@ -16,7 +16,7 @@ Cada carpeta tiene su propio `README.md` con setup específico.
 
 - **Backend**: Spring Boot 3.5, Java 21, MySQL 8, JPA/Hibernate, JWT auth, Bucket4j (rate limiting), Spring Security
 - **Frontend**: React 19, Vite, React Router, Axios
-- **Servicios**: Cloudinary (imágenes/video), Gmail SMTP
+- **Servicios**: Cloudinary (imágenes/video), API HTTP de Resend
 
 ## Arranque rápido (dev)
 
