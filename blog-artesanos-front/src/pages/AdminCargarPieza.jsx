@@ -18,7 +18,8 @@ export default function AdminCargarPieza() {
     const [artesanoId, setArtesanoId] = useState('')
     const [form, setForm] = useState({
         titulo: '', descripcion: '', precio: '',
-        horasTrabajo: '', categoria: '', oficio: '', estado: 'DISPONIBLE'
+        horasTrabajo: '', categoria: '', oficio: '', estado: 'DISPONIBLE',
+        destacada: false
     })
     const [fotos, setFotos] = useState([])
     const [guardando, setGuardando] = useState(false)
@@ -39,8 +40,8 @@ export default function AdminCargarPieza() {
     if (usuario && usuario.rol !== 'ADMIN') return <Navigate to="/panel" replace />
 
     const handleChange = e => {
-        const { name, value } = e.target
-        setForm(prev => ({ ...prev, [name]: value }))
+        const { name, value, type, checked } = e.target
+        setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
     }
 
     const handleFotos = e => {
@@ -67,7 +68,8 @@ export default function AdminCargarPieza() {
                 horasTrabajo: form.horasTrabajo ? parseInt(form.horasTrabajo) : null,
                 categoria: form.categoria,
                 oficio: form.oficio,
-                estado: form.estado
+                estado: form.estado,
+                destacada: form.destacada
             }
             const { data: pieza } = await api.post(`/admin/artesanos/${artesanoId}/piezas`, payload)
 
@@ -177,6 +179,23 @@ export default function AdminCargarPieza() {
                         <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows={3}
                             style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
                     </div>
+
+                    {/* Destacada — el backend la fuerza a false si el plan del artesano no lo permite */}
+                    <label style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        fontSize: '13px', color: 'var(--color-text-2)', cursor: 'pointer'
+                    }}>
+                        <input
+                            type="checkbox"
+                            name="destacada"
+                            checked={form.destacada}
+                            onChange={handleChange}
+                        />
+                        Marcar como destacada
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-3)' }}>
+                            (solo se aplica si el artesano tiene Premium activo)
+                        </span>
+                    </label>
 
                     {/* Fotos */}
                     <div>
