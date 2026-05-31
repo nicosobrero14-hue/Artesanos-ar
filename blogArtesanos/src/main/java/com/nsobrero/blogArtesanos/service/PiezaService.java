@@ -90,6 +90,12 @@ public class PiezaService {
         return listarDestacadasPublicas(null);
     }
 
+    /*
+     * Cupo del feed de destacadas. Más alto que antes (12 → 20) para mostrar
+     * más diversidad ahora que el algoritmo rota por artesano.
+     */
+    private static final int CUPO_DESTACADAS = 20;
+
     @Transactional
     public List<PiezaDTO> listarDestacadasPublicas(com.nsobrero.blogArtesanos.enums.Oficio oficio) {
         /*
@@ -99,16 +105,48 @@ public class PiezaService {
          * Al renovar, vuelve a aparecer automáticamente sin que el artesano tenga
          * que tocar nada.
          */
-        var lista = new java.util.ArrayList<>(
-            piezaRepository.findDestacadasPublicas(EstadoPieza.DISPONIBLE).stream()
+        var todas = piezaRepository.findDestacadasPublicas(EstadoPieza.DISPONIBLE).stream()
                 .filter(p -> p.getArtesano().getRol() != RolUsuario.ADMIN)
                 .filter(p -> planService.isPremium(p.getArtesano()))
                 .filter(p -> oficio == null || oficio.equals(p.getOficio()))
-                .toList()
-        );
-        // Aleatorizamos para que cada request rote distintas piezas
-        java.util.Collections.shuffle(lista);
-        return lista.stream().limit(12).map(this::toDTOPublico).toList();
+                .toList();
+
+        /*
+         * Selección round-robin por artesano para repartir exposición y no
+         * saturar el feed con un solo taller que tenga muchas destacadas:
+         *
+         *  - Vuelta 1: 1 pieza por cada artesano (shuffleada — cada request
+         *    elige una distinta de las que tiene ese artesano).
+         *  - Vuelta 2: segunda pieza de cada artesano que tenga más, en orden.
+         *  - Y así sucesivamente hasta llenar el cupo o agotar piezas.
+         */
+        java.util.Map<Long, java.util.List<Pieza>> porArtesano = new java.util.LinkedHashMap<>();
+        for (Pieza p : todas) {
+            porArtesano.computeIfAbsent(p.getArtesano().getId(), k -> new java.util.ArrayList<>()).add(p);
+        }
+        for (var piezasArt : porArtesano.values()) {
+            // Shuffle por artesano → cada request muestra una pieza distinta de cada uno
+            java.util.Collections.shuffle(piezasArt);
+        }
+
+        var seleccionadas = new java.util.ArrayList<Pieza>();
+        int vuelta = 0;
+        while (seleccionadas.size() < CUPO_DESTACADAS) {
+            boolean agreguéEnEstaVuelta = false;
+            for (var piezasArt : porArtesano.values()) {
+                if (piezasArt.size() > vuelta) {
+                    seleccionadas.add(piezasArt.get(vuelta));
+                    agreguéEnEstaVuelta = true;
+                    if (seleccionadas.size() >= CUPO_DESTACADAS) break;
+                }
+            }
+            if (!agreguéEnEstaVuelta) break; // ya no quedan más piezas
+            vuelta++;
+        }
+
+        // Shuffle final para que el orden visual del feed sea variado
+        java.util.Collections.shuffle(seleccionadas);
+        return seleccionadas.stream().map(this::toDTOPublico).toList();
     }
 
     /*
