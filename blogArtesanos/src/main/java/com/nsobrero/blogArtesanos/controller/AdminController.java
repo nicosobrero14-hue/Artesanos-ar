@@ -472,19 +472,31 @@ public class AdminController {
         Object emailFlag = body.get("enviarEmail");
         boolean enviarEmail = emailFlag == null || "true".equalsIgnoreCase(String.valueOf(emailFlag));
 
-        int enviadas = 0;
+        // Notificaciones in-app — una por artesano
         for (Artesano a : destinatarios) {
             notificacionService.notificar(a.getId(), TipoNotificacion.GENERICO, mensaje, url);
-            if (enviarEmail && a.getEmail() != null && !a.getEmail().isBlank()) {
-                emailService.enviarAnuncioGlobal(a.getEmail(), a.getNombre(), mensaje);
-            }
-            enviadas++;
+        }
+
+        // Emails — en un solo batch a Resend para evitar el rate limit (2 req/seg)
+        // que tiraba 429 silenciosamente cuando hacíamos un loop de @Async.
+        int conEmail = 0;
+        if (enviarEmail) {
+            List<EmailService.DestinatarioAnuncio> destEmail = destinatarios.stream()
+                .filter(a -> a.getEmail() != null && !a.getEmail().isBlank())
+                .map(a -> new EmailService.DestinatarioAnuncio(a.getEmail(), a.getNombre()))
+                .toList();
+            conEmail = destEmail.size();
+            emailService.enviarAnuncioGlobalBatch(destEmail, mensaje);
         }
 
         auditoriaService.log(admin, "NOTIFICACION_GLOBAL", "ARTESANO", null,
-            "enviadas=" + enviadas + " · email=" + enviarEmail +
+            "enviadas=" + destinatarios.size() + " · email=" + enviarEmail + " (" + conEmail + ")" +
             " · mensaje=" + (mensaje.length() > 80 ? mensaje.substring(0, 80) + "…" : mensaje));
 
-        return ResponseEntity.ok(Map.of("enviadas", enviadas, "conEmail", enviarEmail));
+        return ResponseEntity.ok(Map.of(
+            "enviadas", destinatarios.size(),
+            "conEmail", enviarEmail,
+            "emailsDespachados", conEmail
+        ));
     }
 }

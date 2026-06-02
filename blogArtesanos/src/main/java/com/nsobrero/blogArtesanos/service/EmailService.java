@@ -119,18 +119,65 @@ public class EmailService {
     /*
      * Anuncio global del admin. Se manda a cada artesano activo cuando el admin
      * usa la herramienta de notificaciones globales.
+     *
+     * NO usar en loop — Resend tiene rate limit de 2 req/seg y las async se
+     * pegan entre sí. Para envíos masivos usar enviarAnuncioGlobalBatch().
      */
     @Async
     public void enviarAnuncioGlobal(String destinatario, String nombre, String mensaje) {
-        enviar(
-            destinatario,
-            "Novedades de Artesanos.ar",
-            "Hola " + nombre + ",\n\n" +
-            mensaje + "\n\n" +
-            "---\n" +
-            "Entrá a tu panel: " + frontendUrl + "/panel\n\n" +
-            "Equipo Artesanos.ar"
-        );
+        enviar(destinatario, "Novedades de Artesanos.ar", textoAnuncio(nombre, mensaje));
+    }
+
+    private String textoAnuncio(String nombre, String mensaje) {
+        return "Hola " + nombre + ",\n\n" +
+               mensaje + "\n\n" +
+               "---\n" +
+               "Entrá a tu panel: " + frontendUrl + "/panel\n\n" +
+               "Equipo Artesanos.ar";
+    }
+
+    /*
+     * Datos mínimos para mandar un anuncio global a un destinatario.
+     */
+    public record DestinatarioAnuncio(String email, String nombre) {}
+
+    /*
+     * Anuncio global en BATCH — manda hasta 100 emails en una sola request
+     * a Resend (endpoint /emails/batch). Esto evita el rate limit que tira
+     * 429 cuando se intenta despachar muchos emails individuales en paralelo.
+     *
+     * Si la lista supera 100, se parte en lotes de 100.
+     */
+    @Async
+    public void enviarAnuncioGlobalBatch(List<DestinatarioAnuncio> destinatarios, String mensaje) {
+        if (destinatarios == null || destinatarios.isEmpty()) return;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        int LOTE = 100;
+        for (int desde = 0; desde < destinatarios.size(); desde += LOTE) {
+            int hasta = Math.min(desde + LOTE, destinatarios.size());
+            List<DestinatarioAnuncio> chunk = destinatarios.subList(desde, hasta);
+
+            List<Map<String, Object>> emails = chunk.stream().map(d ->
+                Map.<String, Object>of(
+                    "from", emailRemitente,
+                    "to", List.of(d.email()),
+                    "subject", "Novedades de Artesanos.ar",
+                    "text", textoAnuncio(d.nombre(), mensaje)
+                )
+            ).toList();
+
+            HttpEntity<List<Map<String, Object>>> request = new HttpEntity<>(emails, headers);
+            try {
+                restTemplate.postForObject("https://api.resend.com/emails/batch", request, String.class);
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(EmailService.class)
+                    .warn("Error en envío batch de anuncio global (lote " + desde + "-" + hasta + ")", e);
+            }
+        }
     }
 
     /*
