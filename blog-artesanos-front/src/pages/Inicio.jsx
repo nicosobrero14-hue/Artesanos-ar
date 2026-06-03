@@ -7,10 +7,12 @@ import SidebarOficios from '../components/SidebarOficios'
 import MobileDrawer from '../components/MobileDrawer'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
+import useIsMobile from '../hooks/useIsMobile'
 
 
 export default function Inicio() {
     const { usuario } = useAuth()
+    const isMobile = useIsMobile()
     const [artesanos, setArtesanos] = useState([])
     const [destacadas, setDestacadas] = useState([])
     const [recientes, setRecientes] = useState([])
@@ -127,13 +129,26 @@ export default function Inicio() {
                 loading={loading}
             />
 
-            {/* ── Sidebar lateral de oficios — semi-oculto, hover expande ── */}
+            {/*
+              * Filtros de oficio — patrón distinto por dispositivo:
+              *  - Desktop: sidebar lateral que se expande con hover (no invasivo).
+              *  - Mobile: fila horizontal de chips sticky bajo el navbar (el hover
+              *    no aplica en táctil y el sidebar fijo molestaba).
+              */}
             {!loading && oficios.length > 0 && (
-                <SidebarOficios
-                    oficios={oficios}
-                    seleccionado={oficioSeleccionado}
-                    onSeleccionar={setOficioSeleccionado}
-                />
+                isMobile ? (
+                    <FiltrosOficio
+                        oficios={oficios}
+                        seleccionado={oficioSeleccionado}
+                        onSeleccionar={setOficioSeleccionado}
+                    />
+                ) : (
+                    <SidebarOficios
+                        oficios={oficios}
+                        seleccionado={oficioSeleccionado}
+                        onSeleccionar={setOficioSeleccionado}
+                    />
+                )
             )}
 
             {/* ── Artesano destacado de la semana ──────────────────────── */}
@@ -505,20 +520,16 @@ function FiltrosOficio({ oficios, seleccionado, onSeleccionar }) {
         <div style={{
             background: 'var(--color-bg-2)',
             borderBottom: '1px solid var(--color-border)',
-            padding: '14px 24px',
+            padding: '10px 16px',
             position: 'sticky', top: '56px', zIndex: 90
         }}>
             <div style={{
                 maxWidth: '1100px', margin: '0 auto',
-                display: 'flex', gap: '8px', flexWrap: 'nowrap',
+                display: 'flex', gap: '6px', flexWrap: 'nowrap',
                 overflowX: 'auto', alignItems: 'center',
-                scrollbarWidth: 'thin'
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
             }}>
-                <span style={{
-                    fontSize: '11px', color: 'var(--color-text-3)',
-                    textTransform: 'uppercase', letterSpacing: '0.08em',
-                    flexShrink: 0, marginRight: '4px', fontWeight: '600'
-                }}>Oficio:</span>
                 <button onClick={() => onSeleccionar(null)} style={chipStyle(!seleccionado)}>
                     Todos
                 </button>
