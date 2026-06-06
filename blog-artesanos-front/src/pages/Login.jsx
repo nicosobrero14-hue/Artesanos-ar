@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
@@ -12,6 +12,8 @@ export default function Login() {
     const [mostrarReenvio, setMostrarReenvio] = useState(false)
     const { login } = useAuth()
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const sesionExpiro = searchParams.get('expired') === '1'
 
     const handleChange = (e) => {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -69,6 +71,17 @@ export default function Login() {
             <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '6px' }}>Bienvenido</h1>
             <p style={{ color: 'var(--color-text-2)', fontSize: '14px' }}>Ingresa a tu panel de artesano</p>
             </div>
+
+            {/* Aviso si la sesión expiró y nos mandaron acá automáticamente */}
+            {sesionExpiro && !error && (
+            <div style={{
+                background: '#f5b94f15', border: '1px solid #f5b94f55',
+                borderRadius: 'var(--radius-sm)', padding: '10px 12px',
+                marginBottom: '16px', fontSize: '13px', color: '#f5b94f'
+            }}>
+                Tu sesión venció. Iniciá sesión de nuevo para continuar.
+            </div>
+            )}
 
             {/* autoComplete="off" evita que el browser llene y envíe el form solo */}
             <form onSubmit={handleSubmit} autoComplete="off"

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react'
+import { isTokenExpired } from '../api/axios'
 
 /*
  * Context en React es una forma de compartir datos entre componentes
@@ -12,10 +13,25 @@ import { createContext, useContext, useState } from 'react'
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-    // Inicializamos el token desde localStorage — así si el usuario
-    // recarga la página, no pierde la sesión
-    const [token, setToken] = useState(localStorage.getItem('token'))
+    /*
+     * Inicializamos el token desde localStorage — pero validamos primero
+     * que NO esté vencido. Si está vencido, lo tratamos como deslogueado
+     * de entrada y limpiamos. Sin esto, el navbar te muestra como logueado
+     * con un token podrido y las llamadas API caen con 401.
+     */
+    const [token, setToken] = useState(() => {
+        const guardado = localStorage.getItem('token')
+        if (guardado && isTokenExpired(guardado)) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('usuario')
+            return null
+        }
+        return guardado
+    })
+
     const [usuario, setUsuario] = useState(() => {
+        const tokenGuardado = localStorage.getItem('token')
+        if (!tokenGuardado || isTokenExpired(tokenGuardado)) return null
         const saved = localStorage.getItem('usuario')
         return saved ? JSON.parse(saved) : null
     })
