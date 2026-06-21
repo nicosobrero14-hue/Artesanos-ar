@@ -280,7 +280,7 @@ function calcularMeta(evento) {
         return {
             estadoLabel: '🔥 SE VIENE',
             icono: '⚡',
-            iconoBorde: '#f5b94f',
+            iconoBorde: 'var(--color-premium)',
             iconoBg: '#f5b94f33',
             fondo: 'linear-gradient(135deg, rgba(245, 185, 79, 0.22), rgba(245, 185, 79, 0.04))',
             glow: 'rgba(245, 185, 79, 0.3)',

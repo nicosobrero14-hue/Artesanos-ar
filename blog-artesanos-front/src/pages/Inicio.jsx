@@ -493,7 +493,7 @@ function Stat({ number, label, loading, highlight }) {
             <p style={{
                 fontSize: '26px',
                 fontWeight: '700',
-                color: highlight ? '#f5b94f' : 'var(--color-text)',
+                color: highlight ? 'var(--color-premium)' : 'var(--color-text)',
                 lineHeight: '1',
                 marginBottom: '4px',
                 fontVariantNumeric: 'tabular-nums'
@@ -642,7 +642,7 @@ function SeccionDestacadas({ piezas }) {
         }} className="section-pad">
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 <SectionHeader
-                    titulo={<><span style={{ color: '#f5b94f' }}>★</span> Piezas destacadas</>}
+                    titulo={<><span style={{ color: 'var(--color-premium)' }}>★</span> Piezas destacadas</>}
                     subtitulo="Lo mejor de nuestros artesanos premium"
                     contador={`${piezas.length} ${piezas.length === 1 ? 'pieza' : 'piezas'}`}
                 />
@@ -662,12 +662,12 @@ function SeccionDestacadas({ piezas }) {
                                 transition: 'all 0.2s',
                                 position: 'relative'
                             }}
-                                onMouseEnter={e => { e.currentTarget.style.borderColor = '#f5b94f'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245, 185, 79, 0.15)' }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-premium)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245, 185, 79, 0.15)' }}
                                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#f5b94f55'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}>
                                 <span style={{
                                     position: 'absolute', top: '10px', left: '10px', zIndex: 2,
                                     fontSize: '10px', fontWeight: '700',
-                                    background: '#f5b94f', color: '#0f0f0f',
+                                    background: 'var(--color-premium)', color: '#0f0f0f',
                                     padding: '3px 9px', borderRadius: '20px',
                                     boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
                                 }}>★ DESTACADA</span>
@@ -824,7 +824,7 @@ function CardArtesano({ artesano }) {
                 position: 'relative'
             }}
                 onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = artesano.esPremium ? '#f5b94f' : 'var(--color-accent)'
+                    e.currentTarget.style.borderColor = artesano.esPremium ? 'var(--color-premium)' : 'var(--color-accent)'
                     e.currentTarget.style.transform = 'translateY(-3px)'
                     e.currentTarget.style.boxShadow = artesano.esPremium
                         ? '0 8px 24px rgba(245, 185, 79, 0.12)'
@@ -839,7 +839,7 @@ function CardArtesano({ artesano }) {
                     <span style={{
                         position: 'absolute', top: '12px', right: '12px',
                         fontSize: '9px', fontWeight: '700',
-                        background: '#f5b94f', color: '#0f0f0f',
+                        background: 'var(--color-premium)', color: '#0f0f0f',
                         padding: '2px 7px', borderRadius: '20px'
                     }}>★ PREMIUM</span>
                 )}
@@ -848,7 +848,7 @@ function CardArtesano({ artesano }) {
                     <div style={{
                         width: '52px', height: '52px', borderRadius: '50%', flexShrink: 0,
                         background: 'var(--color-bg-3)',
-                        border: `2px solid ${artesano.esPremium ? '#f5b94f' : 'var(--color-border)'}`,
+                        border: `2px solid ${artesano.esPremium ? 'var(--color-premium)' : 'var(--color-border)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '20px', fontWeight: '600', color: 'var(--color-accent)',
                         overflow: 'hidden'

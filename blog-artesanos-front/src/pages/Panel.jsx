@@ -143,7 +143,7 @@ export default function Panel() {
                 background: plan.esPremium
                     ? 'linear-gradient(135deg, #f5b94f22, #f59f3322)'
                     : 'var(--color-bg-2)',
-                border: `1px solid ${plan.esPremium ? '#f5b94f' : 'var(--color-border)'}`,
+                border: `1px solid ${plan.esPremium ? 'var(--color-premium)' : 'var(--color-border)'}`,
                 borderRadius: 'var(--radius)', padding: '18px 22px', marginBottom: '24px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap'
             }} className="stack-mobile">
@@ -154,7 +154,7 @@ export default function Panel() {
                     </span>
                     <span style={{
                     fontSize: '12px', fontWeight: '600',
-                    background: plan.esPremium ? '#f5b94f' : 'var(--color-bg-3)',
+                    background: plan.esPremium ? 'var(--color-premium)' : 'var(--color-bg-3)',
                     color: plan.esPremium ? '#0f0f0f' : 'var(--color-text-2)',
                     padding: '2px 10px', borderRadius: '20px'
                     }}>
@@ -174,7 +174,7 @@ export default function Panel() {
                 </div>
                 {!plan.esPremium && (
                 <Link to="/premium" style={{
-                    background: '#f5b94f', color: '#0f0f0f',
+                    background: 'var(--color-premium)', color: '#0f0f0f',
                     padding: '8px 18px', borderRadius: 'var(--radius-sm)',
                     fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap'
                 }}>

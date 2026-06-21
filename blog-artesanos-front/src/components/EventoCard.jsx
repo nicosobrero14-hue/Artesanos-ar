@@ -57,7 +57,7 @@ export default function EventoCard({ evento, onChange, onEditar, onEliminar, com
                 <span style={{
                     position: 'absolute', top: '12px', right: '12px',
                     fontSize: '10px', fontWeight: '700',
-                    background: '#f5b94f22', color: '#f5b94f',
+                    background: '#f5b94f22', color: 'var(--color-premium)',
                     padding: '3px 9px', borderRadius: '20px',
                     border: '1px solid #f5b94f55'
                 }}>
@@ -225,12 +225,12 @@ function FechasBadge({ inicio, fin }) {
         <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             background: enCurso ? '#4caf8225' : esInminente ? '#f5b94f25' : 'var(--color-bg-3)',
-            border: `1px solid ${enCurso ? 'var(--color-success)' : esInminente ? '#f5b94f' : 'var(--color-border)'}`,
+            border: `1px solid ${enCurso ? 'var(--color-success)' : esInminente ? 'var(--color-premium)' : 'var(--color-border)'}`,
             borderRadius: '20px',
             padding: '4px 12px',
             fontSize: '12px',
             fontWeight: '500',
-            color: enCurso ? 'var(--color-success)' : esInminente ? '#f5b94f' : 'var(--color-text-2)'
+            color: enCurso ? 'var(--color-success)' : esInminente ? 'var(--color-premium)' : 'var(--color-text-2)'
         }}>
             <span>📅</span>
             <span>{texto}</span>

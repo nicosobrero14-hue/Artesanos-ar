@@ -1,18 +1,52 @@
-/* Variables de color — cambiás estos valores y cambia toda la app */
+/* Variables de color, espaciado y tipografía — el sistema de diseño vive acá.
+   Cambiá un valor y se propaga a toda la app. */
 :root {
+  /* Superficies y texto */
   --color-bg: #0f0f0f;
   --color-bg-2: #1a1a1a;
   --color-bg-3: #242424;
   --color-border: #2e2e2e;
   --color-text: #f0f0f0;
   --color-text-2: #aaaaaa;
-  --color-text-3: #666666;
-  --color-accent: #c8a96e;       /* dorado artesanal */
+  --color-text-3: #888888;   /* subido desde #666 para cumplir WCAG AA (4.5:1) */
+
+  /* Colores semánticos */
+  --color-accent: #c8a96e;       /* dorado artesanal — acento principal */
   --color-accent-hover: #b8935a;
   --color-success: #4caf82;
   --color-danger: #e05c5c;
+  --color-premium: #f5b94f;      /* dorado más vivo para Premium / destacados */
+  --color-reservada: #7c8cf8;    /* azul lavanda para estado "Reservada" */
+
+  /* Radios */
   --radius: 10px;
   --radius-sm: 6px;
+
+  /* Escala de espaciado — base 4. Usá var(--space-*) en vez de magic numbers. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Escala tipográfica — ratio 1.2, base 14px */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+
+  /* Pesos */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
 
   /* Breakpoint mobile — referencia para JS via useIsMobile */
   --bp-mobile: 768px;
@@ -28,7 +62,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 15px;
+  font-size: var(--text-base);
   line-height: 1.6;
 }
 
@@ -44,12 +78,44 @@ a:hover {
 button {
   cursor: pointer;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--text-base);
 }
 
 input, textarea, select {
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--text-base);
+}
+
+/* Foco visible para navegación por teclado.
+   Solo aparece cuando el usuario navega con Tab, no al hacer click. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Inputs y textareas tienen su propio estilo de foco — el outline general
+   se vería raro encima del border. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.2);
+}
+
+/* Clase utilitaria para texto accesible que se oculta visualmente
+   pero sigue disponible para lectores de pantalla. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ───────────────────────────── Utilidades responsive ──────────────────────── */
@@ -71,8 +137,8 @@ input, textarea, select {
   }
 
   /* Headings más chicos en mobile para ganar aire */
-  h1 { font-size: 18px !important; }
-  h2 { font-size: 16px !important; }
+  h1 { font-size: var(--text-lg) !important; }
+  h2 { font-size: var(--text-md) !important; }
 
   /* Inputs en iOS ≥16px para evitar el zoom automático del browser */
   input, textarea, select {

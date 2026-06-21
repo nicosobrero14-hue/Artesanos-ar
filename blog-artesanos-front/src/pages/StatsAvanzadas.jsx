@@ -35,7 +35,7 @@ export default function StatsAvanzadas() {
                     }}>
                         <p style={{ marginBottom: '12px' }}>{error}</p>
                         <Link to="/premium" style={{
-                            display: 'inline-block', background: '#f5b94f', color: '#0f0f0f',
+                            display: 'inline-block', background: 'var(--color-premium)', color: '#0f0f0f',
                             padding: '10px 22px', borderRadius: 'var(--radius-sm)',
                             fontSize: '14px', fontWeight: '500'
                         }}>★ Ir a Premium</Link>

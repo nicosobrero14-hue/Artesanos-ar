@@ -62,7 +62,7 @@ export default function CuponesVigentes({ slug }) {
                         onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5b94f15, #f5b94f05)' }}
                     >
                         <div style={{
-                            background: '#f5b94f', color: '#0f0f0f',
+                            background: 'var(--color-premium)', color: '#0f0f0f',
                             borderRadius: 'var(--radius-sm)',
                             padding: '8px 10px',
                             fontWeight: '700', fontSize: '18px',
@@ -73,7 +73,7 @@ export default function CuponesVigentes({ slug }) {
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <p style={{
                                 fontFamily: 'monospace', fontSize: '14px',
-                                fontWeight: '600', color: '#f5b94f',
+                                fontWeight: '600', color: 'var(--color-premium)',
                                 marginBottom: '2px'
                             }}>
                                 {copiado === c.codigo ? '✓ COPIADO' : c.codigo}

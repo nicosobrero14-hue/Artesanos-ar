@@ -97,7 +97,7 @@ export default function Registro() {
                 lineHeight: '1.5'
             }}>
                 <p style={{ marginBottom: '2px' }}>
-                    <strong style={{ color: '#f5b94f' }}>🎁 1 mes de Premium gratis</strong>
+                    <strong style={{ color: 'var(--color-premium)' }}>🎁 1 mes de Premium gratis</strong>
                 </p>
                 <p style={{ color: 'var(--color-text-2)', fontSize: '12px' }}>
                     Al verificar tu cuenta. Destacá piezas, subí más fotos y videos.

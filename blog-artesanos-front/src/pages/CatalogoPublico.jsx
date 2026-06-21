@@ -14,7 +14,7 @@ import { useSEO } from '../hooks/useSEO'
 const colorEstado = {
     DISPONIBLE: 'var(--color-success)',
     ENCARGO: 'var(--color-accent)',
-    RESERVADA: '#7c8cf8',
+    RESERVADA: 'var(--color-reservada)',
     VENDIDA: 'var(--color-text-3)'
 }
 
@@ -228,14 +228,14 @@ export default function CatalogoPublico() {
                         {piezasFiltradas.map(pieza => (
                             <div key={pieza.id} style={{
                                 background: 'var(--color-bg-2)',
-                                border: `1px solid ${pieza.destacada ? '#f5b94f' : 'var(--color-border)'}`,
+                                border: `1px solid ${pieza.destacada ? 'var(--color-premium)' : 'var(--color-border)'}`,
                                 borderRadius: 'var(--radius)', overflow: 'hidden', position: 'relative'
                             }}>
                                 {pieza.destacada && (
                                     <span style={{
                                         position: 'absolute', top: '10px', left: '10px', zIndex: 2,
                                         fontSize: '10px', fontWeight: '700',
-                                        background: '#f5b94f', color: '#0f0f0f',
+                                        background: 'var(--color-premium)', color: '#0f0f0f',
                                         padding: '3px 9px', borderRadius: '20px',
                                         boxShadow: '0 2px 8px rgba(0,0,0,0.4)'
                                     }}>

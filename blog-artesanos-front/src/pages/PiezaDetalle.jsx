@@ -14,7 +14,7 @@ import { useSEO } from '../hooks/useSEO'
 const colorEstado = {
     DISPONIBLE: 'var(--color-success)',
     ENCARGO: 'var(--color-accent)',
-    RESERVADA: '#7c8cf8',
+    RESERVADA: 'var(--color-reservada)',
     VENDIDA: 'var(--color-text-3)'
 }
 
@@ -130,7 +130,7 @@ export default function PiezaDetalle() {
                                 <span style={{
                                     position: 'absolute', top: '8px', right: '8px', zIndex: 2,
                                     fontSize: '10px', fontWeight: '700',
-                                    background: '#f5b94f', color: '#0f0f0f',
+                                    background: 'var(--color-premium)', color: '#0f0f0f',
                                     padding: '2px 8px', borderRadius: '20px'
                                 }}>★ VIDEO</span>
                                 <video
@@ -150,7 +150,7 @@ export default function PiezaDetalle() {
                                 <span style={{
                                     display: 'inline-block', marginBottom: '8px',
                                     fontSize: '11px', fontWeight: '700',
-                                    background: '#f5b94f', color: '#0f0f0f',
+                                    background: 'var(--color-premium)', color: '#0f0f0f',
                                     padding: '3px 10px', borderRadius: '20px'
                                 }}>
                                     ★ PIEZA DESTACADA
@@ -172,18 +172,18 @@ export default function PiezaDetalle() {
                                     <p style={{ fontSize: '15px', color: 'var(--color-text-3)', textDecoration: 'line-through', marginBottom: '2px' }}>
                                         ${Number(pieza.precio).toLocaleString('es-AR')}
                                     </p>
-                                    <p style={{ fontSize: '26px', fontWeight: '600', color: '#f5b94f', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                    <p style={{ fontSize: '26px', fontWeight: '600', color: 'var(--color-premium)', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                                         ${Math.round(precioConDescuento).toLocaleString('es-AR')}
                                         <span style={{
                                             fontSize: '11px', fontWeight: '700',
-                                            background: '#f5b94f', color: '#0f0f0f',
+                                            background: 'var(--color-premium)', color: '#0f0f0f',
                                             padding: '3px 9px', borderRadius: '20px'
                                         }}>
                                             -{mejorCupon.porcentaje}% con {mejorCupon.codigo}
                                         </span>
                                     </p>
                                     <p style={{ fontSize: '11px', color: 'var(--color-text-3)', marginTop: '4px' }}>
-                                        Mencioná el código <strong style={{ color: '#f5b94f' }}>{mejorCupon.codigo}</strong> al artesano para aplicar el descuento
+                                        Mencioná el código <strong style={{ color: 'var(--color-premium)' }}>{mejorCupon.codigo}</strong> al artesano para aplicar el descuento
                                     </p>
                                 </div>
                             ) : (

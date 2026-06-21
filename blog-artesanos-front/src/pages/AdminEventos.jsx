@@ -70,7 +70,7 @@ export default function AdminEventos() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>Moderación de eventos</h1>
                     <span style={{
-                        background: '#f5b94f', color: '#0f0f0f',
+                        background: 'var(--color-premium)', color: '#0f0f0f',
                         fontSize: '11px', fontWeight: '700',
                         padding: '2px 10px', borderRadius: '20px'
                     }}>⚙ ADMIN</span>

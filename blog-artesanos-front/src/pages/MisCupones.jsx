@@ -105,13 +105,13 @@ export default function MisCupones() {
                         borderRadius: 'var(--radius)', padding: '32px', textAlign: 'center'
                     }}>
                         <p style={{ fontSize: '15px', marginBottom: '12px' }}>
-                            🎟 Los cupones de descuento son una feature <strong style={{ color: '#f5b94f' }}>Premium</strong>
+                            🎟 Los cupones de descuento son una feature <strong style={{ color: 'var(--color-premium)' }}>Premium</strong>
                         </p>
                         <p style={{ fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '20px' }}>
                             Atraé más clientes con descuentos por temporada, ferias o lanzamientos.
                         </p>
                         <Link to="/premium" style={{
-                            display: 'inline-block', background: '#f5b94f', color: '#0f0f0f',
+                            display: 'inline-block', background: 'var(--color-premium)', color: '#0f0f0f',
                             padding: '10px 22px', borderRadius: 'var(--radius-sm)',
                             fontSize: '14px', fontWeight: '500'
                         }}>★ Conocer Premium</Link>
@@ -189,7 +189,7 @@ export default function MisCupones() {
                                                 onClick={() => togglePieza(p.id)}
                                                 style={{
                                                     background: seleccionada ? '#f5b94f22' : 'var(--color-bg-2)',
-                                                    border: `1px solid ${seleccionada ? '#f5b94f' : 'var(--color-border)'}`,
+                                                    border: `1px solid ${seleccionada ? 'var(--color-premium)' : 'var(--color-border)'}`,
                                                     borderRadius: 'var(--radius-sm)',
                                                     padding: '8px',
                                                     cursor: 'pointer',
@@ -199,8 +199,8 @@ export default function MisCupones() {
                                                 <span style={{
                                                     width: '16px', height: '16px',
                                                     borderRadius: '4px',
-                                                    background: seleccionada ? '#f5b94f' : 'transparent',
-                                                    border: `1px solid ${seleccionada ? '#f5b94f' : 'var(--color-border)'}`,
+                                                    background: seleccionada ? 'var(--color-premium)' : 'transparent',
+                                                    border: `1px solid ${seleccionada ? 'var(--color-premium)' : 'var(--color-border)'}`,
                                                     flexShrink: 0,
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                     fontSize: '11px', color: '#0f0f0f', fontWeight: '700'
@@ -254,7 +254,7 @@ export default function MisCupones() {
                                         borderRadius: 'var(--radius-sm)',
                                         padding: '10px 6px'
                                     }}>
-                                        <p style={{ fontSize: '20px', fontWeight: '700', color: '#f5b94f', lineHeight: 1 }}>
+                                        <p style={{ fontSize: '20px', fontWeight: '700', color: 'var(--color-premium)', lineHeight: 1 }}>
                                             {c.porcentaje}%
                                         </p>
                                         <p style={{ fontSize: '10px', color: 'var(--color-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
@@ -275,7 +275,7 @@ export default function MisCupones() {
                                             {c.usosMax && ` · ${c.usosCantidad}/${c.usosMax} usos`}
                                             {!c.usosMax && ` · ${c.usosCantidad} usos`}
                                         </p>
-                                        <p style={{ fontSize: '11px', color: c.piezasIds?.length > 0 ? '#f5b94f' : 'var(--color-text-3)', marginTop: '2px', fontWeight: '500' }}>
+                                        <p style={{ fontSize: '11px', color: c.piezasIds?.length > 0 ? 'var(--color-premium)' : 'var(--color-text-3)', marginTop: '2px', fontWeight: '500' }}>
                                             {c.piezasIds?.length > 0
                                                 ? `🎯 Aplica a ${c.piezasIds.length} ${c.piezasIds.length === 1 ? 'pieza' : 'piezas'} específica${c.piezasIds.length === 1 ? '' : 's'}`
                                                 : '🌐 Cupón global (todas tus piezas)'}

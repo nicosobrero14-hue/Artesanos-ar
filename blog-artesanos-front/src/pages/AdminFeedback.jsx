@@ -40,7 +40,7 @@ export default function AdminFeedback() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>💡 Feedback recibido</h1>
                     <span style={{
-                        background: '#f5b94f', color: '#0f0f0f',
+                        background: 'var(--color-premium)', color: '#0f0f0f',
                         fontSize: '11px', fontWeight: '700',
                         padding: '2px 10px', borderRadius: '20px'
                     }}>⚙ ADMIN</span>
@@ -72,7 +72,7 @@ export default function AdminFeedback() {
                                     <div>
                                         <span style={{
                                             fontSize: '10px', fontWeight: '700',
-                                            background: '#f5b94f22', color: '#f5b94f',
+                                            background: '#f5b94f22', color: 'var(--color-premium)',
                                             padding: '2px 8px', borderRadius: '20px',
                                             marginRight: '8px'
                                         }}>{f.tipo || 'GENERAL'}</span>

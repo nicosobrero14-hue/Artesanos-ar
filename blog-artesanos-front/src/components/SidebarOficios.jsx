@@ -60,7 +60,7 @@ export default function SidebarOficios({ oficios = [], seleccionado, onSeleccion
                     fontSize: '12px',
                     fontWeight: '700',
                     letterSpacing: '0.3em',
-                    color: seleccionado ? '#f5b94f' : 'var(--color-text-2)',
+                    color: seleccionado ? 'var(--color-premium)' : 'var(--color-text-2)',
                     textTransform: 'uppercase',
                     userSelect: 'none'
                 }}>
@@ -127,7 +127,7 @@ function ItemOficio({ activo, onClick, children }) {
             border: 'none',
             borderRadius: 'var(--radius-sm)',
             padding: '10px 12px',
-            color: activo ? '#f5b94f' : 'var(--color-text-2)',
+            color: activo ? 'var(--color-premium)' : 'var(--color-text-2)',
             fontSize: '13px',
             cursor: 'pointer',
             textAlign: 'left',

@@ -133,7 +133,7 @@ export default function Buscar() {
                                                 <div style={{ flex: 1, minWidth: 0 }}>
                                                     <p style={{ fontWeight: '500', color: 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                         {a.nombre}
-                                                        {a.esPremium && <span style={{ color: '#f5b94f', marginLeft: '6px' }}>★</span>}
+                                                        {a.esPremium && <span style={{ color: 'var(--color-premium)', marginLeft: '6px' }}>★</span>}
                                                     </p>
                                                     {a.ubicacion && (
                                                         <p style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{a.ubicacion}</p>
@@ -165,7 +165,7 @@ export default function Buscar() {
                                                 <CarruselFotos fotos={p.fotos} titulo={p.titulo} height={140} />
                                                 <div style={{ padding: '10px 12px' }}>
                                                     <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--color-text)', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {p.destacada && <span style={{ color: '#f5b94f', marginRight: '4px' }}>★</span>}
+                                                        {p.destacada && <span style={{ color: 'var(--color-premium)', marginRight: '4px' }}>★</span>}
                                                         {p.titulo}
                                                     </p>
                                                     <p style={{ fontSize: '11px', color: 'var(--color-text-3)', marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

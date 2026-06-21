@@ -92,7 +92,7 @@ export default function Navbar() {
                         {usuario?.rol === 'ADMIN' && (
                             <Link to="/admin" style={{
                                 position: 'relative',
-                                color: '#f5b94f', fontSize: '14px', fontWeight: '600',
+                                color: 'var(--color-premium)', fontSize: '14px', fontWeight: '600',
                                 display: 'inline-flex', alignItems: 'center', gap: '4px'
                             }}>
                                 ⚙ Admin
@@ -198,7 +198,7 @@ export default function Navbar() {
                     {usuario?.rol === 'ADMIN' && (
                         <Link to="/admin" style={{
                             ...drawerLink,
-                            color: '#f5b94f', fontWeight: '600',
+                            color: 'var(--color-premium)', fontWeight: '600',
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                         }}>
                             <span>⚙ Panel Admin</span>

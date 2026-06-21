@@ -52,10 +52,10 @@ export default function BotonFavorito({ piezaId, size = 'md' }) {
             title={esFavorito ? 'Sacar de favoritos' : 'Guardar para después'}
             style={{
                 background: esFavorito ? '#f5b94f22' : 'transparent',
-                border: `1px solid ${esFavorito ? '#f5b94f' : 'var(--color-border)'}`,
+                border: `1px solid ${esFavorito ? 'var(--color-premium)' : 'var(--color-border)'}`,
                 borderRadius: '20px',
                 padding: s.padding,
-                color: esFavorito ? '#f5b94f' : 'var(--color-text-2)',
+                color: esFavorito ? 'var(--color-premium)' : 'var(--color-text-2)',
                 fontSize: s.fontSize,
                 cursor: cargando ? 'wait' : 'pointer',
                 display: 'inline-flex', alignItems: 'center',

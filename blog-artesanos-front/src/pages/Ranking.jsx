@@ -93,7 +93,7 @@ export default function Ranking() {
                             <div style={{ flex: 1, minWidth: '200px' }}>
                                 <p style={{
                                     fontSize: '11px', fontWeight: '700',
-                                    color: '#f5b94f', textTransform: 'uppercase',
+                                    color: 'var(--color-premium)', textTransform: 'uppercase',
                                     letterSpacing: '0.08em', marginBottom: '4px'
                                 }}>
                                     Premio {config.periodicidad || 'mensual'} del #1
@@ -153,7 +153,7 @@ export default function Ranking() {
 
 function FilaRanking({ pieza }) {
     const esTop3 = pieza.posicion <= 3
-    const colorPosicion = pieza.posicion === 1 ? '#f5b94f' :
+    const colorPosicion = pieza.posicion === 1 ? 'var(--color-premium)' :
                           pieza.posicion === 2 ? '#c0c0c0' :
                           pieza.posicion === 3 ? '#cd7f32' :
                           'var(--color-text-3)'
@@ -200,7 +200,7 @@ function FilaRanking({ pieza }) {
                         {pieza.destacada && (
                             <span style={{
                                 fontSize: '9px', fontWeight: '700',
-                                background: '#f5b94f', color: '#0f0f0f',
+                                background: 'var(--color-premium)', color: '#0f0f0f',
                                 padding: '1px 6px', borderRadius: '20px'
                             }}>★</span>
                         )}

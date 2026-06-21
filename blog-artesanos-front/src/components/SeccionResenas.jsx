@@ -221,7 +221,7 @@ function Estrellas({ valor, onChange, onHover, readOnly, tamano = 18 }) {
                         onMouseLeave={readOnly ? undefined : () => onHover?.(0)}
                         style={{
                             fontSize: `${tamano}px`,
-                            color: lleno ? '#f5b94f' : 'var(--color-text-3)',
+                            color: lleno ? 'var(--color-premium)' : 'var(--color-text-3)',
                             cursor: readOnly ? 'default' : 'pointer',
                             lineHeight: 1,
                             transition: 'color 0.15s'

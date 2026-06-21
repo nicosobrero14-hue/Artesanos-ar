@@ -29,7 +29,7 @@ export default function AdminAuditoria() {
     const colorPorAccion = (a) => {
         if (a.startsWith('ELIMINAR')) return 'var(--color-danger)'
         if (a.includes('UPGRADE') || a.includes('APROBAR')) return 'var(--color-success)'
-        if (a.includes('DOWNGRADE') || a.includes('BLOQUEAR')) return '#f5b94f'
+        if (a.includes('DOWNGRADE') || a.includes('BLOQUEAR')) return 'var(--color-premium)'
         return 'var(--color-text-2)'
     }
 

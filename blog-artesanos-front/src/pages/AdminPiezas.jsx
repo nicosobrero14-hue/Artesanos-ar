@@ -82,7 +82,7 @@ export default function AdminPiezas() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>🛡 Moderación de piezas</h1>
                     <span style={{
-                        background: '#f5b94f', color: '#0f0f0f',
+                        background: 'var(--color-premium)', color: '#0f0f0f',
                         fontSize: '11px', fontWeight: '700',
                         padding: '2px 10px', borderRadius: '20px'
                     }}>⚙ ADMIN</span>
@@ -139,7 +139,7 @@ export default function AdminPiezas() {
                                             </span>
                                         )}
                                         {p.destacada && (
-                                            <span style={{ fontSize: '10px', fontWeight: '700', background: '#f5b94f', color: '#0f0f0f', padding: '2px 6px', borderRadius: '20px' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: '700', background: 'var(--color-premium)', color: '#0f0f0f', padding: '2px 6px', borderRadius: '20px' }}>
                                                 ★
                                             </span>
                                         )}
@@ -160,7 +160,7 @@ export default function AdminPiezas() {
                                         style={btnStyle('var(--color-text-2)')}>
                                         Ver
                                     </Link>
-                                    <button onClick={() => toggleOculta(p)} style={btnStyle(p.oculta ? 'var(--color-success)' : '#f5b94f')}>
+                                    <button onClick={() => toggleOculta(p)} style={btnStyle(p.oculta ? 'var(--color-success)' : 'var(--color-premium)')}>
                                         {p.oculta ? '✓ Mostrar' : '🚫 Ocultar'}
                                     </button>
                                     <button onClick={() => eliminar(p)} style={btnStyle('var(--color-danger)')}>

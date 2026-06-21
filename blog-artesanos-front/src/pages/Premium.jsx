@@ -50,7 +50,7 @@ export default function Premium() {
 
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '12px' }}>
-                        Pasate a <span style={{ color: '#f5b94f' }}>Premium ★</span>
+                        Pasate a <span style={{ color: 'var(--color-premium)' }}>Premium ★</span>
                     </h1>
                     <p style={{ fontSize: '16px', color: 'var(--color-text-2)', maxWidth: '560px', margin: '0 auto', lineHeight: '1.6' }}>
                         Mostrá tu trabajo sin límites. Más fotos, piezas destacadas y posición prioritaria en el listado.
@@ -99,12 +99,12 @@ export default function Premium() {
                     }}>
                         <span style={{
                             position: 'absolute', top: '-12px', right: '20px',
-                            background: '#f5b94f', color: '#0f0f0f',
+                            background: 'var(--color-premium)', color: '#0f0f0f',
                             fontSize: '11px', fontWeight: '700',
                             padding: '4px 12px', borderRadius: '20px'
                         }}>RECOMENDADO</span>
 
-                        <p style={{ fontSize: '12px', color: '#f5b94f', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', fontWeight: '600' }}>
+                        <p style={{ fontSize: '12px', color: 'var(--color-premium)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', fontWeight: '600' }}>
                             ★ Premium
                         </p>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '20px' }}>
@@ -179,7 +179,7 @@ function Item({ ok, highlight, children }) {
                 ? (highlight ? 'var(--color-text)' : 'var(--color-text-2)')
                 : 'var(--color-text-3)'
         }}>
-            <span style={{ color: ok ? (highlight ? '#f5b94f' : 'var(--color-success)') : 'var(--color-text-3)', flexShrink: 0 }}>
+            <span style={{ color: ok ? (highlight ? 'var(--color-premium)' : 'var(--color-success)') : 'var(--color-text-3)', flexShrink: 0 }}>
                 {ok ? '✓' : '×'}
             </span>
             <span style={{ fontWeight: highlight ? '500' : '400' }}>{children}</span>

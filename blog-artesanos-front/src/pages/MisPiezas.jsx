@@ -12,7 +12,7 @@ const ESTADOS = ['DISPONIBLE', 'ENCARGO', 'RESERVADA', 'VENDIDA']
 const colorEstado = {
     DISPONIBLE: 'var(--color-success)',
     ENCARGO: 'var(--color-accent)',
-    RESERVADA: '#7c8cf8',
+    RESERVADA: 'var(--color-reservada)',
     VENDIDA: 'var(--color-text-3)'
     }
 
@@ -412,7 +412,7 @@ const colorEstado = {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {limitePiezasAlcanzado && (
                 <Link to="/premium" style={{
-                    fontSize: '12px', color: '#f5b94f', fontWeight: '500',
+                    fontSize: '12px', color: 'var(--color-premium)', fontWeight: '500',
                     border: '1px solid #f5b94f', borderRadius: '20px', padding: '4px 12px'
                 }}>
                     Llegaste al límite — pasate a Premium
@@ -476,7 +476,7 @@ const colorEstado = {
                     />
                     Marcar como destacada
                     {!puedeDestacar && (
-                        <Link to="/premium" style={{ fontSize: '11px', color: '#f5b94f', marginLeft: '4px' }}>
+                        <Link to="/premium" style={{ fontSize: '11px', color: 'var(--color-premium)', marginLeft: '4px' }}>
                         (Premium)
                         </Link>
                     )}
@@ -666,7 +666,7 @@ const colorEstado = {
                         }
                         </button>
                         {pieza.fotos?.length >= maxFotos && plan && !plan.esPremium && (
-                            <Link to="/premium" style={{ fontSize: '11px', color: '#f5b94f' }}>
+                            <Link to="/premium" style={{ fontSize: '11px', color: 'var(--color-premium)' }}>
                             Más fotos en Premium →
                             </Link>
                         )}
@@ -681,7 +681,7 @@ const colorEstado = {
                                         border: '1px solid #f5b94f',
                                         borderRadius: 'var(--radius-sm)',
                                         padding: '4px 10px',
-                                        color: '#f5b94f',
+                                        color: 'var(--color-premium)',
                                         fontSize: '12px',
                                         cursor: 'pointer'
                                     }}>
@@ -695,7 +695,7 @@ const colorEstado = {
                                             border: '1px dashed #f5b94f',
                                             borderRadius: 'var(--radius-sm)',
                                             padding: '4px 10px',
-                                            color: '#f5b94f',
+                                            color: 'var(--color-premium)',
                                             fontSize: '12px',
                                             cursor: subiendoVideo === pieza.id ? 'wait' : 'pointer'
                                         }}>

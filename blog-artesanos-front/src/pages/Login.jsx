@@ -77,7 +77,7 @@ export default function Login() {
             <div style={{
                 background: '#f5b94f15', border: '1px solid #f5b94f55',
                 borderRadius: 'var(--radius-sm)', padding: '10px 12px',
-                marginBottom: '16px', fontSize: '13px', color: '#f5b94f'
+                marginBottom: '16px', fontSize: '13px', color: 'var(--color-premium)'
             }}>
                 Tu sesión venció. Iniciá sesión de nuevo para continuar.
             </div>

@@ -126,7 +126,7 @@ export default function Admin() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <h1 style={{ fontSize: '22px', fontWeight: '600' }}>Panel Admin</h1>
                     <span style={{
-                        background: '#f5b94f', color: '#0f0f0f',
+                        background: 'var(--color-premium)', color: '#0f0f0f',
                         fontSize: '11px', fontWeight: '700',
                         padding: '2px 10px', borderRadius: '20px'
                     }}>⚙ ADMIN</span>
@@ -225,7 +225,7 @@ export default function Admin() {
                                             <Td>
                                                 <span style={{
                                                     fontSize: '11px', fontWeight: '600',
-                                                    background: a.esPremium ? '#f5b94f' : 'var(--color-bg-3)',
+                                                    background: a.esPremium ? 'var(--color-premium)' : 'var(--color-bg-3)',
                                                     color: a.esPremium ? '#0f0f0f' : 'var(--color-text-2)',
                                                     padding: '2px 8px', borderRadius: '20px'
                                                 }}>
@@ -252,7 +252,7 @@ export default function Admin() {
                                                 {a.rol === 'ADMIN' ? (
                                                     <span style={{
                                                         fontSize: '10px', fontWeight: '700',
-                                                        background: '#f5b94f', color: '#0f0f0f',
+                                                        background: 'var(--color-premium)', color: '#0f0f0f',
                                                         padding: '2px 6px', borderRadius: '20px'
                                                     }}>ADMIN</span>
                                                 ) : (
@@ -334,7 +334,7 @@ export default function Admin() {
                                 color: 'var(--color-text-2)', fontSize: '13px', cursor: 'pointer'
                             }}>Cancelar</button>
                             <button onClick={handleUpgrade} disabled={accionando === modalUpgrade.id} style={{
-                                background: '#f5b94f', color: '#0f0f0f', border: 'none',
+                                background: 'var(--color-premium)', color: '#0f0f0f', border: 'none',
                                 borderRadius: 'var(--radius-sm)', padding: '8px 20px',
                                 fontSize: '13px', fontWeight: '600', cursor: 'pointer'
                             }}>
@@ -408,7 +408,7 @@ function Td({ children, align }) {
 function BotonAccion({ children, onClick, disabled, highlight, danger }) {
     let color = 'var(--color-text-2)'
     let border = 'var(--color-border)'
-    if (highlight) { color = '#f5b94f'; border = '#f5b94f' }
+    if (highlight) { color = 'var(--color-premium)'; border = 'var(--color-premium)' }
     if (danger) { color = 'var(--color-danger)'; border = 'var(--color-border)' }
     return (
         <button onClick={onClick} disabled={disabled} style={{

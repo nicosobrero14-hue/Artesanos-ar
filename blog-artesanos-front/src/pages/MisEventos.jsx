@@ -76,7 +76,7 @@ export default function MisEventos() {
                         <Button onClick={abrirCrear}>+ Nuevo evento</Button>
                     ) : (
                         <Link to="/premium" style={{
-                            background: '#f5b94f', color: '#0f0f0f',
+                            background: 'var(--color-premium)', color: '#0f0f0f',
                             padding: '8px 16px', borderRadius: 'var(--radius-sm)',
                             fontSize: '13px', fontWeight: '500'
                         }}>
@@ -90,7 +90,7 @@ export default function MisEventos() {
                     <div style={{ marginBottom: '32px' }}>
                         <h2 style={{
                             fontSize: '14px', fontWeight: '600',
-                            color: '#f5b94f',
+                            color: 'var(--color-premium)',
                             textTransform: 'uppercase', letterSpacing: '0.08em',
                             marginBottom: '12px',
                             display: 'flex', alignItems: 'center', gap: '8px'
@@ -157,7 +157,7 @@ export default function MisEventos() {
                                 </p>
                                 <Link to="/premium" style={{
                                     display: 'inline-block',
-                                    background: '#f5b94f', color: '#0f0f0f',
+                                    background: 'var(--color-premium)', color: '#0f0f0f',
                                     padding: '10px 22px', borderRadius: 'var(--radius-sm)',
                                     fontSize: '14px', fontWeight: '500'
                                 }}>

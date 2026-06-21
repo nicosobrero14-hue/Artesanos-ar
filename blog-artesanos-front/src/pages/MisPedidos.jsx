@@ -10,7 +10,7 @@ const colorEstado = {
     PENDIENTE: 'var(--color-text-3)',
     EN_PROCESO: 'var(--color-accent)',
     LISTO: 'var(--color-success)',
-    ENTREGADO: '#7c8cf8',
+    ENTREGADO: 'var(--color-reservada)',
     CANCELADO: 'var(--color-danger)'
     }
 
