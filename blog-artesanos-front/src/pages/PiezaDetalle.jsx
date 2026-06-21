@@ -118,7 +118,7 @@ export default function PiezaDetalle() {
                     {pieza.titulo}
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '32px' }}>
+                <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '32px' }}>
 
                     {/* Fotos + Video */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
