@@ -139,7 +139,7 @@ export default function MisCupones() {
                             value={form.descripcion}
                             onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
                             style={inputStyle} maxLength={200} />
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                             <div>
                                 <label style={labelStyle}>Vence el</label>
                                 <input required type="date" value={form.fechaVencimiento}

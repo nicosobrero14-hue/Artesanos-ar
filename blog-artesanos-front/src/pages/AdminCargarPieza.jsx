@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
+import Input from '../components/Input'
+import Select from '../components/Select'
+import Button from '../components/Button'
 import { useAuth } from '../context/AuthContext'
 
 /*
@@ -92,7 +95,7 @@ export default function AdminCargarPieza() {
             const nombreArt = artesanos.find(a => String(a.id) === String(artesanoId))?.nombre || ''
             setOkMsg(`✓ Pieza "${form.titulo}" creada para ${nombreArt}.`)
             // Reset form (mantiene el artesano seleccionado para cargar varias seguidas)
-            setForm({ titulo: '', descripcion: '', precio: '', horasTrabajo: '', categoria: '', oficio: '', estado: 'DISPONIBLE' })
+            setForm({ titulo: '', descripcion: '', precio: '', horasTrabajo: '', categoria: '', oficio: '', estado: 'DISPONIBLE', destacada: false })
             setFotos([])
         } catch (err) {
             setError(err.response?.data?.message || 'Error al crear la pieza')
@@ -101,30 +104,30 @@ export default function AdminCargarPieza() {
         }
     }
 
-    const inputStyle = {
-        width: '100%', boxSizing: 'border-box',
-        background: 'var(--color-bg-3)', border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-sm)', padding: '10px 12px',
-        color: 'var(--color-text)', fontSize: '14px', outline: 'none'
-    }
+    const artesanoOptions = artesanos.map(a => ({ value: a.id, label: `${a.nombre} (${a.email})` }))
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <Navbar />
             <div className="container-page" style={{ maxWidth: '640px', margin: '0 auto', padding: '32px 24px' }}>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                    <h1 style={{ fontSize: '22px', fontWeight: '600' }}>📦 Cargar pieza para un artesano</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                    <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--weight-semibold)' }}>
+                        📦 Cargar pieza para un artesano
+                    </h1>
                     <span style={{
                         background: 'var(--color-premium)', color: '#0f0f0f',
-                        fontSize: '11px', fontWeight: '700', padding: '2px 10px', borderRadius: '20px'
+                        fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-bold)',
+                        padding: '2px 10px', borderRadius: '20px'
                     }}>⚙ ADMIN</span>
                 </div>
-                <p style={{ color: 'var(--color-text-2)', fontSize: '14px', marginBottom: '16px' }}>
+                <p style={{ color: 'var(--color-text-2)', fontSize: 'var(--text-base)', marginBottom: '16px' }}>
                     Para onboarding asistido — cargá el catálogo del artesano sin pedirle la contraseña.
                 </p>
                 <div style={{ marginBottom: '20px' }}>
-                    <Link to="/admin" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>← Volver al admin</Link>
+                    <Link to="/admin" style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-2)' }}>
+                        ← Volver al admin
+                    </Link>
                 </div>
 
                 <form onSubmit={handleSubmit} style={{
@@ -132,58 +135,63 @@ export default function AdminCargarPieza() {
                     borderRadius: 'var(--radius)', padding: '20px',
                     display: 'flex', flexDirection: 'column', gap: '14px'
                 }}>
-                    <div>
-                        <label style={labelStyle}>Artesano destino *</label>
-                        <select value={artesanoId} onChange={e => setArtesanoId(e.target.value)} style={inputStyle}>
-                            <option value="">— Elegí el artesano —</option>
-                            {artesanos.map(a => (
-                                <option key={a.id} value={a.id}>{a.nombre} ({a.email})</option>
-                            ))}
-                        </select>
-                    </div>
+                    <Select
+                        label="Artesano destino *"
+                        value={artesanoId}
+                        onChange={e => setArtesanoId(e.target.value)}
+                        placeholder="— Elegí el artesano —"
+                        options={artesanoOptions}
+                    />
 
                     <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div>
-                            <label style={labelStyle}>Título *</label>
-                            <input name="titulo" value={form.titulo} onChange={handleChange} required style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Precio ($) *</label>
-                            <input name="precio" type="number" value={form.precio} onChange={handleChange} required style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Oficio *</label>
-                            <select name="oficio" value={form.oficio} onChange={handleChange} required style={inputStyle}>
-                                <option value="">— Elegí —</option>
-                                {oficios.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Estado</label>
-                            <select name="estado" value={form.estado} onChange={handleChange} style={inputStyle}>
-                                {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Sub-categoría</label>
-                            <input name="categoria" value={form.categoria} onChange={handleChange} style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Horas de trabajo</label>
-                            <input name="horasTrabajo" type="number" value={form.horasTrabajo} onChange={handleChange} style={inputStyle} />
-                        </div>
+                        <Input label="Título *" name="titulo" value={form.titulo} onChange={handleChange} required />
+                        <Input label="Precio ($) *" name="precio" type="number" value={form.precio} onChange={handleChange} required />
+                        <Select
+                            label="Oficio *"
+                            name="oficio"
+                            value={form.oficio}
+                            onChange={handleChange}
+                            required
+                            placeholder="— Elegí —"
+                            options={oficios}
+                        />
+                        <Select
+                            label="Estado"
+                            name="estado"
+                            value={form.estado}
+                            onChange={handleChange}
+                            options={ESTADOS}
+                        />
+                        <Input label="Sub-categoría" name="categoria" value={form.categoria} onChange={handleChange} />
+                        <Input label="Horas de trabajo" name="horasTrabajo" type="number" value={form.horasTrabajo} onChange={handleChange} />
                     </div>
 
                     <div>
-                        <label style={labelStyle}>Descripción</label>
-                        <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows={3}
-                            style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
+                        <label htmlFor="ad-desc" style={{
+                            display: 'block', fontSize: 'var(--text-sm)',
+                            color: 'var(--color-text-2)', marginBottom: '6px'
+                        }}>Descripción</label>
+                        <textarea
+                            id="ad-desc"
+                            name="descripcion"
+                            value={form.descripcion}
+                            onChange={handleChange}
+                            rows={3}
+                            style={{
+                                width: '100%', boxSizing: 'border-box',
+                                background: 'var(--color-bg-3)',
+                                border: '1px solid var(--color-border)',
+                                borderRadius: 'var(--radius-sm)', padding: '10px 12px',
+                                color: 'var(--color-text)', resize: 'vertical',
+                                outline: 'none', fontFamily: 'inherit', fontSize: 'var(--text-base)'
+                            }}
+                        />
                     </div>
 
                     {/* Destacada — el backend la fuerza a false si el plan del artesano no lo permite */}
                     <label style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
-                        fontSize: '13px', color: 'var(--color-text-2)', cursor: 'pointer'
+                        fontSize: 'var(--text-sm)', color: 'var(--color-text-2)', cursor: 'pointer'
                     }}>
                         <input
                             type="checkbox"
@@ -192,57 +200,86 @@ export default function AdminCargarPieza() {
                             onChange={handleChange}
                         />
                         Marcar como destacada
-                        <span style={{ fontSize: '11px', color: 'var(--color-text-3)' }}>
+                        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
                             (solo se aplica si el artesano tiene Premium activo)
                         </span>
                     </label>
 
                     {/* Fotos */}
                     <div>
-                        <label style={labelStyle}>Fotos</label>
+                        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-2)', marginBottom: '6px' }}>
+                            Fotos {fotos.length > 0 && <span style={{ color: 'var(--color-text-3)' }}>({fotos.length})</span>}
+                        </p>
                         {fotos.length > 0 && (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))', gap: '6px', marginBottom: '8px' }}>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))',
+                                gap: '6px', marginBottom: '8px'
+                            }}>
                                 {fotos.map((f, idx) => (
-                                    <div key={idx} style={{ position: 'relative', aspectRatio: '1', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
-                                        <img src={URL.createObjectURL(f)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        <button type="button" onClick={() => quitarFoto(idx)} style={{
-                                            position: 'absolute', top: '2px', right: '2px',
-                                            background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none',
-                                            borderRadius: '50%', width: '18px', height: '18px', fontSize: '11px', cursor: 'pointer'
-                                        }}>×</button>
+                                    <div key={idx} style={{
+                                        position: 'relative', aspectRatio: '1',
+                                        borderRadius: 'var(--radius-sm)', overflow: 'hidden',
+                                        border: '1px solid var(--color-border)'
+                                    }}>
+                                        <img src={URL.createObjectURL(f)} alt={`Foto ${idx + 1}`}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <button
+                                            type="button"
+                                            onClick={() => quitarFoto(idx)}
+                                            aria-label={`Quitar foto ${idx + 1}`}
+                                            className="btn-sm"
+                                            style={{
+                                                position: 'absolute', top: '2px', right: '2px',
+                                                background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none',
+                                                borderRadius: '50%', width: '20px', height: '20px',
+                                                fontSize: 'var(--text-sm)', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                padding: 0, lineHeight: 1
+                                            }}
+                                        ><span aria-hidden="true">×</span></button>
                                     </div>
                                 ))}
                             </div>
                         )}
                         <input type="file" accept="image/*" multiple ref={fotosRef} onChange={handleFotos} style={{ display: 'none' }} />
-                        <button type="button" onClick={() => fotosRef.current?.click()} style={{
-                            background: 'transparent', border: '1px dashed var(--color-border)',
-                            borderRadius: 'var(--radius-sm)', padding: '8px 14px',
-                            fontSize: '13px', color: 'var(--color-text-2)', cursor: 'pointer'
-                        }}>📷 Agregar fotos</button>
+                        <button
+                            type="button"
+                            onClick={() => fotosRef.current?.click()}
+                            style={{
+                                background: 'transparent',
+                                border: '1px dashed var(--color-border)',
+                                borderRadius: 'var(--radius-sm)',
+                                padding: '12px 14px', fontSize: 'var(--text-base)',
+                                color: 'var(--color-text-2)', cursor: 'pointer',
+                                width: '100%', textAlign: 'center'
+                            }}
+                        >
+                            📷 Agregar fotos
+                        </button>
                     </div>
 
-                    {error && <p style={{ color: 'var(--color-danger)', fontSize: '13px' }}>{error}</p>}
-                    {okMsg && <p style={{ color: 'var(--color-success)', fontSize: '13px' }}>{okMsg}</p>}
+                    {error && (
+                        <p role="alert" style={{ color: 'var(--color-danger)', fontSize: 'var(--text-base)' }}>
+                            {error}
+                        </p>
+                    )}
+                    {okMsg && (
+                        <p role="status" style={{ color: 'var(--color-success)', fontSize: 'var(--text-base)' }}>
+                            {okMsg}
+                        </p>
+                    )}
                     {progreso && (
-                        <p style={{ color: 'var(--color-accent)', fontSize: '13px' }}>
+                        <p role="status" style={{ color: 'var(--color-accent)', fontSize: 'var(--text-base)' }}>
                             Subiendo foto {progreso.subiendo} de {progreso.total}...
                         </p>
                     )}
 
-                    <button type="submit" disabled={guardando} style={{
-                        background: 'var(--color-accent)', color: '#0f0f0f', border: 'none',
-                        borderRadius: 'var(--radius-sm)', padding: '11px', fontSize: '14px',
-                        fontWeight: '600', cursor: guardando ? 'wait' : 'pointer', opacity: guardando ? 0.6 : 1
-                    }}>
-                        {guardando ? 'Creando...' : 'Crear pieza'}
-                    </button>
+                    <Button type="submit" loading={guardando} fullWidth>
+                        Crear pieza
+                    </Button>
                 </form>
             </div>
         </div>
     )
-}
-
-const labelStyle = {
-    display: 'block', fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '6px'
 }

@@ -126,7 +126,7 @@ export default function PiezaDetalle() {
                             <CarruselFotos fotos={pieza.fotos} titulo={pieza.titulo} height={340} />
                         </div>
                         {pieza.videoUrl && (
-                            <div style={{ background: 'var(--color-bg-2)', border: '1px solid #f5b94f55', borderRadius: 'var(--radius)', overflow: 'hidden', position: 'relative' }}>
+                            <div style={{ background: 'var(--color-bg-2)', border: '1px solid color-mix(in srgb, var(--color-premium) 33%, transparent)', borderRadius: 'var(--radius)', overflow: 'hidden', position: 'relative' }}>
                                 <span style={{
                                     position: 'absolute', top: '8px', right: '8px', zIndex: 2,
                                     fontSize: '10px', fontWeight: '700',
@@ -312,7 +312,7 @@ export default function PiezaDetalle() {
                                     style={{ textDecoration: 'none', display: 'block' }}>
                                     <div style={{
                                         background: 'var(--color-bg-2)',
-                                        border: `1px solid ${p.destacada ? '#f5b94f55' : 'var(--color-border)'}`,
+                                        border: `1px solid ${p.destacada ? 'color-mix(in srgb, var(--color-premium) 33%, transparent)' : 'var(--color-border)'}`,
                                         borderRadius: 'var(--radius-sm)', overflow: 'hidden'
                                     }}>
                                         <CarruselFotos fotos={p.fotos} titulo={p.titulo} height={130} />

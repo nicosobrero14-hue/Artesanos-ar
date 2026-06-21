@@ -147,7 +147,7 @@ export default function Navbar() {
                             position: 'relative'
                         }}
                     >
-                        <span style={{ fontSize: '18px', lineHeight: 1 }}>☰</span>
+                        <span aria-hidden="true" style={{ fontSize: '18px', lineHeight: 1 }}>☰</span>
                         {usuario?.rol === 'ADMIN' && adminPendientes > 0 && (
                             <span style={{ ...badgePendientes, position: 'absolute', top: '-4px', right: '-4px' }}>
                                 {adminPendientes}
@@ -179,13 +179,13 @@ export default function Navbar() {
                     </div>
                     <button
                         onClick={() => setDrawerAbierto(false)}
-                        aria-label="Cerrar"
+                        aria-label="Cerrar menú"
                         style={{
                             background: 'transparent', border: 'none',
                             color: 'var(--color-text-2)', fontSize: '22px',
                             lineHeight: 1, padding: '4px 8px'
                         }}
-                    >×</button>
+                    ><span aria-hidden="true">×</span></button>
                 </div>
 
                 {/* Links */}

@@ -1,22 +1,63 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 /*
  * Drawer lateral reutilizable que entra desde la derecha.
- * Click en el backdrop o presionar Escape lo cierra.
- * Bloquea el scroll del body mientras está abierto.
- *
- * Uso:
- *   <MobileDrawer abierto={open} onClose={() => setOpen(false)}>
- *     ...contenido...
- *   </MobileDrawer>
+ * Click en backdrop, Escape o navegar fuera lo cierra.
+ * Bloquea scroll del body, atrapa el foco dentro del panel, y
+ * restaura el foco al elemento que lo abrió al cerrar.
  */
 export default function MobileDrawer({ abierto, onClose, children, anchoMax = '280px' }) {
-    // Cerrar con Escape
+    const panelRef = useRef(null)
+    const triggerRef = useRef(null)
+
+    /*
+     * Cerrar con Escape + focus trap básico:
+     *  - Al abrir: guardamos quién tenía el foco y movemos el foco al panel.
+     *  - Mientras está abierto: Tab/Shift+Tab queda atrapado entre el primer y último foco-able.
+     *  - Al cerrar: restauramos el foco al elemento original.
+     */
     useEffect(() => {
         if (!abierto) return
-        const onKey = (e) => { if (e.key === 'Escape') onClose() }
+
+        triggerRef.current = document.activeElement
+
+        const panel = panelRef.current
+        if (panel) {
+            // Mover foco al primer elemento foco-able dentro del panel,
+            // o al panel mismo si no hay nada.
+            const focusables = getFocusables(panel)
+            ;(focusables[0] || panel).focus()
+        }
+
+        const onKey = (e) => {
+            if (e.key === 'Escape') {
+                onClose()
+                return
+            }
+            if (e.key !== 'Tab' || !panel) return
+
+            const focusables = getFocusables(panel)
+            if (focusables.length === 0) {
+                e.preventDefault()
+                return
+            }
+            const first = focusables[0]
+            const last = focusables[focusables.length - 1]
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault()
+                last.focus()
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault()
+                first.focus()
+            }
+        }
+
         window.addEventListener('keydown', onKey)
-        return () => window.removeEventListener('keydown', onKey)
+        return () => {
+            window.removeEventListener('keydown', onKey)
+            // Restaurar foco al elemento original
+            triggerRef.current?.focus?.()
+        }
     }, [abierto, onClose])
 
     // Lock scroll mientras abierto
@@ -33,6 +74,7 @@ export default function MobileDrawer({ abierto, onClose, children, anchoMax = '2
             {/* Backdrop */}
             <div
                 onClick={onClose}
+                aria-hidden="true"
                 style={{
                     position: 'fixed', inset: 0, zIndex: 200,
                     background: 'rgba(0,0,0,0.55)',
@@ -43,8 +85,10 @@ export default function MobileDrawer({ abierto, onClose, children, anchoMax = '2
             />
             {/* Panel */}
             <aside
+                ref={panelRef}
                 role="dialog"
                 aria-modal="true"
+                tabIndex={-1}
                 style={{
                     position: 'fixed', top: 0, right: 0, bottom: 0,
                     width: '85vw', maxWidth: anchoMax,
@@ -54,11 +98,22 @@ export default function MobileDrawer({ abierto, onClose, children, anchoMax = '2
                     transform: abierto ? 'translateX(0)' : 'translateX(100%)',
                     transition: 'transform 0.25s ease',
                     display: 'flex', flexDirection: 'column',
-                    overflowY: 'auto'
+                    overflowY: 'auto',
+                    outline: 'none'
                 }}
             >
                 {children}
             </aside>
         </>
     )
+}
+
+/*
+ * Lista los elementos que pueden recibir foco con Tab dentro de un contenedor.
+ * Usado por el focus trap.
+ */
+function getFocusables(root) {
+    return Array.from(root.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ))
 }

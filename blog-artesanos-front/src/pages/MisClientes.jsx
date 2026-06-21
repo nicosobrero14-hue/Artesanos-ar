@@ -123,7 +123,7 @@ export default function MisClientes() {
                 {editando ? 'Editar cliente' : 'Nuevo cliente'}
                 </h2>
                 <form onSubmit={handleGuardar}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     <Input label="Nombre *" name="nombre" value={form.nombre}
                     onChange={handleChange} required />
                     <Input label="Telefono" name="telefono" placeholder="Ej: 3492xxxxxx"

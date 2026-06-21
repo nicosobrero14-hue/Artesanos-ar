@@ -186,7 +186,7 @@ export default function MiPerfil() {
                 />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <Input label="Ubicacion" name="ubicacion" placeholder="Ej: Rafaela, Santa Fe"
                 value={form.ubicacion} onChange={handleChange} />
                 <Input label="Rubros" name="rubros" placeholder="Ej: Cuchilleria, Cuero"
@@ -198,7 +198,7 @@ export default function MiPerfil() {
                 borderRadius: 'var(--radius)', padding: '20px'
             }}>
                 <p style={{ fontSize: '13px', fontWeight: '500', marginBottom: '16px' }}>Redes y contacto</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <Input label="Instagram (usuario)" name="instagram" placeholder="@tu_usuario"
                     value={form.instagram} onChange={handleChange} />
                 <Input label="WhatsApp (con codigo de pais)" name="whatsapp" placeholder="5493404xxxxxx"

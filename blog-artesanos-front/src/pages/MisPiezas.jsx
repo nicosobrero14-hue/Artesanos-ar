@@ -4,6 +4,8 @@ import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import Select from '../components/Select'
+import EmptyState from '../components/EmptyState'
 import CarruselFotos from '../components/CarruselFotos'
 import BotonWhatsApp from '../components/BotonWhatsApp'
 
@@ -39,6 +41,7 @@ const colorEstado = {
         />
         <button
             onClick={onClose}
+            aria-label="Cerrar vista ampliada"
             style={{
             position: 'fixed', top: '16px', right: '16px',
             background: 'rgba(255,255,255,0.12)', border: 'none',
@@ -47,7 +50,7 @@ const colorEstado = {
             display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}
         >
-            ×
+            <span aria-hidden="true">×</span>
         </button>
         </div>
     )
@@ -413,7 +416,7 @@ const colorEstado = {
                 {limitePiezasAlcanzado && (
                 <Link to="/premium" style={{
                     fontSize: '12px', color: 'var(--color-premium)', fontWeight: '500',
-                    border: '1px solid #f5b94f', borderRadius: '20px', padding: '4px 12px'
+                    border: '1px solid var(--color-premium)', borderRadius: '20px', padding: '4px 12px'
                 }}>
                     Llegaste al límite — pasate a Premium
                 </Link>
@@ -432,54 +435,67 @@ const colorEstado = {
                 <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     <Input label="Título *" name="titulo" value={form.titulo} onChange={handleChange} required />
                     <Input label="Precio ($) *" name="precio" type="number" value={form.precio} onChange={handleChange} required />
-                    <div>
-                        <label style={{ fontSize: '13px', color: 'var(--color-text-2)', display: 'block', marginBottom: '6px' }}>
-                            Oficio <span style={{ color: 'var(--color-danger)' }}>*</span>
-                        </label>
-                        <select name="oficio" value={form.oficio} onChange={handleChange} required
-                            style={{ width: '100%', background: 'var(--color-bg-3)', border: '1px solid var(--color-border)',
-                                borderRadius: 'var(--radius-sm)', padding: '10px 12px',
-                                color: form.oficio ? 'var(--color-text)' : 'var(--color-text-3)',
-                                fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}>
-                            <option value="">— Elegí el oficio —</option>
-                            {oficios.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                        </select>
-                    </div>
+                    <Select
+                        label="Oficio *"
+                        name="oficio"
+                        value={form.oficio}
+                        onChange={handleChange}
+                        required
+                        placeholder="— Elegí el oficio —"
+                        options={oficios}
+                    />
                     <Input label="Sub-categoría (opcional)" name="categoria" placeholder="Ej: Facón, Pulsera" value={form.categoria} onChange={handleChange} />
                     <Input label="Horas de trabajo" name="horasTrabajo" type="number" value={form.horasTrabajo} onChange={handleChange} />
                 </div>
                 <div style={{ marginBottom: '16px' }}>
-                    <label style={{ fontSize: '13px', color: 'var(--color-text-2)', display: 'block', marginBottom: '6px' }}>Descripción</label>
+                    <label htmlFor="mp-desc" style={{
+                        fontSize: 'var(--text-sm)', color: 'var(--color-text-2)',
+                        display: 'block', marginBottom: '6px'
+                    }}>Descripción</label>
                     <textarea
-                    name="descripcion" value={form.descripcion} onChange={handleChange} rows={3}
-                    style={{ width: '100%', background: 'var(--color-bg-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '10px 12px', color: 'var(--color-text)', resize: 'vertical', outline: 'none' }}
+                        id="mp-desc"
+                        name="descripcion" value={form.descripcion} onChange={handleChange} rows={3}
+                        style={{
+                            width: '100%', boxSizing: 'border-box',
+                            background: 'var(--color-bg-3)', border: '1px solid var(--color-border)',
+                            borderRadius: 'var(--radius-sm)', padding: '10px 12px',
+                            color: 'var(--color-text)', resize: 'vertical', outline: 'none',
+                            fontFamily: 'inherit', fontSize: 'var(--text-base)'
+                        }}
                     />
                 </div>
-                <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '20px' }}>
-                    <div>
-                    <label style={{ fontSize: '13px', color: 'var(--color-text-2)', display: 'block', marginBottom: '6px' }}>Estado</label>
-                    <select name="estado" value={form.estado} onChange={handleChange}
-                        style={{ background: 'var(--color-bg-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '10px 12px', color: 'var(--color-text)', outline: 'none' }}>
-                        {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
-                    </select>
-                    </div>
-                    <label style={{
-                        display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px',
-                        color: puedeDestacar ? 'var(--color-text-2)' : 'var(--color-text-3)',
-                        cursor: puedeDestacar ? 'pointer' : 'not-allowed', marginTop: '18px'
-                    }}>
-                    <input
-                        type="checkbox" name="destacada"
-                        checked={form.destacada && puedeDestacar}
+                <div className="grid-1-mobile" style={{
+                    display: 'grid', gridTemplateColumns: '1fr 1fr',
+                    gap: '16px', alignItems: 'end', marginBottom: '20px'
+                }}>
+                    <Select
+                        label="Estado"
+                        name="estado"
+                        value={form.estado}
                         onChange={handleChange}
-                        disabled={!puedeDestacar}
+                        options={ESTADOS}
                     />
-                    Marcar como destacada
-                    {!puedeDestacar && (
-                        <Link to="/premium" style={{ fontSize: '11px', color: 'var(--color-premium)', marginLeft: '4px' }}>
-                        (Premium)
-                        </Link>
-                    )}
+                    <label style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        fontSize: 'var(--text-sm)',
+                        color: puedeDestacar ? 'var(--color-text-2)' : 'var(--color-text-3)',
+                        cursor: puedeDestacar ? 'pointer' : 'not-allowed',
+                        padding: '10px 0'
+                    }}>
+                        <input
+                            type="checkbox" name="destacada"
+                            checked={form.destacada && puedeDestacar}
+                            onChange={handleChange}
+                            disabled={!puedeDestacar}
+                        />
+                        Marcar como destacada
+                        {!puedeDestacar && (
+                            <Link to="/premium" style={{
+                                fontSize: 'var(--text-xs)', color: 'var(--color-premium)', marginLeft: '4px'
+                            }}>
+                                (Premium)
+                            </Link>
+                        )}
                     </label>
                 </div>
                 {/* Fotos iniciales — solo al CREAR (al editar se manejan desde la card) */}
@@ -515,15 +531,18 @@ const colorEstado = {
                                         <button
                                             type="button"
                                             onClick={() => quitarFotoNueva(idx)}
+                                            aria-label={`Quitar foto ${idx + 1}`}
+                                            className="btn-sm"
                                             style={{
                                                 position: 'absolute', top: '2px', right: '2px',
                                                 background: 'rgba(0,0,0,0.7)', color: 'white',
                                                 border: 'none', borderRadius: '50%',
                                                 width: '20px', height: '20px',
-                                                fontSize: '12px', cursor: 'pointer',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                fontSize: 'var(--text-sm)', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                padding: 0, lineHeight: 1
                                             }}
-                                        >×</button>
+                                        ><span aria-hidden="true">×</span></button>
                                     </div>
                                 ))}
                             </div>
@@ -601,14 +620,16 @@ const colorEstado = {
             {loading ? (
             <p style={{ color: 'var(--color-text-2)' }}>Cargando piezas...</p>
             ) : piezas.length === 0 ? (
-            <div style={{ background: 'var(--color-bg-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius)', padding: '48px', textAlign: 'center' }}>
-                <p style={{ color: 'var(--color-text-2)', marginBottom: '16px' }}>Todavía no cargaste ninguna pieza</p>
-                <Button onClick={abrirCrear}>+ Crear primera pieza</Button>
-            </div>
+            <EmptyState
+                icon="🛠️"
+                title="Todavía no cargaste ninguna pieza"
+                desc="Sumá tu primera pieza para que aparezca en tu catálogo público."
+                action={<Button onClick={abrirCrear}>+ Crear primera pieza</Button>}
+            />
             ) : piezasFiltradas.length === 0 ? (
-            <div style={{ background: 'var(--color-bg-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius)', padding: '32px', textAlign: 'center' }}>
-                <p style={{ color: 'var(--color-text-2)' }}>No hay piezas en estado <strong>{labelEstado[filtroEstado]}</strong></p>
-            </div>
+            <EmptyState
+                title={<>No hay piezas en estado <strong>{labelEstado[filtroEstado]}</strong></>}
+            />
             ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {piezasFiltradas.map(pieza => (
@@ -678,7 +699,7 @@ const colorEstado = {
                                 pieza.videoUrl ? (
                                     <button onClick={() => eliminarVideo(pieza.id)} style={{
                                         background: 'transparent',
-                                        border: '1px solid #f5b94f',
+                                        border: '1px solid var(--color-premium)',
                                         borderRadius: 'var(--radius-sm)',
                                         padding: '4px 10px',
                                         color: 'var(--color-premium)',
@@ -692,7 +713,7 @@ const colorEstado = {
                                         disabled={subiendoVideo === pieza.id}
                                         style={{
                                             background: 'transparent',
-                                            border: '1px dashed #f5b94f',
+                                            border: '1px dashed var(--color-premium)',
                                             borderRadius: 'var(--radius-sm)',
                                             padding: '4px 10px',
                                             color: 'var(--color-premium)',
@@ -722,12 +743,13 @@ const colorEstado = {
                         >
                         Editar
                         </button>
-                        <button
-                        onClick={() => handleEliminar(pieza.id)}
-                        style={{ background: 'transparent', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', color: 'var(--color-danger)', fontSize: '13px', cursor: 'pointer' }}
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleEliminar(pieza.id)}
                         >
-                        Eliminar
-                        </button>
+                            Eliminar
+                        </Button>
                     </div>
 
                     </div>
