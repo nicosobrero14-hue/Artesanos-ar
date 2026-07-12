@@ -8,6 +8,7 @@ import BotonWhatsApp from '../components/BotonWhatsApp'
 import BotonMeGusta from '../components/BotonMeGusta'
 import BotonFavorito from '../components/BotonFavorito'
 import BotonReportar from '../components/BotonReportar'
+import ThemeToggle from '../components/ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 
@@ -91,7 +92,8 @@ export default function PiezaDetalle() {
                 <Link to={`/artesano/${pieza.artesanoSlug}`} style={{ fontSize: '14px', color: 'var(--color-text-2)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     ← Volver al catálogo
                 </Link>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <ThemeToggle size="sm" />
                     <Link to="/" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>Inicio</Link>
                     {usuario ? (
                         <Link to="/panel" style={{ fontSize: '13px', color: 'var(--color-accent)' }}>Mi panel</Link>

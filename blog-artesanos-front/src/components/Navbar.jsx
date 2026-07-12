@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 import Campanita from './Campanita'
 import MobileDrawer from './MobileDrawer'
+import ThemeToggle from './ThemeToggle'
 
 /*
  * Navbar responsive.
@@ -105,7 +106,8 @@ export default function Navbar() {
                 </div>
 
                 {/* Lado derecho */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <ThemeToggle size="sm" />
                     <Campanita />
 
                     {/* Datos del usuario — solo desktop */}

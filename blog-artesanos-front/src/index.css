@@ -50,6 +50,40 @@
 
   /* Breakpoint mobile — referencia para JS via useIsMobile */
   --bp-mobile: 768px;
+
+  /* Sombras — más presentes en light theme donde no hay contraste por color */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+
+  color-scheme: dark;
+}
+
+/*
+ * Modo claro. Se activa cuando el hook useTheme setea data-theme="light"
+ * en el <html>. Cuando no hay preferencia guardada, el hook respeta la del
+ * sistema (prefers-color-scheme). Todo el resto de la app usa var(--color-*),
+ * así que basta con sobrescribir las variables acá.
+ */
+:root[data-theme="light"] {
+  --color-bg: #fafaf7;
+  --color-bg-2: #ffffff;
+  --color-bg-3: #f0ede6;
+  --color-border: #e2ddd2;
+  --color-text: #1a1a1a;
+  --color-text-2: #555555;
+  --color-text-3: #7a7a7a;
+
+  --color-accent: #a8874a;
+  --color-accent-hover: #8f7238;
+  --color-success: #2f8a5f;
+  --color-danger: #c94141;
+  --color-premium: #d48f10;
+  --color-reservada: #4a5cd8;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  color-scheme: light;
 }
 
 * {

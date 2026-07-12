@@ -5,6 +5,7 @@ import CarruselFotos from '../components/CarruselFotos'
 import BannerEventos from '../components/BannerEventos'
 import SidebarOficios from '../components/SidebarOficios'
 import MobileDrawer from '../components/MobileDrawer'
+import ThemeToggle from '../components/ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 import useIsMobile from '../hooks/useIsMobile'
@@ -261,23 +262,28 @@ function TopBar({ usuario }) {
                     )}
                 </div>
 
-                {/* Hamburguesa — solo mobile */}
-                <button
-                    className="solo-mobile-flex"
-                    onClick={() => setDrawerAbierto(true)}
-                    aria-label="Abrir menú"
-                    style={{
-                        display: 'none',
-                        background: 'transparent',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius-sm)',
-                        width: '38px', height: '38px',
-                        alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--color-text)'
-                    }}
-                >
-                    <span style={{ fontSize: '18px', lineHeight: 1 }}>☰</span>
-                </button>
+                {/* Toggle de tema — visible en desktop y mobile */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ThemeToggle size="sm" />
+
+                    {/* Hamburguesa — solo mobile */}
+                    <button
+                        className="solo-mobile-flex"
+                        onClick={() => setDrawerAbierto(true)}
+                        aria-label="Abrir menú"
+                        style={{
+                            display: 'none',
+                            background: 'transparent',
+                            border: '1px solid var(--color-border)',
+                            borderRadius: 'var(--radius-sm)',
+                            width: '38px', height: '38px',
+                            alignItems: 'center', justifyContent: 'center',
+                            color: 'var(--color-text)'
+                        }}
+                    >
+                        <span aria-hidden="true" style={{ fontSize: '18px', lineHeight: 1 }}>☰</span>
+                    </button>
+                </div>
             </nav>
 
             {/* Drawer mobile */}

@@ -6,6 +6,7 @@ import SeccionComentarios from '../components/SeccionComentarios'
 import SeccionResenas from '../components/SeccionResenas'
 import CuponesVigentes from '../components/CuponesVigentes'
 import BotonCompartir from '../components/BotonCompartir'
+import ThemeToggle from '../components/ThemeToggle'
 import BotonWhatsApp from '../components/BotonWhatsApp'
 import BotonMeGusta from '../components/BotonMeGusta'
 import { useAuth } from '../context/AuthContext'
@@ -116,10 +117,11 @@ export default function CatalogoPublico() {
                 <Link to="/" style={{ fontSize: '14px', color: 'var(--color-text-2)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     ← Inicio
                 </Link>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <ThemeToggle size="sm" />
                     {usuario ? (
                         <>
-                            <span style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>{usuario.nombre}</span>
+                            <span className="solo-desktop" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>{usuario.nombre}</span>
                             <Link to="/panel" style={{ fontSize: '13px', color: 'var(--color-accent)' }}>Mi panel</Link>
                         </>
                     ) : (
@@ -152,17 +154,23 @@ export default function CatalogoPublico() {
                         <h1 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '4px' }}>{artesano.nombre}</h1>
                         {artesano.ubicacion && <p style={{ fontSize: '13px', color: 'var(--color-text-2)', marginBottom: '10px' }}>{artesano.ubicacion}</p>}
                         {artesano.bio && <p style={{ fontSize: '14px', color: 'var(--color-text-2)', lineHeight: '1.6', maxWidth: '600px', marginBottom: '14px' }}>{artesano.bio}</p>}
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                             {artesano.instagram && (
-                                <a href={`https://instagram.com/${artesano.instagram.replace('@', '')}`} target="_blank" rel="noreferrer"
-                                    style={{ fontSize: '13px', color: 'var(--color-text-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '5px 12px' }}>
-                                    Instagram
+                                <a href={`https://instagram.com/${artesano.instagram.replace('@', '')}`}
+                                    target="_blank" rel="noreferrer"
+                                    aria-label="Ver Instagram"
+                                    title={`@${artesano.instagram.replace('@', '')}`}
+                                    style={iconLinkStyle}>
+                                    <IconInstagram />
                                 </a>
                             )}
                             {artesano.whatsapp && (
-                                <a href={`https://wa.me/${artesano.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-                                    style={{ fontSize: '13px', color: 'var(--color-text-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '5px 12px' }}>
-                                    WhatsApp
+                                <a href={`https://wa.me/${artesano.whatsapp.replace(/\D/g, '')}`}
+                                    target="_blank" rel="noreferrer"
+                                    aria-label="Escribir por WhatsApp"
+                                    title="WhatsApp"
+                                    style={iconLinkStyle}>
+                                    <IconWhatsApp />
                                 </a>
                             )}
                             <BotonCompartir
@@ -170,15 +178,21 @@ export default function CatalogoPublico() {
                                 texto={`Mirá el trabajo de ${artesano.nombre}`}
                                 style={{ padding: '5px 12px', fontSize: '13px' }}
                             />
-                            {/* Compartir el catálogo por WhatsApp (a un contacto, grupo o estado) */}
-                            <BotonWhatsApp
-                                texto={
-                                    `Mirá el catálogo de ${artesano.nombre} en Artesanos.ar 👇\n` +
-                                    (typeof window !== 'undefined' ? window.location.href : '')
-                                }
-                                label="Compartir catálogo"
-                                style={{ padding: '5px 12px', fontSize: '13px' }}
-                            />
+                            {/*
+                             * "Compartir catálogo" solo tiene sentido en el propio perfil —
+                             * si estoy mirando el catálogo de otra persona no soy yo quien lo
+                             * "comparte", así que lo escondemos para no confundir.
+                             */}
+                            {usuario?.slug === slug && (
+                                <BotonWhatsApp
+                                    texto={
+                                        `Mirá mi catálogo en Artesanos.ar 👇\n` +
+                                        (typeof window !== 'undefined' ? window.location.href : '')
+                                    }
+                                    label="Compartir catálogo"
+                                    style={{ padding: '5px 12px', fontSize: '13px' }}
+                                />
+                            )}
                             {usuario && usuario.slug !== slug && (
                                 <Link to={`/chat?con=${artesano.id}`} style={{
                                     fontSize: '13px',
@@ -354,5 +368,35 @@ export default function CatalogoPublico() {
                 ) : null}
             </div>
         </div>
+    )
+}
+
+/* ── Estilos e iconos compartidos del header ────────────────────────────── */
+
+const iconLinkStyle = {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    width: '34px', height: '34px', borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--color-border)',
+    color: 'var(--color-text-2)',
+    background: 'transparent',
+    transition: 'color 0.15s, border-color 0.15s'
+}
+
+function IconInstagram() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+        </svg>
+    )
+}
+
+function IconWhatsApp() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.5 0 .17 5.33.17 11.88c0 2.09.55 4.13 1.59 5.93L0 24l6.34-1.66a11.86 11.86 0 0 0 5.7 1.45h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.17-1.24-6.15-3.41-8.43zM12.05 21.6h-.01a9.7 9.7 0 0 1-4.94-1.35l-.35-.21-3.76.98 1-3.67-.23-.38a9.68 9.68 0 0 1-1.48-5.09c0-5.36 4.36-9.72 9.72-9.72 2.6 0 5.03 1.01 6.87 2.85a9.66 9.66 0 0 1 2.85 6.87c0 5.36-4.36 9.72-9.72 9.72zm5.32-7.28c-.29-.15-1.72-.85-1.99-.94-.27-.1-.46-.15-.66.15-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.23-.45-2.34-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.49-.66-.5l-.56-.01a1.09 1.09 0 0 0-.79.37c-.27.29-1.03 1.01-1.03 2.46 0 1.45 1.05 2.85 1.2 3.05.15.19 2.07 3.16 5.02 4.43.7.3 1.25.48 1.68.61.7.22 1.34.19 1.85.12.56-.08 1.72-.7 1.97-1.38.24-.68.24-1.26.17-1.38-.07-.12-.27-.19-.56-.34z" />
+        </svg>
     )
 }
