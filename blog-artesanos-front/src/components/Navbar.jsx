@@ -5,6 +5,7 @@ import api from '../api/axios'
 import Campanita from './Campanita'
 import MobileDrawer from './MobileDrawer'
 import ThemeToggle from './ThemeToggle'
+import Icon from './Icon'
 
 /*
  * Navbar responsive.
@@ -52,15 +53,15 @@ export default function Navbar() {
      * `tipo` permite separar visualmente los grupos en el drawer.
      */
     const links = [
-        { to: '/', label: 'Inicio' },
-        { to: '/novedades', label: '✨ Novedades' },
-        { to: '/panel', label: 'Panel' },
-        { to: '/panel/piezas', label: 'Mis piezas' },
-        { to: '/panel/pedidos', label: 'Pedidos' },
-        { to: '/chat', label: '💬 Chat' },
-        { to: '/panel/clientes', label: 'Clientes' },
-        { to: '/panel/eventos', label: 'Eventos' },
-        { to: '/panel/cupones', label: 'Cupones' }
+        { to: '/', label: 'Inicio', icon: 'home' },
+        { to: '/novedades', label: 'Novedades', icon: 'sparkle' },
+        { to: '/panel', label: 'Panel', icon: 'grid' },
+        { to: '/panel/piezas', label: 'Mis piezas', icon: 'box' },
+        { to: '/panel/pedidos', label: 'Pedidos', icon: 'clipboard' },
+        { to: '/chat', label: 'Chat', icon: 'chat' },
+        { to: '/panel/clientes', label: 'Clientes', icon: 'users' },
+        { to: '/panel/eventos', label: 'Eventos', icon: 'calendar' },
+        { to: '/panel/cupones', label: 'Cupones', icon: 'ticket' }
     ]
 
     return (
@@ -87,9 +88,13 @@ export default function Navbar() {
                     </Link>
 
                     {/* Links desktop */}
-                    <div className="solo-desktop" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                    <div className="solo-desktop" style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
                         {links.map(l => (
-                            <Link key={l.to} to={l.to} style={{ color: 'var(--color-text-2)', fontSize: '14px' }}>
+                            <Link key={l.to} to={l.to} style={{
+                                color: 'var(--color-text-2)', fontSize: '14px',
+                                display: 'inline-flex', alignItems: 'center', gap: '6px'
+                            }}>
+                                <Icon name={l.icon} size={16} />
                                 {l.label}
                             </Link>
                         ))}
@@ -97,9 +102,10 @@ export default function Navbar() {
                             <Link to="/admin" style={{
                                 position: 'relative',
                                 color: 'var(--color-premium)', fontSize: '14px', fontWeight: '600',
-                                display: 'inline-flex', alignItems: 'center', gap: '4px'
+                                display: 'inline-flex', alignItems: 'center', gap: '6px'
                             }}>
-                                ⚙ Admin
+                                <Icon name="gear" size={16} />
+                                Admin
                                 {adminPendientes > 0 && (
                                     <span style={badgePendientes}>{adminPendientes}</span>
                                 )}
@@ -196,7 +202,11 @@ export default function Navbar() {
                 {/* Links */}
                 <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0', flex: 1 }}>
                     {links.map(l => (
-                        <Link key={l.to} to={l.to} style={drawerLink}>
+                        <Link key={l.to} to={l.to} style={{
+                            ...drawerLink,
+                            display: 'flex', alignItems: 'center', gap: '10px'
+                        }}>
+                            <Icon name={l.icon} size={17} />
                             {l.label}
                         </Link>
                     ))}
@@ -206,7 +216,10 @@ export default function Navbar() {
                             color: 'var(--color-premium)', fontWeight: '600',
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                         }}>
-                            <span>⚙ Panel Admin</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <Icon name="gear" size={17} />
+                                Panel Admin
+                            </span>
                             {adminPendientes > 0 && (
                                 <span style={badgePendientes}>{adminPendientes}</span>
                             )}

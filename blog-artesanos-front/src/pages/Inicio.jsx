@@ -6,6 +6,7 @@ import BannerEventos from '../components/BannerEventos'
 import SidebarOficios from '../components/SidebarOficios'
 import MobileDrawer from '../components/MobileDrawer'
 import ThemeToggle from '../components/ThemeToggle'
+import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 import useIsMobile from '../hooks/useIsMobile'
@@ -222,15 +223,15 @@ function TopBar({ usuario }) {
                 </Link>
 
                 {/* Links desktop */}
-                <div className="solo-desktop" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <Link to="/novedades" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                        ✨ Novedades
+                <div className="solo-desktop" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <Link to="/novedades" style={{ fontSize: '13px', color: 'var(--color-text-2)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <Icon name="sparkle" size={15} /> Novedades
                     </Link>
-                    <Link to="/eventos" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                        📅 Eventos
+                    <Link to="/eventos" style={{ fontSize: '13px', color: 'var(--color-text-2)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <Icon name="calendar" size={15} /> Eventos
                     </Link>
-                    <Link to="/ranking" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>
-                        🏆 Ranking
+                    <Link to="/ranking" style={{ fontSize: '13px', color: 'var(--color-text-2)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <Icon name="trophy" size={15} /> Ranking
                     </Link>
                     {usuario ? (
                         <>
@@ -315,16 +316,16 @@ function TopBar({ usuario }) {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0', flex: 1 }}>
-                    <Link to="/" style={linkDrawer}>🏠 Inicio</Link>
-                    <Link to="/novedades" style={linkDrawer}>✨ Novedades</Link>
-                    <Link to="/eventos" style={linkDrawer}>📅 Eventos</Link>
-                    <Link to="/ranking" style={linkDrawer}>🏆 Ranking</Link>
+                    <Link to="/" style={linkDrawerIcono}><Icon name="home" size={17} /> Inicio</Link>
+                    <Link to="/novedades" style={linkDrawerIcono}><Icon name="sparkle" size={17} /> Novedades</Link>
+                    <Link to="/eventos" style={linkDrawerIcono}><Icon name="calendar" size={17} /> Eventos</Link>
+                    <Link to="/ranking" style={linkDrawerIcono}><Icon name="trophy" size={17} /> Ranking</Link>
                     {usuario && usuario.slug && (
-                        <Link to={`/artesano/${usuario.slug}`} style={linkDrawer}>📖 Mi catálogo</Link>
+                        <Link to={`/artesano/${usuario.slug}`} style={linkDrawerIcono}><Icon name="box" size={17} /> Mi catálogo</Link>
                     )}
                     {usuario && (
-                        <Link to="/panel" style={{ ...linkDrawer, color: 'var(--color-accent)', fontWeight: '600' }}>
-                            ⚙ Mi panel
+                        <Link to="/panel" style={{ ...linkDrawerIcono, color: 'var(--color-accent)', fontWeight: '600' }}>
+                            <Icon name="grid" size={17} /> Mi panel
                         </Link>
                     )}
                 </div>
@@ -359,6 +360,13 @@ const linkDrawer = {
     fontSize: '14px',
     color: 'var(--color-text)',
     borderBottom: '1px solid var(--color-border)'
+}
+
+const linkDrawerIcono = {
+    ...linkDrawer,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
 }
 
 const btnAccent = {

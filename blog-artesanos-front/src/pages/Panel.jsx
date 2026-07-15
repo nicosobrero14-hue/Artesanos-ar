@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import BotonWhatsApp from '../components/BotonWhatsApp'
+import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
 
 /*
@@ -215,15 +216,15 @@ export default function Panel() {
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                 gap: '12px'
                 }}>
-                <AccionCard to="/panel/piezas" titulo="Gestionar piezas" desc="Agregar, editar o cambiar estado de tus piezas" />
-                <AccionCard to="/panel/pedidos" titulo="Ver pedidos" desc="Seguí el estado de cada encargo" />
-                <AccionCard to="/panel/mensajes" titulo="Mensajes recibidos" desc="Consultas desde tu catálogo público" />
-                <AccionCard to="/panel/eventos" titulo="📅 Mis eventos" desc="Ferias y exposiciones donde vas a estar" />
-                <AccionCard to="/panel/cupones" titulo="🎟 Cupones" desc="Descuentos para atraer clientes (Premium)" />
-                <AccionCard to="/panel/stats" titulo="📊 Stats avanzadas" desc="Métricas de engagement (Premium)" />
-                <AccionCard to="/panel/resumen" titulo="✨ Tu resumen" desc="Tu recorrido en una tarjeta para compartir" />
-                <AccionCard to="/favoritos" titulo="🔖 Mis favoritos" desc="Piezas que guardaste para volver" />
-                <AccionCard to="/panel/perfil" titulo="Editar perfil" desc="Bio, redes, ubicación y foto de perfil" />
+                <AccionCard to="/panel/piezas" icon="box" titulo="Gestionar piezas" desc="Agregar, editar o cambiar estado de tus piezas" />
+                <AccionCard to="/panel/pedidos" icon="clipboard" titulo="Ver pedidos" desc="Seguí el estado de cada encargo" />
+                <AccionCard to="/panel/mensajes" icon="chat" titulo="Mensajes recibidos" desc="Consultas desde tu catálogo público" />
+                <AccionCard to="/panel/eventos" icon="calendar" titulo="Mis eventos" desc="Ferias y exposiciones donde vas a estar" />
+                <AccionCard to="/panel/cupones" icon="ticket" titulo="Cupones" desc="Descuentos para atraer clientes (Premium)" />
+                <AccionCard to="/panel/stats" icon="chart" titulo="Stats avanzadas" desc="Métricas de engagement (Premium)" />
+                <AccionCard to="/panel/resumen" icon="sparkle" titulo="Tu resumen" desc="Tu recorrido en una tarjeta para compartir" />
+                <AccionCard to="/favoritos" icon="bookmark" titulo="Mis favoritos" desc="Piezas que guardaste para volver" />
+                <AccionCard to="/panel/perfil" icon="user" titulo="Editar perfil" desc="Bio, redes, ubicación y foto de perfil" />
                 </div>
             </>
             ) : (
@@ -253,7 +254,7 @@ export default function Panel() {
     }
 
     // Componente interno — tarjeta de acceso rápido
-    function AccionCard({ to, titulo, desc }) {
+    function AccionCard({ to, titulo, desc, icon }) {
     return (
         <Link to={to} style={{ textDecoration: 'none' }}>
         <div style={{
@@ -267,7 +268,10 @@ export default function Panel() {
             onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-accent)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--color-border)'}
         >
-            <p style={{ fontWeight: '500', marginBottom: '6px', color: 'var(--color-text)' }}>{titulo}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                {icon && <span style={{ color: 'var(--color-accent)' }}><Icon name={icon} size={18} /></span>}
+                <p style={{ fontWeight: '500', color: 'var(--color-text)' }}>{titulo}</p>
+            </div>
             <p style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>{desc}</p>
         </div>
         </Link>
