@@ -11,6 +11,19 @@ import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 import useIsMobile from '../hooks/useIsMobile'
 
+/*
+ * Fisher-Yates — devuelve una copia mezclada del array sin mutar el original.
+ * Se usa para rotar las piezas destacadas (beneficio premium).
+ */
+function mezclar(arr) {
+    const a = [...arr]
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[a[i], a[j]] = [a[j], a[i]]
+    }
+    return a
+}
+
 
 export default function Inicio() {
     const { usuario } = useAuth()
@@ -27,6 +40,9 @@ export default function Inicio() {
     const [loading, setLoading] = useState(true)
     const [busqueda, setBusqueda] = useState('')
     const [rubroSeleccionado, setRubroSeleccionado] = useState(null)
+    // Contador que se incrementa en cada rotación de destacadas — sirve de key
+    // para disparar el fade de la grilla.
+    const [rotacion, setRotacion] = useState(0)
 
     useSEO({
         title: 'Trabajo artesanal argentino, directo del taller',
@@ -80,6 +96,24 @@ export default function Inicio() {
             })
             .catch(err => console.error(err))
     }, [oficioSeleccionado])
+
+    /*
+     * Rotación de piezas destacadas — beneficio premium: cada tanto se reordenan
+     * para que distintas piezas ocupen los primeros lugares (los más vistos).
+     *
+     * Clave: solo rotamos si el usuario está CERCA DEL TOPE (mirando la sección).
+     * Si scrolleó para abajo no tocamos nada, así nunca le movemos el contenido
+     * bajo los pies ni le salta el scroll. Al volver arriba, retoma la rotación.
+     */
+    useEffect(() => {
+        const id = setInterval(() => {
+            if (document.hidden) return
+            if (window.scrollY > 300) return
+            setDestacadas(prev => (prev.length > 1 ? mezclar(prev) : prev))
+            setRotacion(r => r + 1)
+        }, 12000)
+        return () => clearInterval(id)
+    }, [])
 
     // Extraemos los rubros únicos de todos los artesanos (split por coma, lowercase)
     const rubrosDisponibles = Array.from(new Set(
@@ -153,7 +187,7 @@ export default function Inicio() {
 
             {/* ── Vidriera de piezas destacadas (solo premium) ─────────── */}
             {!loading && destacadas.length > 0 && (
-                <SeccionDestacadas piezas={destacadas} />
+                <SeccionDestacadas piezas={destacadas} rotacion={rotacion} />
             )}
 
             {/* ── Piezas recientes (todos, cards más chicas) ───────────── */}
@@ -642,7 +676,7 @@ function SeccionArtesanoSemana({ artesano }) {
 // ────────────────────────────────────────────────────────────────────────
 // Sección destacadas
 // ────────────────────────────────────────────────────────────────────────
-function SeccionDestacadas({ piezas }) {
+function SeccionDestacadas({ piezas, rotacion = 0 }) {
     return (
         <div style={{
             background: 'linear-gradient(180deg, rgba(245, 185, 79, 0.06), rgba(245, 185, 79, 0))',
@@ -655,10 +689,12 @@ function SeccionDestacadas({ piezas }) {
                     subtitulo="Lo mejor de nuestros artesanos premium"
                     contador={`${piezas.length} ${piezas.length === 1 ? 'pieza' : 'piezas'}`}
                 />
-                <div style={{
+                {/* key={rotacion} → cada rotación remonta la grilla con un fade suave */}
+                <div key={rotacion} style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                    gap: '14px'
+                    gap: '14px',
+                    animation: 'fade-in 0.5s ease'
                 }}>
                     {piezas.map(p => (
                         <Link key={p.id} to={`/artesano/${p.artesanoSlug}/pieza/${p.id}`}
@@ -680,7 +716,7 @@ function SeccionDestacadas({ piezas }) {
                                     padding: '3px 9px', borderRadius: '20px',
                                     boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
                                 }}>★ DESTACADA</span>
-                                <CarruselFotos fotos={p.fotos} titulo={p.titulo} height={170} />
+                                <CarruselFotos fotos={p.fotos} titulo={p.titulo} height={170} ajuste="contain" />
                                 <div style={{ padding: '14px 16px' }}>
                                     <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '4px', lineHeight: '1.3' }}>
                                         {p.titulo}
@@ -730,7 +766,7 @@ function SeccionRecientes({ piezas }) {
                             }}
                                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
                                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}>
-                                <CarruselFotos fotos={p.fotos} titulo={p.titulo} height={130} />
+                                <CarruselFotos fotos={p.fotos} titulo={p.titulo} height={130} ajuste="contain" />
                                 <div style={{ padding: '10px 12px' }}>
                                     <p style={{ fontSize: '13px', fontWeight: '500', marginBottom: '2px', lineHeight: '1.3', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                         {p.titulo}

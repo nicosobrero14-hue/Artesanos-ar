@@ -221,6 +221,12 @@ html { scroll-behavior: smooth; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Fade suave — usado al rotar la grilla de piezas destacadas */
+@keyframes fade-in {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+
 /* Mejor tap target en mobile — mínimo 40px en botones chicos */
 @media (max-width: 768px) {
   button:not(.btn-sm) {

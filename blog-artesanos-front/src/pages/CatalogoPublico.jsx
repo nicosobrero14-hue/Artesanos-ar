@@ -260,7 +260,7 @@ export default function CatalogoPublico() {
                                 )}
 
                                 <Link to={`/artesano/${slug}/pieza/${pieza.id}`} style={{ display: 'block' }}>
-                                    <CarruselFotos fotos={pieza.fotos} titulo={pieza.titulo} height={180} />
+                                    <CarruselFotos fotos={pieza.fotos} titulo={pieza.titulo} height={180} ajuste="contain" />
                                 </Link>
 
                                 <div style={{ padding: '16px' }}>
