@@ -8,6 +8,8 @@ import Select from '../components/Select'
 import EmptyState from '../components/EmptyState'
 import CarruselFotos from '../components/CarruselFotos'
 import BotonWhatsApp from '../components/BotonWhatsApp'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 const ESTADOS = ['DISPONIBLE', 'ENCARGO', 'RESERVADA', 'VENDIDA']
 
@@ -65,6 +67,8 @@ const colorEstado = {
 
     // ── Componente principal ───────────────────────────────────────────────────
     export default function MisPiezas() {
+    const confirm = useConfirm()
+    const toast = useToast()
     const [piezas, setPiezas] = useState([])
     const [plan, setPlan] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -122,7 +126,7 @@ const colorEstado = {
         // Actualizamos solo la pieza afectada en el estado local, sin recargar todo
         setPiezas(prev => prev.map(p => p.id === piezaId ? data : p))
         } catch (err) {
-        alert('Error al eliminar la foto')
+        toast('Error al eliminar la foto', 'error')
         }
     }
 
@@ -144,7 +148,7 @@ const colorEstado = {
         if (archivos.length === 0) return
         const restante = maxFotos - fotosNuevas.length
         if (restante <= 0) {
-            alert(`Llegaste al máximo de ${maxFotos} fotos por pieza.`)
+            toast(`Llegaste al máximo de ${maxFotos} fotos por pieza.`, 'error')
             e.target.value = ''
             return
         }
@@ -153,9 +157,9 @@ const colorEstado = {
             .filter(a => a.type.startsWith('image/'))
             .slice(0, restante)
         if (validos.length < archivos.length) {
-            alert(`Solo se agregaron ${validos.length} fotos. ${restante < archivos.length
+            toast(`Solo se agregaron ${validos.length} fotos. ${restante < archivos.length
                 ? `Máximo ${maxFotos} por pieza.`
-                : 'Algunos archivos no eran imágenes válidas.'}`)
+                : 'Algunos archivos no eran imágenes válidas.'}`, 'error')
         }
         setFotosNuevas(prev => [...prev, ...validos])
         e.target.value = ''
@@ -220,7 +224,7 @@ const colorEstado = {
                     } catch (errFoto) {
                         const msg = errFoto.response?.data?.message ||
                             `Error al subir la foto ${i + 1} de ${fotosNuevas.length}`
-                        alert(msg)
+                        toast(msg, 'error')
                         break
                     }
                 }
@@ -245,12 +249,12 @@ const colorEstado = {
     }
 
     const handleEliminar = async (id) => {
-        if (!confirm('¿Eliminar esta pieza?')) return
+        if (!await confirm({ mensaje: '¿Eliminar esta pieza? Esta acción no se puede deshacer.', confirmLabel: 'Eliminar', danger: true })) return
         try {
         await api.delete(`/mis-piezas/${id}`)
         cargarPiezas()
         } catch (err) {
-        alert('Error al eliminar')
+        toast('Error al eliminar', 'error')
         }
     }
 
@@ -269,7 +273,7 @@ const colorEstado = {
         if (!archivo) return
         // Pre-validación: 50MB max para que no espere subiendo en vano
         if (archivo.size > 50 * 1024 * 1024) {
-            alert('El video supera los 50MB. Comprimilo o recortalo antes de subir.')
+            toast('El video supera los 50MB. Comprimilo o recortalo antes de subir.', 'error')
             e.target.value = ''
             return
         }
@@ -283,7 +287,7 @@ const colorEstado = {
             cargarPiezas()
         } catch (err) {
             const msg = err.response?.data?.message || 'Error al subir el video'
-            alert(msg)
+            toast(msg, 'error')
         } finally {
             setSubiendoVideo(null)
             e.target.value = ''
@@ -291,12 +295,12 @@ const colorEstado = {
     }
 
     const eliminarVideo = async (piezaId) => {
-        if (!confirm('¿Eliminar el video de esta pieza?')) return
+        if (!await confirm({ mensaje: '¿Eliminar el video de esta pieza?', confirmLabel: 'Eliminar', danger: true })) return
         try {
             await api.delete(`/mis-piezas/${piezaId}/video`)
             cargarPiezas()
         } catch (err) {
-            alert('Error al eliminar el video')
+            toast('Error al eliminar el video', 'error')
         }
     }
 
@@ -313,7 +317,7 @@ const colorEstado = {
         cargarPiezas()
         } catch (err) {
         const msg = err.response?.data?.message || 'Error al subir la foto'
-        alert(msg)
+        toast(msg, 'error')
         } finally {
         setSubiendoFoto(null)
         e.target.value = ''

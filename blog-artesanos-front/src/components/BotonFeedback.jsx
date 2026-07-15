@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Botón flotante "Feedback" en la esquina inferior derecha de toda la app.
@@ -13,6 +14,7 @@ const TIPOS = ['Bug / Error', 'Mejora', 'Pregunta', 'Otro']
 
 export default function BotonFeedback() {
     const { usuario } = useAuth()
+    const toast = useToast()
     const [abierto, setAbierto] = useState(false)
     const [tipo, setTipo] = useState('Mejora')
     const [mensaje, setMensaje] = useState('')
@@ -39,7 +41,7 @@ export default function BotonFeedback() {
                 setMensaje('')
             }, 2000)
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al enviar el feedback')
+            toast(err.response?.data?.message || 'Error al enviar el feedback', 'error')
         } finally {
             setEnviando(false)
         }

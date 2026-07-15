@@ -3,9 +3,11 @@ import { Navigate, Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useConfirm } from '../context/ConfirmContext'
 
 export default function AdminFeedback() {
     const { usuario } = useAuth()
+    const confirm = useConfirm()
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(true)
 
@@ -26,7 +28,7 @@ export default function AdminFeedback() {
     }
 
     const eliminar = async (id) => {
-        if (!confirm('¿Eliminar este feedback?')) return
+        if (!await confirm({ mensaje: '¿Eliminar este feedback?', confirmLabel: 'Eliminar', danger: true })) return
         await api.delete(`/feedback/${id}`)
         cargar()
     }

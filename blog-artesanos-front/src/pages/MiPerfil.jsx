@@ -5,9 +5,13 @@ import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 export default function MiPerfil() {
     const { usuario, login, logout } = useAuth()
+    const confirm = useConfirm()
+    const toast = useToast()
     const navigate = useNavigate()
     const [form, setForm] = useState({
         nombre: '', bio: '', ubicacion: '', rubros: '', instagram: '', whatsapp: ''
@@ -71,7 +75,7 @@ export default function MiPerfil() {
         })
         setAvatarUrl(data.avatarUrl)
         } catch {
-        alert('Error al subir el avatar')
+        toast('Error al subir el avatar', 'error')
         } finally {
         setSubiendoAvatar(false)
         e.target.value = ''
@@ -79,12 +83,12 @@ export default function MiPerfil() {
     }
 
     const eliminarAvatar = async () => {
-        if (!confirm('Eliminar tu foto de perfil?')) return
+        if (!await confirm({ mensaje: '¿Eliminar tu foto de perfil?', confirmLabel: 'Eliminar', danger: true })) return
         try {
         await api.delete('/artesanos/mi-perfil/avatar')
         setAvatarUrl(null)
         } catch {
-        alert('Error al eliminar el avatar')
+        toast('Error al eliminar el avatar', 'error')
         }
     }
 
@@ -255,16 +259,16 @@ export default function MiPerfil() {
                 onClick={async () => {
                     const confirmacion = prompt(`Para confirmar escribí: "ELIMINAR ${usuario.nombre}"`)
                     if (confirmacion !== `ELIMINAR ${usuario.nombre}`) {
-                    if (confirmacion !== null) alert('Texto incorrecto, no se eliminó nada.')
+                    if (confirmacion !== null) toast('Texto incorrecto, no se eliminó nada.', 'error')
                     return
                     }
                     try {
                     await api.delete('/artesanos/mi-cuenta')
-                    alert('Cuenta eliminada. Hasta pronto.')
+                    toast('Cuenta eliminada. Hasta pronto.', 'success')
                     logout()
                     navigate('/')
                     } catch {
-                    alert('Error al eliminar la cuenta')
+                    toast('Error al eliminar la cuenta', 'error')
                     }
                 }}
                 style={{

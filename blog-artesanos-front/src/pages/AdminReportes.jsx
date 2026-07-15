@@ -3,9 +3,11 @@ import { Link, Navigate } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 export default function AdminReportes() {
     const { usuario } = useAuth()
+    const toast = useToast()
     const [reportes, setReportes] = useState([])
     const [filtro, setFiltro] = useState('pendientes')
     const [loading, setLoading] = useState(true)
@@ -28,7 +30,7 @@ export default function AdminReportes() {
             await api.post(`/admin/reportes/${id}/resolver`, { nota: nota || '' })
             cargar()
         } catch {
-            alert('Error al resolver')
+            toast('Error al resolver', 'error')
         }
     }
 
@@ -57,7 +59,7 @@ export default function AdminReportes() {
             await api.post(`/admin/reportes/${reporte.id}/resolver`, { nota: 'Contenido eliminado: ' + motivo })
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar')
+            toast(err.response?.data?.message || 'Error al eliminar', 'error')
         }
     }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../api/axios'
+import { useToast } from '../context/ToastContext'
 
 function formatearFecha(fecha) {
     if (!fecha) return ''
@@ -19,6 +20,7 @@ function formatearFecha(fecha) {
 }
 
 export default function SeccionComentarios({ piezaId, usuario }) {
+    const toast = useToast()
     const [comentarios, setComentarios] = useState([])
     const [texto, setTexto] = useState('')
     const [enviando, setEnviando] = useState(false)
@@ -39,7 +41,7 @@ export default function SeccionComentarios({ piezaId, usuario }) {
             setComentarios(prev => [data, ...prev])
             setTexto('')
         } catch {
-            alert('Error al enviar el comentario')
+            toast('Error al enviar el comentario', 'error')
         } finally {
             setEnviando(false)
         }
@@ -50,7 +52,7 @@ export default function SeccionComentarios({ piezaId, usuario }) {
             await api.delete(`/piezas/${piezaId}/comentarios/${comentarioId}`)
             setComentarios(prev => prev.filter(c => c.id !== comentarioId))
         } catch {
-            alert('Error al eliminar')
+            toast('Error al eliminar', 'error')
         }
     }
 

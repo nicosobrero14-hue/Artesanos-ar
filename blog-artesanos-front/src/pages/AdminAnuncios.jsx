@@ -3,6 +3,8 @@ import { Navigate, Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Admin → Anuncios.
@@ -13,6 +15,8 @@ import { useAuth } from '../context/AuthContext'
  */
 export default function AdminAnuncios() {
     const { usuario } = useAuth()
+    const confirm = useConfirm()
+    const toast = useToast()
     const [mensaje, setMensaje] = useState('')
     const [url, setUrl] = useState('')
     const [enviarEmail, setEnviarEmail] = useState(true)
@@ -24,11 +28,13 @@ export default function AdminAnuncios() {
     const enviar = async (e) => {
         e.preventDefault()
         if (!mensaje.trim()) return
-        const ok = confirm(
-            `¿Mandar este anuncio a TODOS los usuarios activos?\n\n"${mensaje.trim()}"\n\n` +
-            `Aparece en la campana de notificaciones` +
-            (enviarEmail ? ' y además les llega por email.' : ' de cada usuario.')
-        )
+        const ok = await confirm({
+            titulo: 'Enviar anuncio global',
+            mensaje: `¿Mandar este anuncio a TODOS los usuarios activos?\n\n"${mensaje.trim()}"\n\n` +
+                `Aparece en la campana de notificaciones` +
+                (enviarEmail ? ' y además les llega por email.' : ' de cada usuario.'),
+            confirmLabel: 'Enviar'
+        })
         if (!ok) return
 
         setEnviando(true)
@@ -41,7 +47,7 @@ export default function AdminAnuncios() {
             setMensaje('')
             setUrl('')
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al enviar el anuncio')
+            toast(err.response?.data?.message || 'Error al enviar el anuncio', 'error')
         } finally {
             setEnviando(false)
         }

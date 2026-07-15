@@ -3,6 +3,7 @@ import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { useToast } from '../context/ToastContext'
 
 const ESTADOS = ['PENDIENTE', 'EN_PROCESO', 'LISTO', 'ENTREGADO', 'CANCELADO']
 
@@ -15,6 +16,7 @@ const colorEstado = {
     }
 
     export default function MisPedidos() {
+    const toast = useToast()
     const [pedidos, setPedidos] = useState([])
     const [loading, setLoading] = useState(true)
     const [filtro, setFiltro] = useState('')
@@ -68,7 +70,7 @@ const colorEstado = {
         await api.put(`/mis-pedidos/${id}/estado?nuevoEstado=${nuevoEstado}`)
         cargarPedidos()
         } catch (err) {
-        alert('Error al cambiar el estado')
+        toast('Error al cambiar el estado', 'error')
         }
     }
 

@@ -214,8 +214,8 @@ function TopBar({ usuario }) {
                 <Link to="/" style={{
                     color: 'var(--color-accent)',
                     fontWeight: '700',
-                    fontSize: '17px',
-                    letterSpacing: '-0.01em',
+                    fontSize: '22px',
+                    letterSpacing: '-0.02em',
                     flexShrink: 0
                 }}>
                     Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>.ar</span>

@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Input from '../components/Input'
 import Button from '../components/Button'
+import { useToast } from '../context/ToastContext'
 
 export default function Registro() {
+    const toast = useToast()
     const [form, setForm] = useState({ nombre: '', email: '', password: '', ubicacion: '' })
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -55,9 +57,9 @@ export default function Registro() {
             onClick={async () => {
                 try {
                 await api.post('/auth/reenviar-verificacion', { email: form.email })
-                alert('Email reenviado')
+                toast('Email reenviado', 'success')
                 } catch {
-                alert('Error al reenviar')
+                toast('Error al reenviar', 'error')
                 }
             }}
             style={{ background: 'none', border: 'none', color: 'var(--color-accent)', cursor: 'pointer', fontSize: '13px' }}

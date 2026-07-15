@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Card de evento reusable. Modo "compact" para el banner del home,
@@ -12,6 +14,8 @@ import { useAuth } from '../context/AuthContext'
  */
 export default function EventoCard({ evento, onChange, onEditar, onEliminar, compact = false }) {
     const { usuario } = useAuth()
+    const confirm = useConfirm()
+    const toast = useToast()
     const [enviando, setEnviando] = useState(false)
 
     const handleSumarme = async () => {
@@ -24,19 +28,19 @@ export default function EventoCard({ evento, onChange, onEditar, onEliminar, com
             const { data } = await api.post(`/eventos/${evento.id}/sumarme`)
             onChange?.(data)
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al sumarte')
+            toast(err.response?.data?.message || 'Error al sumarte', 'error')
         } finally {
             setEnviando(false)
         }
     }
 
     const handleEliminar = async () => {
-        if (!confirm(`¿Eliminar el evento "${evento.nombre}"?`)) return
+        if (!await confirm({ mensaje: `¿Eliminar el evento "${evento.nombre}"?`, confirmLabel: 'Eliminar', danger: true })) return
         try {
             await api.delete(`/eventos/${evento.id}`)
             onEliminar?.(evento.id)
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar')
+            toast(err.response?.data?.message || 'Error al eliminar', 'error')
         }
     }
 

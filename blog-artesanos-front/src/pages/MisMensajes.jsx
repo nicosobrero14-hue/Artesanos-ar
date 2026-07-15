@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 function formatearFecha(fecha) {
     if (!fecha) return ''
@@ -23,6 +24,7 @@ function formatearFecha(fecha) {
 
 export default function MisMensajes() {
     const { usuario } = useAuth()
+    const toast = useToast()
     const [mensajes, setMensajes] = useState([])
     const [loading, setLoading] = useState(true)
     const [filtro, setFiltro] = useState('todos')
@@ -62,7 +64,7 @@ export default function MisMensajes() {
             setTimeout(() => setRespondidoOk(null), 3000)
         } catch (err) {
             const msg = err.response?.data?.message || 'Error al enviar la respuesta'
-            alert(msg)
+            toast(msg, 'error')
         } finally {
             setEnviandoRespuesta(false)
         }

@@ -79,8 +79,11 @@ export default function Navbar() {
             }}>
                 {/* Lado izquierdo */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '32px', minWidth: 0 }}>
-                    <Link to="/" style={{ color: 'var(--color-accent)', fontWeight: '600', fontSize: '16px', flexShrink: 0 }}>
-                        Artesanos
+                    <Link to="/" style={{
+                        color: 'var(--color-accent)', fontWeight: 'var(--weight-bold)',
+                        fontSize: '20px', letterSpacing: '-0.02em', flexShrink: 0
+                    }}>
+                        Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: 'var(--weight-regular)' }}>.ar</span>
                     </Link>
 
                     {/* Links desktop */}

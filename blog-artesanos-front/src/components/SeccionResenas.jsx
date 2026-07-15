@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../api/axios'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Sección de reseñas para un artesano.
@@ -10,6 +12,8 @@ import api from '../api/axios'
  * El backend valida que el usuario no se reseñe a sí mismo y que no duplique.
  */
 export default function SeccionResenas({ slug, usuario }) {
+    const confirm = useConfirm()
+    const toast = useToast()
     const [data, setData] = useState({ resenas: [], promedio: 0, total: 0 })
     const [loading, setLoading] = useState(true)
     const [calificacion, setCalificacion] = useState(0)
@@ -38,7 +42,7 @@ export default function SeccionResenas({ slug, usuario }) {
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (!calificacion) {
-            alert('Elegí una calificación de 1 a 5 estrellas')
+            toast('Elegí una calificación de 1 a 5 estrellas', 'error')
             return
         }
         setEnviando(true)
@@ -48,19 +52,19 @@ export default function SeccionResenas({ slug, usuario }) {
             setTexto('')
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al enviar la reseña')
+            toast(err.response?.data?.message || 'Error al enviar la reseña', 'error')
         } finally {
             setEnviando(false)
         }
     }
 
     const handleEliminar = async (id) => {
-        if (!confirm('¿Eliminar esta reseña?')) return
+        if (!await confirm({ mensaje: '¿Eliminar esta reseña?', confirmLabel: 'Eliminar', danger: true })) return
         try {
             await api.delete(`/artesanos/${slug}/resenas/${id}`)
             cargar()
         } catch {
-            alert('Error al eliminar')
+            toast('Error al eliminar', 'error')
         }
     }
 

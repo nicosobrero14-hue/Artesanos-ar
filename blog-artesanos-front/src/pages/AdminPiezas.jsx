@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import { optimizarThumb } from '../utils/cloudinary'
 
 /*
@@ -18,6 +19,7 @@ import { optimizarThumb } from '../utils/cloudinary'
  */
 export default function AdminPiezas() {
     const { usuario } = useAuth()
+    const toast = useToast()
     const [piezas, setPiezas] = useState([])
     const [loading, setLoading] = useState(true)
     const [filtro, setFiltro] = useState('todas')
@@ -43,7 +45,7 @@ export default function AdminPiezas() {
             await api.post(`/admin/piezas/${p.id}/toggle-oculta`, { motivo: motivo || '' })
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || `Error al ${accion}`)
+            toast(err.response?.data?.message || `Error al ${accion}`, 'error')
         }
     }
 
@@ -54,7 +56,7 @@ export default function AdminPiezas() {
             await api.delete(`/admin/piezas/${p.id}?motivo=${encodeURIComponent(motivo)}`)
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar')
+            toast(err.response?.data?.message || 'Error al eliminar', 'error')
         }
     }
 

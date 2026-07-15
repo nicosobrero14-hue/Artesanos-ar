@@ -4,6 +4,7 @@ import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
 import Button from '../components/Button'
+import { useToast } from '../context/ToastContext'
 
 export default function Login() {
     const [form, setForm] = useState({ email: '', password: '' })
@@ -11,6 +12,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false)
     const [mostrarReenvio, setMostrarReenvio] = useState(false)
     const { login } = useAuth()
+    const toast = useToast()
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const sesionExpiro = searchParams.get('expired') === '1'
@@ -110,9 +112,9 @@ export default function Login() {
                 onClick={async () => {
                     try {
                     await api.post('/auth/reenviar-verificacion', { email: form.email })
-                    alert('Email de verificacion reenviado')
+                    toast('Email de verificación reenviado', 'success')
                     } catch {
-                    alert('Error al reenviar')
+                    toast('Error al reenviar', 'error')
                     }
                 }}
                 style={{ background: 'none', border: 'none', color: 'var(--color-accent)', cursor: 'pointer', fontSize: '13px', padding: 0, textAlign: 'left' }}

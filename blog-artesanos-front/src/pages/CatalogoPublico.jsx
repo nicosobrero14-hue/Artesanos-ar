@@ -7,6 +7,7 @@ import SeccionResenas from '../components/SeccionResenas'
 import CuponesVigentes from '../components/CuponesVigentes'
 import BotonCompartir from '../components/BotonCompartir'
 import ThemeToggle from '../components/ThemeToggle'
+import { useToast } from '../context/ToastContext'
 import BotonWhatsApp from '../components/BotonWhatsApp'
 import BotonMeGusta from '../components/BotonMeGusta'
 import { useAuth } from '../context/AuthContext'
@@ -29,6 +30,7 @@ const labelEstado = {
 export default function CatalogoPublico() {
     const { slug } = useParams()
     const { usuario } = useAuth()
+    const toast = useToast()
     const [artesano, setArtesano] = useState(null)
     const [piezas, setPiezas] = useState([])
     const [filtro, setFiltro] = useState('TODAS')
@@ -87,7 +89,7 @@ export default function CatalogoPublico() {
             setForm(f => ({ ...f, mensaje: '' }))
             setPiezaSeleccionada(null)
         } catch {
-            alert('Error al enviar el mensaje')
+            toast('Error al enviar el mensaje', 'error')
         } finally {
             setEnviando(false)
         }

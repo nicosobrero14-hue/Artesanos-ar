@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Botón discreto "🚩 Reportar" + modal con motivos predefinidos.
@@ -20,6 +21,7 @@ const MOTIVOS = [
 
 export default function BotonReportar({ tipo, objetoId, sutil = false }) {
     const { usuario } = useAuth()
+    const toast = useToast()
     const [abierto, setAbierto] = useState(false)
     const [motivo, setMotivo] = useState('')
     const [detalle, setDetalle] = useState('')
@@ -52,7 +54,7 @@ export default function BotonReportar({ tipo, objetoId, sutil = false }) {
             setEnviado(true)
             setTimeout(() => setAbierto(false), 1800)
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al enviar el reporte')
+            toast(err.response?.data?.message || 'Error al enviar el reporte', 'error')
         } finally {
             setEnviando(false)
         }

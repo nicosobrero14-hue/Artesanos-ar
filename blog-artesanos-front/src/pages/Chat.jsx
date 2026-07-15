@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 import useIsMobile from '../hooks/useIsMobile'
 
 /*
@@ -24,6 +26,8 @@ import useIsMobile from '../hooks/useIsMobile'
  */
 export default function Chat() {
     const { usuario } = useAuth()
+    const confirm = useConfirm()
+    const toast = useToast()
     const soyAdmin = usuario?.rol === 'ADMIN'
     const isMobile = useIsMobile()
 
@@ -95,7 +99,7 @@ export default function Chat() {
             // Refrescar lista para actualizar no-leídos
             api.get('/chat').then(res => setConversaciones(res.data)).catch(() => {})
         } catch (err) {
-            alert(err.response?.data?.message || 'No se pudo abrir el chat')
+            toast(err.response?.data?.message || 'No se pudo abrir el chat', 'error')
         }
     }
 
@@ -115,11 +119,14 @@ export default function Chat() {
      */
     const vaciarChat = async () => {
         if (!activa) return
-        const ok = confirm(
-            `¿Vaciar todos los mensajes de este chat con ${activa.otroNombre}?\n\n` +
-            `⚠️ Los mensajes se borran para ambos lados (vos y la otra persona).\n` +
-            `Esta acción no se puede deshacer.`
-        )
+        const ok = await confirm({
+            titulo: 'Vaciar chat',
+            mensaje: `¿Vaciar todos los mensajes de este chat con ${activa.otroNombre}?\n\n` +
+                `Los mensajes se borran para ambos lados (vos y la otra persona). ` +
+                `Esta acción no se puede deshacer.`,
+            confirmLabel: 'Vaciar',
+            danger: true
+        })
         if (!ok) return
         try {
             await api.delete(`/chat/${activa.id}/mensajes`)
@@ -127,7 +134,7 @@ export default function Chat() {
             ultimoIdRef.current = 0
             api.get('/chat').then(res => setConversaciones(res.data)).catch(() => {})
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al vaciar el chat')
+            toast(err.response?.data?.message || 'Error al vaciar el chat', 'error')
         }
     }
 
@@ -143,9 +150,9 @@ export default function Chat() {
             ? `¿Eliminar la conversación con ${activa.otroNombre} de tu lado?\n\n` +
               `La otra persona la sigue viendo. Si llega un mensaje nuevo, vuelve a aparecer.`
             : `¿Eliminar la conversación con ${activa.otroNombre}?\n\n` +
-              `⚠️ Se borra todo el historial para ambos lados.\n` +
+              `Se borra todo el historial para ambos lados. ` +
               `Si vuelven a chatear se crea una conversación nueva.`
-        const ok = confirm(mensaje)
+        const ok = await confirm({ titulo: 'Eliminar conversación', mensaje, confirmLabel: 'Eliminar', danger: true })
         if (!ok) return
         try {
             await api.delete(`/chat/${activa.id}`)
@@ -153,7 +160,7 @@ export default function Chat() {
             ultimoIdRef.current = 0
             api.get('/chat').then(res => setConversaciones(res.data)).catch(() => {})
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar la conversación')
+            toast(err.response?.data?.message || 'Error al eliminar la conversación', 'error')
         }
     }
 
@@ -166,7 +173,7 @@ export default function Chat() {
             const { data } = await api.post(`/chat/${activa.id}/toggle-respuesta`)
             setActiva(prev => ({ ...prev, respuestaHabilitada: data.respuestaHabilitada }))
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al cambiar el estado')
+            toast(err.response?.data?.message || 'Error al cambiar el estado', 'error')
         }
     }
 
@@ -182,7 +189,7 @@ export default function Chat() {
             // Refrescar lista (cambió ultimo mensaje y actividad)
             api.get('/chat').then(res => setConversaciones(res.data)).catch(() => {})
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al enviar')
+            toast(err.response?.data?.message || 'Error al enviar', 'error')
         } finally {
             setEnviando(false)
         }

@@ -3,8 +3,12 @@ import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 export default function MisClientes() {
+    const confirm = useConfirm()
+    const toast = useToast()
     const [clientes, setClientes] = useState([])
     const [loading, setLoading] = useState(true)
     const [mostrarForm, setMostrarForm] = useState(false)
@@ -55,19 +59,19 @@ export default function MisClientes() {
         setMostrarForm(false)
         cargarClientes()
         } catch {
-        alert('Error al guardar el cliente')
+        toast('Error al guardar el cliente', 'error')
         } finally {
         setGuardando(false)
         }
     }
 
     const handleEliminar = async (id) => {
-        if (!confirm('Eliminar este cliente?')) return
+        if (!await confirm({ mensaje: '¿Eliminar este cliente?', confirmLabel: 'Eliminar', danger: true })) return
         try {
         await api.delete(`/mis-clientes/${id}`)
         cargarClientes()
         } catch {
-        alert('Error al eliminar')
+        toast('Error al eliminar', 'error')
         }
     }
 

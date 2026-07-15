@@ -3,6 +3,8 @@ import { Navigate, Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Panel admin: tabla con todos los artesanos del sistema y acciones
@@ -13,6 +15,8 @@ import { useAuth } from '../context/AuthContext'
  */
 export default function Admin() {
     const { usuario } = useAuth()
+    const confirm = useConfirm()
+    const toast = useToast()
     const [artesanos, setArtesanos] = useState([])
     const [loading, setLoading] = useState(true)
     const [filtro, setFiltro] = useState('')
@@ -40,7 +44,7 @@ export default function Admin() {
             .then(res => setArtesanos(res.data))
             .catch(err => {
                 console.error(err)
-                alert('Error al cargar artesanos')
+                toast('Error al cargar artesanos', 'error')
             })
             .finally(() => setLoading(false))
     }
@@ -54,20 +58,20 @@ export default function Admin() {
             setMeses(1)
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al activar Premium')
+            toast(err.response?.data?.message || 'Error al activar Premium', 'error')
         } finally {
             setAccionando(null)
         }
     }
 
     const handleDowngrade = async (a) => {
-        if (!confirm(`¿Bajar a GRATIS a ${a.nombre}?`)) return
+        if (!await confirm({ mensaje: `¿Bajar a GRATIS a ${a.nombre}?`, confirmLabel: 'Bajar a Gratis' })) return
         setAccionando(a.id)
         try {
             await api.post(`/admin/artesanos/${a.id}/downgrade`)
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al bajar a Gratis')
+            toast(err.response?.data?.message || 'Error al bajar a Gratis', 'error')
         } finally {
             setAccionando(null)
         }
@@ -84,14 +88,14 @@ export default function Admin() {
             if (motivo === null) return // canceló
         } else {
             // Reactivando — confirmación simple
-            if (!confirm(`¿Reactivar la cuenta de ${a.nombre}?`)) return
+            if (!await confirm({ mensaje: `¿Reactivar la cuenta de ${a.nombre}?`, confirmLabel: 'Reactivar' })) return
         }
         setAccionando(a.id)
         try {
             await api.post(`/admin/artesanos/${a.id}/toggle-activo`, { motivo: motivo || '' })
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al cambiar estado')
+            toast(err.response?.data?.message || 'Error al cambiar estado', 'error')
         } finally {
             setAccionando(null)
         }

@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Admin: editar config del ranking — periodicidad, premio, fecha del próximo otorgamiento.
@@ -13,6 +14,7 @@ const PERIODICIDADES = ['Semanal', 'Quincenal', 'Mensual']
 
 export default function AdminRanking() {
     const { usuario } = useAuth()
+    const toast = useToast()
     const [config, setConfig] = useState(null)
     const [loading, setLoading] = useState(true)
     const [guardando, setGuardando] = useState(false)
@@ -28,7 +30,7 @@ export default function AdminRanking() {
             const res = await api.get('/ranking/config')
             setConfig(res.data)
         } catch {
-            alert('Error cargando configuración')
+            toast('Error cargando configuración', 'error')
         } finally {
             setLoading(false)
         }
@@ -38,7 +40,7 @@ export default function AdminRanking() {
 
     const guardar = async () => {
         if (!config.descripcionPremio?.trim()) {
-            alert('Ingresá una descripción del premio')
+            toast('Ingresá una descripción del premio', 'error')
             return
         }
         setGuardando(true)
@@ -55,7 +57,7 @@ export default function AdminRanking() {
             setOk(true)
             setTimeout(() => setOk(false), 2500)
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al guardar')
+            toast(err.response?.data?.message || 'Error al guardar', 'error')
         } finally {
             setGuardando(false)
         }

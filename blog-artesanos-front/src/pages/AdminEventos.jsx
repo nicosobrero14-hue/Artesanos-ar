@@ -4,6 +4,8 @@ import api from '../api/axios'
 import Navbar from '../components/Navbar'
 import EventoCard from '../components/EventoCard'
 import { useAuth } from '../context/AuthContext'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Panel admin para moderar eventos.
@@ -16,6 +18,8 @@ import { useAuth } from '../context/AuthContext'
  */
 export default function AdminEventos() {
     const { usuario } = useAuth()
+    const confirm = useConfirm()
+    const toast = useToast()
     const [eventos, setEventos] = useState([])
     const [tab, setTab] = useState('pendientes')
     const [loading, setLoading] = useState(true)
@@ -40,20 +44,20 @@ export default function AdminEventos() {
             await api.post(`/admin/eventos/${id}/aprobar`)
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al aprobar')
+            toast(err.response?.data?.message || 'Error al aprobar', 'error')
         } finally {
             setAccionando(null)
         }
     }
 
     const handleEliminar = async (id) => {
-        if (!confirm('¿Eliminar este evento? Esta acción no se puede deshacer.')) return
+        if (!await confirm({ mensaje: '¿Eliminar este evento? Esta acción no se puede deshacer.', confirmLabel: 'Eliminar', danger: true })) return
         setAccionando(id)
         try {
             await api.delete(`/admin/eventos/${id}`)
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar')
+            toast(err.response?.data?.message || 'Error al eliminar', 'error')
         } finally {
             setAccionando(null)
         }

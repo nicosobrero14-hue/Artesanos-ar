@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
+import { useConfirm } from '../context/ConfirmContext'
+import { useToast } from '../context/ToastContext'
 
 /*
  * Panel de cupones — premium-only.
  * Free ve un CTA con explicación.
  */
 export default function MisCupones() {
+    const confirm = useConfirm()
+    const toast = useToast()
     const [cupones, setCupones] = useState([])
     const [misPiezas, setMisPiezas] = useState([])
     const [plan, setPlan] = useState(null)
@@ -54,17 +58,17 @@ export default function MisCupones() {
             setForm({ codigo: '', porcentaje: 10, descripcion: '', fechaVencimiento: '', usosMax: '', piezasIds: [] })
             cargar()
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al crear cupón')
+            toast(err.response?.data?.message || 'Error al crear cupón', 'error')
         }
     }
 
     const handleEliminar = async (id) => {
-        if (!confirm('¿Eliminar este cupón?')) return
+        if (!await confirm({ mensaje: '¿Eliminar este cupón?', confirmLabel: 'Eliminar', danger: true })) return
         try {
             await api.delete(`/mis-cupones/${id}`)
             cargar()
         } catch {
-            alert('Error al eliminar')
+            toast('Error al eliminar', 'error')
         }
     }
 
