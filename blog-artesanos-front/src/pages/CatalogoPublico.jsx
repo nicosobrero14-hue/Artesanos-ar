@@ -7,6 +7,7 @@ import SeccionResenas from '../components/SeccionResenas'
 import CuponesVigentes from '../components/CuponesVigentes'
 import BotonCompartir from '../components/BotonCompartir'
 import ThemeToggle from '../components/ThemeToggle'
+import PantallaError from '../components/PantallaError'
 import { useToast } from '../context/ToastContext'
 import BotonWhatsApp from '../components/BotonWhatsApp'
 import BotonMeGusta from '../components/BotonMeGusta'
@@ -102,9 +103,10 @@ export default function CatalogoPublico() {
     )
 
     if (!artesano) return (
-        <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p style={{ color: 'var(--color-danger)' }}>Artesano no encontrado</p>
-        </div>
+        <PantallaError
+            titulo="Artesano no encontrado"
+            detalle="Este catálogo no existe o el enlace cambió. Puede que el artesano haya dado de baja su cuenta."
+        />
     )
 
     return (

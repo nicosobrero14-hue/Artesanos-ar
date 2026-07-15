@@ -9,6 +9,7 @@ import BotonMeGusta from '../components/BotonMeGusta'
 import BotonFavorito from '../components/BotonFavorito'
 import BotonReportar from '../components/BotonReportar'
 import ThemeToggle from '../components/ThemeToggle'
+import PantallaError from '../components/PantallaError'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
 
@@ -75,9 +76,10 @@ export default function PiezaDetalle() {
     )
 
     if (!pieza) return (
-        <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p style={{ color: 'var(--color-danger)' }}>Pieza no encontrada</p>
-        </div>
+        <PantallaError
+            titulo="Pieza no encontrada"
+            detalle="Esta pieza no existe, fue vendida o el artesano la quitó de su catálogo."
+        />
     )
 
     return (
