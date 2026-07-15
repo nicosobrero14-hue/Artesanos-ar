@@ -65,22 +65,25 @@
  * así que basta con sobrescribir las variables acá.
  */
 :root[data-theme="light"] {
-  /* Superficies tipo papel/pergamino — menos brillantes que el blanco puro
-     para no cansar la vista y para ir con la identidad artesanal. */
-  --color-bg: #ede4cf;         /* crema de fondo — más cálido que off-white */
-  --color-bg-2: #f5ecd6;       /* superficies elevadas (cards, navbar) — un tono más claro */
-  --color-bg-3: #e3d8bd;       /* superficies profundas (inputs, chips) */
-  --color-border: #cfc09a;
-  --color-text: #1f1a13;       /* texto principal, muy oscuro pero no negro puro */
-  --color-text-2: #5a5040;
-  --color-text-3: #8a7f6a;
+  /* Crema suave tirando a blanco — clara y descansada, con un tinte cálido
+     que la aleja del blanco clínico. Los colores de texto están calibrados
+     para cumplir WCAG AA sobre este fondo (verificado con ratios de contraste). */
+  --color-bg: #f8f3e8;         /* fondo casi blanco con tinte crema */
+  --color-bg-2: #fefcf6;       /* superficies elevadas (cards, navbar) */
+  --color-bg-3: #eee7d6;       /* superficies profundas (inputs, chips) */
+  --color-border: #d8caa4;
+  --color-text: #1f1a13;       /* principal — 15.6:1 AAA */
+  --color-text-2: #5a5040;     /* secundario — 7.1:1 AAA */
+  --color-text-3: #6b6150;     /* terciario/hints — 5.5:1 AA (pasa también sobre inputs) */
 
+  /* accent se queda medio: como fondo de botón con texto oscuro cumple AA (5.2:1);
+     como texto (precio grande) llega a AA-large. */
   --color-accent: #a8874a;
   --color-accent-hover: #8f7238;
-  --color-success: #2f8a5f;
-  --color-danger: #c94141;
-  --color-premium: #c8880f;
-  --color-reservada: #4a5cd8;
+  --color-success: #1f6644;    /* oscurecido para AA como texto (6.2:1) */
+  --color-danger: #a52828;     /* oscurecido para AA como texto (6.5:1) */
+  --color-premium: #c8880f;    /* se usa como fondo de badge con texto oscuro (5.8:1) */
+  --color-reservada: #3f4ec0;  /* oscurecido para AA como texto (6.2:1) */
 
   --shadow-sm: 0 1px 2px rgba(70, 55, 20, 0.08);
   --shadow-md: 0 4px 12px rgba(70, 55, 20, 0.10);
