@@ -65,23 +65,25 @@
  * así que basta con sobrescribir las variables acá.
  */
 :root[data-theme="light"] {
-  --color-bg: #fafaf7;
-  --color-bg-2: #ffffff;
-  --color-bg-3: #f0ede6;
-  --color-border: #e2ddd2;
-  --color-text: #1a1a1a;
-  --color-text-2: #555555;
-  --color-text-3: #7a7a7a;
+  /* Superficies tipo papel/pergamino — menos brillantes que el blanco puro
+     para no cansar la vista y para ir con la identidad artesanal. */
+  --color-bg: #ede4cf;         /* crema de fondo — más cálido que off-white */
+  --color-bg-2: #f5ecd6;       /* superficies elevadas (cards, navbar) — un tono más claro */
+  --color-bg-3: #e3d8bd;       /* superficies profundas (inputs, chips) */
+  --color-border: #cfc09a;
+  --color-text: #1f1a13;       /* texto principal, muy oscuro pero no negro puro */
+  --color-text-2: #5a5040;
+  --color-text-3: #8a7f6a;
 
   --color-accent: #a8874a;
   --color-accent-hover: #8f7238;
   --color-success: #2f8a5f;
   --color-danger: #c94141;
-  --color-premium: #d48f10;
+  --color-premium: #c8880f;
   --color-reservada: #4a5cd8;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px rgba(70, 55, 20, 0.08);
+  --shadow-md: 0 4px 12px rgba(70, 55, 20, 0.10);
 
   color-scheme: light;
 }
