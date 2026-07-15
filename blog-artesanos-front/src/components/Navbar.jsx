@@ -84,7 +84,7 @@ export default function Navbar() {
                         color: 'var(--color-accent)', fontWeight: 'var(--weight-bold)',
                         fontSize: '20px', letterSpacing: '-0.02em', flexShrink: 0
                     }}>
-                        Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: 'var(--weight-regular)' }}>.ar</span>
+                        Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: 'var(--weight-regular)' }}>-ar</span>
                     </Link>
 
                     {/* Links desktop */}

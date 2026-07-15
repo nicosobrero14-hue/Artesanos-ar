@@ -57,33 +57,28 @@ export default function Inicio() {
     }, [])
 
     /*
-     * Re-cargar destacadas y recientes cuando cambia el filtro de oficio.
-     * Además: polling cada 25 segundos para rotar piezas EN VIVO sin que el
-     * usuario tenga que recargar. El backend hace shuffle en cada request, así
-     * que cada poll trae el mismo set pero en orden distinto (la rotación visual).
+     * Cargar destacadas, recientes y artesanos destacados. Se re-ejecuta solo
+     * cuando cambia el filtro de oficio.
      *
-     * Pausamos el poll si la pestaña no está visible para no gastar bandwidth.
+     * Antes esto hacía polling cada 7.5s y el backend mezclaba (shuffle) en cada
+     * request para "rotar" las piezas en vivo. Pero reordenar las tarjetas
+     * mientras el usuario scrollea le movía el contenido bajo los pies y le
+     * saltaba el scroll al tope. Ahora se carga una vez y queda fijo — el usuario
+     * navega con el scroll, que es lo esperable.
      */
     useEffect(() => {
         const params = oficioSeleccionado ? `?oficio=${oficioSeleccionado}` : ''
-        const tick = () => {
-            if (document.hidden) return
-            Promise.all([
-                api.get(`/piezas/destacadas${params}`),
-                api.get(`/piezas/recientes${params}`),
-                api.get('/home/artesanos-destacados')
-            ])
-                .then(([resDest, resRec, resArtDest]) => {
-                    setDestacadas(resDest.data)
-                    setRecientes(resRec.data)
-                    // Artesanos destacados rotativos (los mostramos primero en el carrusel)
-                    setArtesanosDestacados(resArtDest.data)
-                })
-                .catch(err => console.error(err))
-        }
-        tick() // fetch inicial
-        const id = setInterval(tick, 7500) // refresh cada 25s
-        return () => clearInterval(id)
+        Promise.all([
+            api.get(`/piezas/destacadas${params}`),
+            api.get(`/piezas/recientes${params}`),
+            api.get('/home/artesanos-destacados')
+        ])
+            .then(([resDest, resRec, resArtDest]) => {
+                setDestacadas(resDest.data)
+                setRecientes(resRec.data)
+                setArtesanosDestacados(resArtDest.data)
+            })
+            .catch(err => console.error(err))
     }, [oficioSeleccionado])
 
     // Extraemos los rubros únicos de todos los artesanos (split por coma, lowercase)
@@ -219,7 +214,7 @@ function TopBar({ usuario }) {
                     letterSpacing: '-0.02em',
                     flexShrink: 0
                 }}>
-                    Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>.ar</span>
+                    Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>-ar</span>
                 </Link>
 
                 {/* Links desktop */}
@@ -979,7 +974,7 @@ function Footer() {
             }}>
                 <div>
                     <p style={{ fontWeight: '600', color: 'var(--color-accent)', marginBottom: '4px' }}>
-                        Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>.ar</span>
+                        Artesanos<span style={{ color: 'var(--color-text-3)', fontWeight: '400' }}>-ar</span>
                     </p>
                     <p style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>
                         Trabajo artesanal argentino, directo del taller.

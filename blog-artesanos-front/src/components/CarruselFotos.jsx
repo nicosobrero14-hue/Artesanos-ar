@@ -6,10 +6,13 @@ import { optimizarCard, optimizarHero } from '../utils/cloudinary'
  * - fotos: array de URLs
  * - titulo: string para el alt
  * - height: altura del carrusel en px
+ * - ajuste: 'cover' (default, llena y recorta — ideal para grillas de cards)
+ *           o 'contain' (muestra la imagen completa con letterbox — ideal para
+ *           la vista de detalle donde importa ver toda la pieza)
  * - onEliminar: función(indice) — si se pasa, muestra el botón de borrar
  *   Solo se usa en el panel privado, nunca en el catálogo público
  */
-export default function CarruselFotos({ fotos = [], titulo = '', height = 180, onEliminar }) {
+export default function CarruselFotos({ fotos = [], titulo = '', height = 180, ajuste = 'cover', onEliminar }) {
     const [indice, setIndice] = useState(0)
     const [visorAbierto, setVisorAbierto] = useState(false)
 
@@ -52,7 +55,7 @@ export default function CarruselFotos({ fotos = [], titulo = '', height = 180, o
             loading="lazy"
             alt={`${titulo} - foto ${indice + 1}`}
             onClick={() => setVisorAbierto(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }}
+            style={{ width: '100%', height: '100%', objectFit: ajuste, cursor: 'zoom-in' }}
             />
 
             {fotos.length > 1 && (

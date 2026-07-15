@@ -125,7 +125,7 @@ export default function PiezaDetalle() {
                     {/* Fotos + Video */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <div style={{ background: 'var(--color-bg-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
-                            <CarruselFotos fotos={pieza.fotos} titulo={pieza.titulo} height={340} />
+                            <CarruselFotos fotos={pieza.fotos} titulo={pieza.titulo} height={340} ajuste="contain" />
                         </div>
                         {pieza.videoUrl && (
                             <div style={{ background: 'var(--color-bg-2)', border: '1px solid color-mix(in srgb, var(--color-premium) 33%, transparent)', borderRadius: 'var(--radius)', overflow: 'hidden', position: 'relative' }}>
