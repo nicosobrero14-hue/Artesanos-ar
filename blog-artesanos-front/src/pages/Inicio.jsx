@@ -431,15 +431,8 @@ function Hero({ busqueda, setBusqueda, stats, loading }) {
     }
     return (
         <div className="hero-section" style={{
-            /*
-             * Base marrón oscuro cálido (gama del dorado) + los brillos
-             * difuminados originales pero bien sutiles — apenas se perciben.
-             */
-            background: `
-                radial-gradient(circle at 20% 0%, rgba(245, 185, 79, 0.04), transparent 40%),
-                radial-gradient(circle at 80% 100%, rgba(76, 175, 130, 0.025), transparent 40%),
-                var(--color-bg-calido)
-            `,
+            /* Mismo difuminado marrón→negro que la sección Artesano de la semana */
+            background: 'linear-gradient(135deg, #1c1710, var(--color-bg))',
             borderBottom: '1px solid var(--color-border)',
             padding: '72px 24px 48px',
             position: 'relative'
