@@ -116,7 +116,7 @@ export default function Panel() {
             {/* Banner: sos el artesano destacado de la semana */}
             {esArtesanoSemana && (
             <div style={{
-                background: 'rgba(245, 185, 79, 0.10)',
+                background: 'linear-gradient(135deg, #f5b94f22, #f59f3315)',
                 border: '1px solid #f5b94f',
                 borderRadius: 'var(--radius)', padding: '18px 22px', marginBottom: '24px'
             }}>
@@ -142,7 +142,7 @@ export default function Panel() {
             {plan && (
             <div style={{
                 background: plan.esPremium
-                    ? 'rgba(245, 185, 79, 0.10)'
+                    ? 'linear-gradient(135deg, #f5b94f22, #f59f3322)'
                     : 'var(--color-bg-2)',
                 border: `1px solid ${plan.esPremium ? 'var(--color-premium)' : 'var(--color-border)'}`,
                 borderRadius: 'var(--radius)', padding: '18px 22px', marginBottom: '24px',

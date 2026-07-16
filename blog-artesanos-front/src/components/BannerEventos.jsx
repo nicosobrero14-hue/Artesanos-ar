@@ -271,7 +271,7 @@ function calcularMeta(evento) {
             icono: '🎪',
             iconoBorde: 'var(--color-success)',
             iconoBg: '#4caf8233',
-            fondo: 'rgba(76, 175, 130, 0.14)',
+            fondo: 'linear-gradient(135deg, rgba(76, 175, 130, 0.25), rgba(76, 175, 130, 0.05))',
             glow: 'rgba(76, 175, 130, 0.3)',
             fechaTexto, countdown: null, enCurso: true
         }
@@ -282,7 +282,7 @@ function calcularMeta(evento) {
             icono: '⚡',
             iconoBorde: 'var(--color-premium)',
             iconoBg: '#f5b94f33',
-            fondo: 'rgba(245, 185, 79, 0.12)',
+            fondo: 'linear-gradient(135deg, rgba(245, 185, 79, 0.22), rgba(245, 185, 79, 0.04))',
             glow: 'rgba(245, 185, 79, 0.3)',
             fechaTexto, countdown, enCurso: false
         }
@@ -292,7 +292,7 @@ function calcularMeta(evento) {
         icono: '📅',
         iconoBorde: 'var(--color-accent)',
         iconoBg: 'var(--color-bg-3)',
-        fondo: 'rgba(76, 175, 130, 0.07)',
+        fondo: 'linear-gradient(135deg, rgba(76, 175, 130, 0.10), rgba(0, 0, 0, 0))',
         glow: 'rgba(76, 175, 130, 0.2)',
         fechaTexto, countdown, enCurso: false
     }

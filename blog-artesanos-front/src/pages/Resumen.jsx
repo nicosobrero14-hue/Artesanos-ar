@@ -58,7 +58,7 @@ export default function Resumen() {
                     <>
                         {/* Tarjeta compartible */}
                         <div style={{
-                            background: '#1a150e',
+                            background: 'linear-gradient(135deg, #1f1a12, #14110c)',
                             border: '1px solid var(--color-accent)',
                             borderRadius: 'var(--radius)',
                             padding: '28px 24px',

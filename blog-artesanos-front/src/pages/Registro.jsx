@@ -89,7 +89,7 @@ export default function Registro() {
 
             {/* Banner de trial Premium gratis al verificar la cuenta. */}
             <div style={{
-                background: 'rgba(245, 185, 79, 0.10)',
+                background: 'linear-gradient(135deg, #f5b94f22, #f59f3315)',
                 border: '1px solid #f5b94f55',
                 borderRadius: 'var(--radius-sm)',
                 padding: '12px 14px',

@@ -10,8 +10,7 @@
   --color-text-2: #aaaaaa;
   --color-text-3: #888888;   /* subido desde #666 para cumplir WCAG AA (4.5:1) */
 
-  /* Superficie cálida — marrón oscuro de la gama del dorado. Para el hero
-     y secciones destacadas que necesitan calidez sin gradientes. */
+  /* Superficie cálida del hero — marrón oscuro de la gama del dorado */
   --color-bg-calido: #221a10;
 
   /* Colores semánticos */
@@ -70,7 +69,8 @@
  */
 :root[data-theme="light"] {
   /* Crema suave tirando a blanco — clara y descansada, con un tinte cálido
-     que la aleja del blanco clínico */
+     que la aleja del blanco clínico. Los colores de texto están calibrados
+     para cumplir WCAG AA sobre este fondo (verificado con ratios de contraste). */
   --color-bg: #f8f3e8;         /* fondo casi blanco con tinte crema */
   --color-bg-2: #fefcf6;       /* superficies elevadas (cards, navbar) */
   --color-bg-3: #eee7d6;       /* superficies profundas (inputs, chips) */

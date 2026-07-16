@@ -28,7 +28,7 @@ export default function Card({
             border: '1px solid var(--color-accent)'
         },
         premium: {
-            background: 'color-mix(in srgb, var(--color-premium) 13%, transparent)',
+            background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-premium) 13%, transparent), color-mix(in srgb, var(--color-premium) 13%, transparent))',
             border: '1px solid var(--color-premium)'
         }
     }

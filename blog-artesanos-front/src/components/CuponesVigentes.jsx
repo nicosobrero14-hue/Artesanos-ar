@@ -49,7 +49,7 @@ export default function CuponesVigentes({ slug }) {
                         onClick={() => copiar(c.codigo)}
                         title="Click para copiar el código"
                         style={{
-                            background: 'rgba(245, 185, 79, 0.08)',
+                            background: 'linear-gradient(135deg, #f5b94f15, #f5b94f05)',
                             border: '1px dashed #f5b94f',
                             borderRadius: 'var(--radius)',
                             padding: '14px',
@@ -58,8 +58,8 @@ export default function CuponesVigentes({ slug }) {
                             textAlign: 'left',
                             transition: 'all 0.2s'
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245, 185, 79, 0.14)' }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245, 185, 79, 0.08)' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5b94f25, #f5b94f10)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5b94f15, #f5b94f05)' }}
                     >
                         <div style={{
                             background: 'var(--color-premium)', color: '#0f0f0f',
