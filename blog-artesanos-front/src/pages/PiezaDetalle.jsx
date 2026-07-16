@@ -9,6 +9,7 @@ import BotonMeGusta from '../components/BotonMeGusta'
 import BotonFavorito from '../components/BotonFavorito'
 import BotonReportar from '../components/BotonReportar'
 import ThemeToggle from '../components/ThemeToggle'
+import Campanita from '../components/Campanita'
 import PantallaError from '../components/PantallaError'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
@@ -95,6 +96,7 @@ export default function PiezaDetalle() {
                     ← Volver al catálogo
                 </Link>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <Campanita />
                     <ThemeToggle size="sm" />
                     <Link to="/" style={{ fontSize: '13px', color: 'var(--color-text-2)' }}>Inicio</Link>
                     {usuario ? (

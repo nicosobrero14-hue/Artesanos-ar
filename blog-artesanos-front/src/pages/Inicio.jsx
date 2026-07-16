@@ -6,6 +6,7 @@ import BannerEventos from '../components/BannerEventos'
 import SidebarOficios from '../components/SidebarOficios'
 import MobileDrawer from '../components/MobileDrawer'
 import ThemeToggle from '../components/ThemeToggle'
+import Campanita from '../components/Campanita'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
 import { useSEO } from '../hooks/useSEO'
@@ -292,8 +293,9 @@ function TopBar({ usuario }) {
                     )}
                 </div>
 
-                {/* Toggle de tema — visible en desktop y mobile */}
+                {/* Campanita + toggle de tema — visibles en desktop y mobile */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Campanita />
                     <ThemeToggle size="sm" />
 
                     {/* Hamburguesa — solo mobile */}

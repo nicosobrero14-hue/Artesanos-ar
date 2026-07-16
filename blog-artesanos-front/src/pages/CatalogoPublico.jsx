@@ -7,6 +7,7 @@ import SeccionResenas from '../components/SeccionResenas'
 import CuponesVigentes from '../components/CuponesVigentes'
 import BotonCompartir from '../components/BotonCompartir'
 import ThemeToggle from '../components/ThemeToggle'
+import Campanita from '../components/Campanita'
 import PantallaError from '../components/PantallaError'
 import { useToast } from '../context/ToastContext'
 import BotonWhatsApp from '../components/BotonWhatsApp'
@@ -122,6 +123,7 @@ export default function CatalogoPublico() {
                     ← Inicio
                 </Link>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <Campanita />
                     <ThemeToggle size="sm" />
                     {usuario ? (
                         <>

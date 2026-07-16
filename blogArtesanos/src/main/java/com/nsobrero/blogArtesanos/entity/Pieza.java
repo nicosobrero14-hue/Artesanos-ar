@@ -72,8 +72,13 @@ public class Pieza {
      * Lista de URLs de fotos. @ElementCollection crea una tabla separada
      * "pieza_fotos" con las URLs. Así podés tener múltiples fotos por pieza.
      * IMPORTANTE: List<String> con el tipo genérico explícito.
+     *
+     * @Fetch(SUBSELECT): cuando se carga una lista de piezas, Hibernate trae
+     * las fotos de TODAS en una sola query (subselect) en vez de una query por
+     * pieza. Con 40 piezas en el home eso son 39 queries menos por request.
      */
     @ElementCollection(fetch = FetchType.EAGER)
+    @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
     @CollectionTable(name = "pieza_fotos", joinColumns = @JoinColumn(name = "pieza_id"))
     @Column(name = "foto_url")
     private List<String> fotos = new ArrayList<>();

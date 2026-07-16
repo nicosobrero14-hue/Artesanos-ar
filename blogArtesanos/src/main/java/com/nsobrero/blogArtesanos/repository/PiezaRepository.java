@@ -51,6 +51,7 @@ public interface PiezaRepository extends JpaRepository<Pieza, Long> {
      */
     @Query("SELECT DISTINCT p FROM Pieza p " +
            "LEFT JOIN FETCH p.materiales " +
+           "JOIN FETCH p.artesano " +
            "WHERE p.destacada = true " +
            "AND p.estado = :estado " +
            "AND p.artesano.activo = true " +
@@ -66,6 +67,7 @@ public interface PiezaRepository extends JpaRepository<Pieza, Long> {
      */
     @Query("SELECT DISTINCT p FROM Pieza p " +
            "LEFT JOIN FETCH p.materiales " +
+           "JOIN FETCH p.artesano " +
            "WHERE (p.destacada = false OR p.destacada IS NULL) " +
            "AND p.estado = :estado " +
            "AND p.artesano.activo = true " +
@@ -80,10 +82,19 @@ public interface PiezaRepository extends JpaRepository<Pieza, Long> {
      */
     @Query("SELECT DISTINCT p FROM Pieza p " +
            "LEFT JOIN FETCH p.materiales " +
+           "JOIN FETCH p.artesano " +
            "WHERE p.artesano.activo = true " +
            "AND p.artesano.rol <> com.nsobrero.blogArtesanos.enums.RolUsuario.ADMIN " +
            "AND (p.oculta = false OR p.oculta IS NULL)")
     List<Pieza> findTodasPublicas();
+
+    /*
+     * IDs de artesanos que tienen al menos una pieza — 1 query.
+     * Reemplaza el patrón "countByArtesanoId por cada artesano" (N+1)
+     * usado para elegir el artesano de la semana.
+     */
+    @Query("SELECT DISTINCT p.artesano.id FROM Pieza p")
+    List<Long> findArtesanoIdsConPiezas();
 
     // Counts para el banner del home
     @Query("SELECT COUNT(p) FROM Pieza p " +
@@ -107,6 +118,7 @@ public interface PiezaRepository extends JpaRepository<Pieza, Long> {
      */
     @Query("SELECT DISTINCT p FROM Pieza p " +
            "LEFT JOIN FETCH p.materiales " +
+           "JOIN FETCH p.artesano " +
            "WHERE p.estado = 'DISPONIBLE' " +
            "AND p.artesano.activo = true " +
            "AND p.artesano.rol <> com.nsobrero.blogArtesanos.enums.RolUsuario.ADMIN " +
@@ -121,6 +133,7 @@ public interface PiezaRepository extends JpaRepository<Pieza, Long> {
      */
     @Query("SELECT DISTINCT p FROM Pieza p " +
            "LEFT JOIN FETCH p.materiales " +
+           "JOIN FETCH p.artesano " +
            "WHERE p.id <> :excluirId " +
            "AND p.estado = 'DISPONIBLE' " +
            "AND p.artesano.activo = true " +

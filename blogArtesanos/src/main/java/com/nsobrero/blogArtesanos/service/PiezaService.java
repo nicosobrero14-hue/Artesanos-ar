@@ -57,11 +57,11 @@ public class PiezaService {
     public List<PiezaDTO> buscar(String query) {
         if (query == null || query.trim().length() < 2) return List.of();
         String q = "%" + query.toLowerCase().trim() + "%";
-        return piezaRepository.buscarPublicas(q).stream()
+        var resultado = piezaRepository.buscarPublicas(q).stream()
                 .filter(p -> p.getArtesano().getRol() != RolUsuario.ADMIN)
                 .limit(50)
-                .map(this::toDTOPublico)
                 .toList();
+        return toDTOsBatch(resultado, true);
     }
 
     /*
@@ -74,10 +74,10 @@ public class PiezaService {
         Pieza ref = buscarPieza(piezaId);
         String categoria = ref.getCategoria() != null ? ref.getCategoria() : "__nada__";
         Long artesanoId = ref.getArtesano().getId();
-        return piezaRepository.findRelacionadas(piezaId, categoria, artesanoId).stream()
+        var resultado = piezaRepository.findRelacionadas(piezaId, categoria, artesanoId).stream()
                 .limit(4)
-                .map(this::toDTOPublico)
                 .toList();
+        return toDTOsBatch(resultado, true);
     }
 
     /*
@@ -146,7 +146,7 @@ public class PiezaService {
 
         // Shuffle final para que el orden visual del feed sea variado
         java.util.Collections.shuffle(seleccionadas);
-        return seleccionadas.stream().map(this::toDTOPublico).toList();
+        return toDTOsBatch(seleccionadas, true);
     }
 
     /*
@@ -175,13 +175,13 @@ public class PiezaService {
         combinadas.addAll(noDestacadas);
         combinadas.addAll(destacadasNoVisibles);
 
-        return combinadas.stream()
+        var resultado = combinadas.stream()
                 .filter(p -> p.getArtesano().getRol() != RolUsuario.ADMIN)
                 .filter(p -> oficio == null || oficio.equals(p.getOficio()))
                 .sorted(Comparator.comparing(Pieza::getFechaCreacion, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(24)
-                .map(this::toDTOPublico)
                 .toList();
+        return toDTOsBatch(resultado, true);
     }
 
     /*
@@ -204,32 +204,34 @@ public class PiezaService {
      */
     @Transactional
     public List<PiezaDTO> listarNovedades() {
-        return piezaRepository.findTodasPublicas().stream()
+        var resultado = piezaRepository.findTodasPublicas().stream()
                 .filter(p -> p.getEstado() == EstadoPieza.DISPONIBLE)
                 .sorted(Comparator.comparing(Pieza::getFechaCreacion,
                         Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(48)
-                .map(this::toDTOPublico)
                 .toList();
+        return toDTOsBatch(resultado, true);
     }
 
     @Transactional
     public List<PiezaDTO> listarPublicas(String slug) {
         Artesano artesano = artesanoRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Artesano no encontrado"));
-        return piezaRepository
+        var resultado = piezaRepository
                 .findPublicasByArtesanoIdWithMateriales(artesano.getId())
                 .stream()
                 .sorted(ORDEN_PERFIL_PUBLICO)
-                .map(this::toDTOPublico).toList();
+                .toList();
+        return toDTOsBatch(resultado, true);
     }
 
     @Transactional
     public List<PiezaDTO> listarMias(Long artesanoId) {
-        return piezaRepository.findByArtesanoIdWithMateriales(artesanoId)
+        var resultado = piezaRepository.findByArtesanoIdWithMateriales(artesanoId)
                 .stream()
                 .sorted(ORDEN_DESTACADAS_PRIMERO)
-                .map(this::toDTO).toList();
+                .toList();
+        return toDTOsBatch(resultado, false);
     }
 
     /*
@@ -433,7 +435,9 @@ public class PiezaService {
      * Cuando renueve premium, vuelve a aparecer públicamente sin tener que tocar nada.
      */
     private PiezaDTO toDTO(Pieza p) {
-        return toDTOInterno(p, false);
+        return toDTOInterno(p, false,
+                meGustaRepository.countByPiezaId(p.getId()),
+                comentarioRepository.countByPiezaId(p.getId()));
     }
 
     /*
@@ -442,16 +446,47 @@ public class PiezaService {
      * en la DB esté true — para que el badge dorado no aparezca públicamente.
      */
     private PiezaDTO toDTOPublico(Pieza p) {
-        return toDTOInterno(p, true);
+        return toDTOInterno(p, true,
+                meGustaRepository.countByPiezaId(p.getId()),
+                comentarioRepository.countByPiezaId(p.getId()));
     }
 
-    private PiezaDTO toDTOInterno(Pieza p, boolean vistaPublica) {
+    /*
+     * Mapeo BATCH de una lista de piezas a DTOs.
+     *
+     * Antes cada pieza disparaba 2 queries de count (likes + comentarios) — con
+     * 40 piezas en el home eran 80 queries por request, y con la latencia de red
+     * hacia la DB eso dominaba el tiempo de respuesta. Ahora los counts de TODAS
+     * las piezas se traen en 2 queries agrupadas (GROUP BY pieza_id) y se mapean
+     * desde memoria.
+     */
+    private List<PiezaDTO> toDTOsBatch(List<Pieza> piezas, boolean vistaPublica) {
+        if (piezas.isEmpty()) return List.of();
+        List<Long> ids = piezas.stream().map(Pieza::getId).toList();
+
+        var likesPorPieza = aMapa(meGustaRepository.countAgrupadoPorPieza(ids));
+        var comentariosPorPieza = aMapa(comentarioRepository.countAgrupadoPorPieza(ids));
+
+        return piezas.stream()
+                .map(p -> toDTOInterno(p, vistaPublica,
+                        likesPorPieza.getOrDefault(p.getId(), 0L),
+                        comentariosPorPieza.getOrDefault(p.getId(), 0L)))
+                .toList();
+    }
+
+    /* Convierte el resultado de una query agrupada [id, count] en un mapa id → count */
+    private static java.util.Map<Long, Long> aMapa(List<Object[]> filas) {
+        var mapa = new java.util.HashMap<Long, Long>();
+        for (Object[] fila : filas) {
+            mapa.put((Long) fila[0], (Long) fila[1]);
+        }
+        return mapa;
+    }
+
+    private PiezaDTO toDTOInterno(Pieza p, boolean vistaPublica, long likes, long comentarios) {
         List<String> nombresMateriales = p.getMateriales().stream()
                 .map(Material::getNombre)
                 .toList();
-
-        long likes = meGustaRepository.countByPiezaId(p.getId());
-        long comentarios = comentarioRepository.countByPiezaId(p.getId());
 
         Boolean destacada = p.getDestacada();
         if (vistaPublica && Boolean.TRUE.equals(destacada)) {

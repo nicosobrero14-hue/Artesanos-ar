@@ -2,7 +2,6 @@ package com.nsobrero.blogArtesanos.controller;
 
 import com.nsobrero.blogArtesanos.dto.ArtesanoPublicoDTO;
 import com.nsobrero.blogArtesanos.entity.Artesano;
-import com.nsobrero.blogArtesanos.entity.Pieza;
 import com.nsobrero.blogArtesanos.enums.RolUsuario;
 import com.nsobrero.blogArtesanos.repository.ArtesanoRepository;
 import com.nsobrero.blogArtesanos.repository.ComentarioRepository;
@@ -60,10 +59,22 @@ public class ArtesanosDestacadosController {
                 .filter(a -> a.getRol() != RolUsuario.ADMIN)
                 .toList();
 
-        // Calculamos score por artesano
+        /*
+         * Score por artesano con 3 queries agrupadas (likes, comentarios y reseñas
+         * por artesano). Antes se iteraba artesano por artesano y pieza por pieza
+         * con counts individuales — cientos de queries por request, que era la
+         * causa principal de la lentitud del home.
+         */
+        Map<Long, Long> likesPorArtesano = aMapa(meGustaRepository.countAgrupadoPorArtesano());
+        Map<Long, Long> comentariosPorArtesano = aMapa(comentarioRepository.countAgrupadoPorArtesano());
+        Map<Long, Long> resenasPorArtesano = aMapa(resenaRepository.countAgrupadoPorArtesano());
+
         Map<Long, Long> scorePorArtesano = new HashMap<>();
         for (Artesano a : elegibles) {
-            long score = calcularScore(a);
+            long score = likesPorArtesano.getOrDefault(a.getId(), 0L) * 3
+                    + comentariosPorArtesano.getOrDefault(a.getId(), 0L) * 5
+                    + resenasPorArtesano.getOrDefault(a.getId(), 0L) * 10;
+            if (planService.isPremium(a)) score += BONUS_PREMIUM;
             scorePorArtesano.put(a.getId(), score);
         }
 
@@ -117,11 +128,14 @@ public class ArtesanosDestacadosController {
     @GetMapping("/artesano-semana")
     @Transactional
     public ResponseEntity<ArtesanoPublicoDTO> artesanoSemana() {
+        // 1 query con los ids de artesanos que tienen piezas (antes: 1 count por artesano)
+        var idsConPiezas = new java.util.HashSet<>(piezaRepository.findArtesanoIdsConPiezas());
+
         List<Artesano> elegibles = artesanoRepository.findAll().stream()
                 .filter(Artesano::getActivo)
                 .filter(a -> a.getRol() != RolUsuario.ADMIN)
                 // Solo artesanos con al menos 1 pieza — no destacamos catálogos vacíos
-                .filter(a -> piezaRepository.countByArtesanoId(a.getId()) > 0)
+                .filter(a -> idsConPiezas.contains(a.getId()))
                 .sorted(Comparator.comparing(Artesano::getId))
                 .toList();
 
@@ -135,21 +149,13 @@ public class ArtesanosDestacadosController {
         return ResponseEntity.ok(toPublicoDTO(elegibles.get(idx)));
     }
 
-    /*
-     * Calcula score acumulado. Itera las piezas y reseñas del artesano.
-     * Para volúmenes grandes esto se podría optimizar con queries SUM, pero
-     * para una comunidad chica/mediana funciona bien.
-     */
-    private long calcularScore(Artesano a) {
-        long score = 0;
-        List<Pieza> piezas = piezaRepository.findByArtesanoId(a.getId());
-        for (Pieza p : piezas) {
-            score += meGustaRepository.countByPiezaId(p.getId()) * 3;
-            score += comentarioRepository.countByPiezaId(p.getId()) * 5;
+    /* Convierte el resultado de una query agrupada [id, count] en un mapa id → count */
+    private static Map<Long, Long> aMapa(List<Object[]> filas) {
+        Map<Long, Long> mapa = new HashMap<>();
+        for (Object[] fila : filas) {
+            mapa.put((Long) fila[0], (Long) fila[1]);
         }
-        score += resenaRepository.countByArtesanoId(a.getId()) * 10;
-        if (planService.isPremium(a)) score += BONUS_PREMIUM;
-        return score;
+        return mapa;
     }
 
     private ArtesanoPublicoDTO toPublicoDTO(Artesano a) {

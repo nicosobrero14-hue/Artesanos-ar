@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 /*
  * Campanita 🔔 con badge rojo de no-leídas.
@@ -24,14 +25,17 @@ const ICONOS = {
 }
 
 export default function Campanita() {
+    const { usuario } = useAuth()
     const [count, setCount] = useState(0)
     const [abierto, setAbierto] = useState(false)
     const [items, setItems] = useState([])
     const [cargando, setCargando] = useState(false)
     const ref = useRef(null)
 
-    /* Poll del count cada 30s mientras la pestaña esté visible */
+    /* Poll del count cada 60s mientras la pestaña esté visible.
+       Solo si hay sesión — sin usuario no hay notificaciones que consultar. */
     useEffect(() => {
+        if (!usuario) return
         const tick = () => {
             if (document.hidden) return
             api.get('/notificaciones/no-leidas')
@@ -39,9 +43,9 @@ export default function Campanita() {
                 .catch(() => {})
         }
         tick()
-        const id = setInterval(tick, 30000)
+        const id = setInterval(tick, 60000)
         return () => clearInterval(id)
-    }, [])
+    }, [usuario])
 
     /* Cerrar al click fuera */
     useEffect(() => {
@@ -71,6 +75,9 @@ export default function Campanita() {
             setCargando(false)
         }
     }
+
+    // Sin sesión no se muestra — así se puede montar en cualquier navbar sin chequeos.
+    if (!usuario) return null
 
     return (
         <div ref={ref} style={{ position: 'relative' }}>

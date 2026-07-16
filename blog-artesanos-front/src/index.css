@@ -12,7 +12,7 @@
 
   /* Colores semánticos */
   --color-accent: #c8a96e;       /* dorado artesanal — acento principal */
-  --color-accent-hover: #b8935a;
+  --color-accent-hover: #b8935a; /* dorado más oscuro para hover */
   --color-success: #4caf82;
   --color-danger: #e05c5c;
   --color-premium: #f5b94f;      /* dorado más vivo para Premium / destacados */
