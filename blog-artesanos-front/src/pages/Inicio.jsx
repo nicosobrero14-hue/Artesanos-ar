@@ -431,8 +431,8 @@ function Hero({ busqueda, setBusqueda, stats, loading }) {
     }
     return (
         <div className="hero-section" style={{
-            /* Mismo difuminado marrón→negro que la sección Artesano de la semana */
-            background: 'linear-gradient(135deg, #1c1710, var(--color-bg))',
+            /* Difuminado marrón en dark; superficie clara plana en light (var por theme) */
+            background: 'var(--bg-hero)',
             borderBottom: '1px solid var(--color-border)',
             padding: '72px 24px 48px',
             position: 'relative'
@@ -610,7 +610,8 @@ function SeccionArtesanoSemana({ artesano }) {
         <div className="section-pad" style={{
             borderBottom: '1px solid var(--color-border)',
             padding: '36px 24px',
-            background: 'linear-gradient(135deg, #1c1710, var(--color-bg))'
+            /* Oscuro plano (sin difuminar) — se diferencia del hero que sí lleva el gradiente */
+            background: 'var(--color-bg-2)'
         }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 <p style={{
