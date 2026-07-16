@@ -62,7 +62,7 @@ export default function Eventos() {
 
             {/* Hero */}
             <div style={{
-                background: 'var(--color-bg-2)',
+                background: 'rgba(76, 175, 130, 0.06)',
                 padding: '48px 24px 32px',
                 textAlign: 'center'
             }}>

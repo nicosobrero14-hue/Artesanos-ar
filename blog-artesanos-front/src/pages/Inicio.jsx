@@ -431,7 +431,7 @@ function Hero({ busqueda, setBusqueda, stats, loading }) {
     }
     return (
         <div className="hero-section" style={{
-            background: 'var(--color-bg-2)',
+            background: 'var(--color-bg-calido)',
             borderBottom: '1px solid var(--color-border)',
             padding: '72px 24px 48px',
             position: 'relative'
@@ -609,7 +609,7 @@ function SeccionArtesanoSemana({ artesano }) {
         <div className="section-pad" style={{
             borderBottom: '1px solid var(--color-border)',
             padding: '36px 24px',
-            background: 'var(--color-bg-2)'
+            background: 'var(--color-bg-calido)'
         }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 <p style={{
@@ -677,7 +677,7 @@ function SeccionArtesanoSemana({ artesano }) {
 function SeccionDestacadas({ piezas, rotacion = 0 }) {
     return (
         <div style={{
-            background: 'var(--color-bg)',
+            background: 'rgba(245, 185, 79, 0.05)',
             borderBottom: '1px solid var(--color-border)',
             padding: '48px 24px'
         }} className="section-pad">

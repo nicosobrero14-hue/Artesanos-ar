@@ -67,7 +67,7 @@ export default function Ranking() {
 
             {/* Hero */}
             <div style={{
-                background: 'var(--color-bg-2)',
+                background: 'rgba(245, 185, 79, 0.05)',
                 padding: '48px 24px 32px',
                 textAlign: 'center'
             }}>
