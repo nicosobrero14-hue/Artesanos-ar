@@ -93,7 +93,7 @@ export default function Premium() {
 
                     {/* Plan premium */}
                     <div style={{
-                        background: 'linear-gradient(135deg, #f5b94f15, #f59f3315)',
+                        background: 'rgba(245, 185, 79, 0.08)',
                         border: '2px solid #f5b94f',
                         borderRadius: 'var(--radius)', padding: '28px', position: 'relative'
                     }}>

@@ -67,7 +67,7 @@ export default function Ranking() {
 
             {/* Hero */}
             <div style={{
-                background: 'linear-gradient(180deg, rgba(245, 185, 79, 0.08), transparent)',
+                background: 'var(--color-bg-2)',
                 padding: '48px 24px 32px',
                 textAlign: 'center'
             }}>
@@ -82,7 +82,7 @@ export default function Ranking() {
                 {config?.activo && config.descripcionPremio && (
                     <div style={{
                         maxWidth: '600px', margin: '24px auto 0',
-                        background: 'linear-gradient(135deg, #f5b94f25, #f5b94f10)',
+                        background: 'rgba(245, 185, 79, 0.12)',
                         border: '1px solid #f5b94f',
                         borderRadius: 'var(--radius)',
                         padding: '20px 28px',

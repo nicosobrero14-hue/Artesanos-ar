@@ -330,7 +330,7 @@ export default function CatalogoPublico() {
                 {/* CTA de contacto — unificado con el chat in-app */}
                 {usuario && usuario.slug !== slug ? (
                     <div id="form-contacto" style={{
-                        background: 'linear-gradient(135deg, var(--color-bg-2), var(--color-bg-3))',
+                        background: 'var(--color-bg-2)',
                         border: '1px solid var(--color-border)',
                         borderRadius: 'var(--radius)', padding: '32px', textAlign: 'center'
                     }}>
